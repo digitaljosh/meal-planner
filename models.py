@@ -1,4 +1,5 @@
-from main import db 
+'''
+#from main import db 
 
 
 class User(db.Model):
@@ -47,6 +48,8 @@ class Recipe(db.Model):
         self.ingredients = ingredients
         self.instructions = instructions
         self.time = time
+
+'''
         
 
 
