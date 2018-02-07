@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h2>Search Recipes</h2>
+    <form action="/search" method="post">
+        <table>
+            <tr>
+                <td><label for="search">Find A Recipe</label></td>
+                <td>
+                    <input name="search" type="text" value="">
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="Search">
+    </form>
+
+    <div>
+        
+        <ul>
+            {% for i in range((recipe_list|length)-1) %}
+                <li>{{ recipe_list['results'][i]['title'] }}</li></a>
+                    <img src="https://spoonacular.com/recipeImages/{{ recipe_list['results'][i]['imageUrls'][0] }}"/>
+            {% endfor %}
+        </ul>
+
+        https://spoonacular.com/recipeImages/
+        
+    </div>
+
+{% endblock %}
