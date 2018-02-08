@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, json
+from flask import Flask, render_template, request, json, request
 #from rapidconnect import RapidConnect
 import requests
+import json
+
 #from flask_sqlalchemy import SQLAlchemy 
 
 #TODO break main apart into seperate files later
@@ -14,13 +16,17 @@ app = Flask(__name__)
 app.config['DEBUG'] = True
 
 
+
+#GET Search Recipes - spoonacular
 @app.route('/search', methods=['POST', 'GET'])
 def recipe_search():
 
     if request.method == 'POST':
+        
         search_query = request.form['search']
         search_query = search_query.replace(" ","+")
-        api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?query="
+
+        api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&query="
         url = api + search_query
         headers={
             "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
@@ -28,25 +34,12 @@ def recipe_search():
             }
 
         json_data = requests.get(url, headers=headers).json()
+
         
 
         print("########################################")
-        title = json_data['results'][0]['title']
-        print(title)
-        print(type(title))
+        print("json_data Type: ")
         print(type(json_data))
-
-
-        print("########################################")
-            
-        
-        ''' # making list of titles from json data
-        recipe_list = []
-        for recipe in json_data['results']:
-            recipe_list.append(recipe['title'])
-        '''
-
-        print("########################################")
         #print(json_data)
         print("########################################")
 
@@ -56,6 +49,31 @@ def recipe_search():
     else:
         return render_template('search.html')
 
+
+
+# Get Recipe Information - spoonacular API 
+@app.route('/instructions', methods=['POST', 'GET'])
+def recipe_instructions():
+    recipe_id = request.args.get('id')
+    api_part1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
+    api_part2 = "/information?includeNutrition=false"
+    url = api_part1 + recipe_id + api_part2
+    headers={
+    "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
+    "Accept": "application/json"
+    }
+
+    json_data = requests.get(url, headers=headers).json()
+
+
+    print("######################")
+    print(type(json_data))
+    print(json_data)
+    print("######################")
+
+
+    
+    return render_template('search.html', recipe_instr=json_data) 
 
 
 
