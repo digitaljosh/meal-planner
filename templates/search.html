@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h2>Search Recipes</h2>
+    <form action="/search" method="post">
+        <table>
+            <tr>
+                <td><label for="search">Find A Recipe</label></td>
+                <td>
+                    <input name="search" type="text" value="">
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="Search">
+    </form>
+
+
+    <!-- Display recipe titles and pictures -->
+    <div>
+        <ul>
+            {% for i in range((recipe_list|length)-1) %}
+                <h3>{{ recipe_list['results'][i]['title'] }}</h3>
+                <img src="https://spoonacular.com/recipeImages/{{ recipe_list['results'][i]['imageUrls'][0] }}"/>
+                <h4><a href="/instructions?id={{ recipe_list['results'][i]['id'] }}">Recipe Instructions</a></h4>
+                </br>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div>
+        
+        {% if recipe_instr %}
+            <h3>{{ recipe_instr.get('title') }}</h3>
+            <img src="{{ recipe_instr.get('image') }}"/>
+            </br>
+            <h4>Ingredients:</h4>
+            <ul>
+                {% for i in range(recipe_instr['extendedIngredients']|length) %}
+                    <li>{{ recipe_instr['extendedIngredients'][i]['originalString'] }}</li>
+                {% endfor %}
+            </ul>
+            </br>
+            <h4>Recipe Instructions:</h4>
+            <p>{{ recipe_instr.get('instructions') }}</p>
+        {% endif %}
+                
+
+    </div>
+
+{% endblock %}
