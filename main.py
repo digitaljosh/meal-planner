@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, json, request
 #from rapidconnect import RapidConnect
 import requests
 import json
+import recipe_search_list, recipe_info
+
 
 #from flask_sqlalchemy import SQLAlchemy 
 
@@ -22,10 +24,11 @@ app.config['DEBUG'] = True
 def recipe_search():
 
     if request.method == 'POST':
-        
+        '''
+        -The following code block calls spoonacular api, using temp data during development-
+
         search_query = request.form['search']
         search_query = search_query.replace(" ","+")
-
         api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&query="
         url = api + search_query
         headers={
@@ -35,18 +38,16 @@ def recipe_search():
 
         json_data = requests.get(url, headers=headers).json()
 
-        
-
-        print("########################################")
-        print("json_data Type: ")
-        print(type(json_data))
-        #print(json_data)
-        print("########################################")
-
-
+        print("##############")
+        print(recipe_temp)
+        print("################")
         return render_template('search.html', recipe_list=json_data)
+        '''
+        recipe_list = recipe_search_list.recipe_search_list #call r_s_l variable within r_s_l module
+        return render_template('search.html', recipe_list=recipe_list )
 
     else:
+        
         return render_template('search.html')
 
 
@@ -54,6 +55,10 @@ def recipe_search():
 # Get Recipe Information - spoonacular API 
 @app.route('/instructions', methods=['POST', 'GET'])
 def recipe_instructions():
+
+    '''
+    -The following code block calls spoonacular api, using temp data during development-
+
     recipe_id = request.args.get('id')
     api_part1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
     api_part2 = "/information?includeNutrition=false"
@@ -65,16 +70,11 @@ def recipe_instructions():
 
     json_data = requests.get(url, headers=headers).json()
 
-
-    print("######################")
-    print(type(json_data))
-    print(json_data)
-    print("######################")
-
-
-    
     return render_template('search.html', recipe_instr=json_data) 
+    '''
 
+    recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
+    return render_template('search.html', recipe_instructions=recipe_instructions )
 
 
 @app.route("/")
