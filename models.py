@@ -42,8 +42,8 @@ class Day(db.Model):
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    ingredients = db.Column(db.String(50))# maybe pickle to use a list ?
-    instructions = db.Column(db.Text)
+    ingredients = db.Column(db.String(500))# maybe pickle to use a list ?
+    instructions = db.Column(db.Text)# may also need to use pickled object 
     time = db.Column(db.Interval) # timedelta() time it take to perform task
     cookbook_id = db.Column(db.Integer, db.ForeignKey('cookbook.id'))
 
