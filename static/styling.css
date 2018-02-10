@@ -1,0 +1,18 @@
+h2 {
+    text-align: center;
+    color: white;
+    font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif
+}
+.body {
+    background-color: cornflowerblue;
+}
+
+/* flash messages */
+.negative {
+    color: red;
+    font-size: 3rem;
+}
+.positive {
+    color: green;
+    font-size: 3rem;
+}

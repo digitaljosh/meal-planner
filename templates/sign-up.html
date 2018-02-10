@@ -3,15 +3,16 @@
 {% block content %}
 <h1>Set yourself up!</h1>
 
-    <form action="/continue" method="post" name="signup">
+    <form action="/sign-up" method="post" name="signup">
         <div><label>Username</label><input type="text" name="username" value="{{ username }}" required>
 
-        <div><label>E-Mail</label><imput type="email" name="email" value="{{ email }}" required>
+            <div><label>E-Mail</label><input type="email" name="email" value="{{ email }}" required>
+                
             
         <div><label>Password</label><input type="password" name="passw" required>
                 
         <div><label>Confirm Password</label><input type="password" name="conf_pass" required>
-        
+            
         
         <input type="submit" value="well?" />
 {% endblock %}
