@@ -5,7 +5,7 @@ from hidden import local_db_connect
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = local_db_connect
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://DinDin:1meal@localhost:3306/DinDin'
 
 app.secret_key = 'amsdfsndfknasdlfknl'
 
