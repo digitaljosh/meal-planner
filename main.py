@@ -42,10 +42,11 @@ def recipe_search():
         #print(json_data)
         print("########################################")
 
-
+        
         return render_template('search.html', recipe_list=json_data)
 
     else:
+        
         return render_template('search.html')
 
 
@@ -72,7 +73,7 @@ def recipe_instructions():
     
     try:
         stop_index = json_data['title'].index('-')
-        print("INDEX" + stop_index)
+        print("INDEX" + str(stop_index))
         dish_name = json_data['title'][:stop_index]
         print(dish_name)
     except ValueError:
@@ -90,14 +91,14 @@ def recipe_instructions():
     print("===================")
     ingreds = json_data['extendedIngredients']
     print(pp.pprint(ingreds))
-    print(ingreds[4]['name'])
+    print(ingreds[4]['originalString'])
     print(len(ingreds))
     print("*******************")
     print("AND the ingredients are: ")
     recipe_ingredients = []
     for i in range(0, len(ingreds)):
-        recipe_ingredients.append(ingreds[i]['name'])
-        print(ingreds[i]['name'])
+        recipe_ingredients.append(ingreds[i]['originalString'])
+        print(ingreds[i]['originalString'])
 
     print("*********************")
     
@@ -135,13 +136,14 @@ def recipe_instructions():
     print(type(recipe_time))
 
     #print(recipe_instructs)
-    """
-    new_recipe = Recipe(recipe_name, recipe_ingredients, "cook", recipe_time, cookbook_id=None)
+    #TODO convert or make time explicit in minutes 
+    new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
 
     db.session.add(new_recipe)
     db.session.commit()
-    """
-    return render_template('search.html', recipe_instr=json_data) 
+    
+    return render_template('recipe.html', recipe=new_recipe)
+    #return render_template('search.html', recipe_instr=json_data) 
 
 
 
