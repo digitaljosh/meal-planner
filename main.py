@@ -1,10 +1,11 @@
 from flask import render_template, redirect, request, flash, session
-from app import app, db
 
 from datetime import date
 import calendar
 
+from app import app, db
 from models import User, Calendar
+from hashy import check_pw_hash
 
 
 
@@ -87,7 +88,7 @@ def login():
 
         if user_to_check.count() == 1:
             user = user_to_check.first()
-            if user.password == tried_pw:
+            if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = tried_name
                 return render_template('calendar.html', username=session['username'])
             else:
