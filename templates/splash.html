@@ -2,14 +2,22 @@
 
 {% block content %}
 
-      <div class="container">
+
+      <div>
         
-        <h2> Hello, World. </h2>
+        <div class="all-buttons">
+          <div class="button-wrapper">
+            <a href="/login"><input class="button5" type="button" name="button5" value="Login"/></a>
+          </div>
+          <div class="button-wrapper">
+            <a href="/sign-up"><input class="button5" type="button" name="button5" value="Signup"/></a>
+          </div>
+          <div class="button-wrapper">
+            <a href="/search"><input class="button5" type="button" name="button5" value="Search"/></a>
+          </div>
+        </div>
         
       </div>
 
-      <h5><a href="/login">Log in!</a></h5>
-      <h5><a href="/sign-up">Sign up</a></h5>
-      <h5><a href="/search">Search</a></h5>
 
 {% endblock %}
