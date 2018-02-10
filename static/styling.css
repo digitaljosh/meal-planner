@@ -5,7 +5,14 @@ h2 {
 }
 .body {
     background-color: cornflowerblue;
+    background-image: url(/static/images/splash-background.jpeg) ;
+    background-position: center center;
+    background-repeat:  no-repeat;
+    background-attachment: fixed;
+    background-size:  cover;
+    background-color: #999;
 }
+
 
 /* flash messages */
 .negative {
@@ -16,3 +23,41 @@ h2 {
     color: green;
     font-size: 3rem;
 }
+
+
+
+/** Splash Buttons **/
+
+.all-buttons {
+    width: 300px;
+    margin: auto;
+  }
+
+.button-wrapper {
+    margin: 20px 0 0 75px;
+    position: relative;
+    display: inline-block;
+  }
+
+  .button5 {
+    height: 40px;
+    width: 150px;
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    border: 2px solid #000;
+    border-radius: 2px;
+    font-family: 'Georgia';
+    font-size: 22px;
+    font-weight: 750;
+    color: #000;
+    transition: 300ms;
+    opacity: 0.75;
+  }
+  .button5:hover {
+    color: #fff;
+    opacity: 0.5;
+    font-weight: 250;
+  }
+  
+  /** End Splash Button **/
