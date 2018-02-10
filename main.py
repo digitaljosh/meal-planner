@@ -12,7 +12,7 @@ from datetime import date
 import calendar
 
 from models import User, Calendar, Recipe
-from app import app 
+from app import app, db
 
 
 
@@ -122,10 +122,25 @@ def recipe_instructions():
     # print(pp.pprint(ingredients))
     
 
-# AND now instantiate recipe => TODO we'll need to change recipe.time from interval to integer
-    new_recipe = Recipe(recipe_name, recipe_ingredients, recipe_instructs, recipe_time, cookbook_id=None)
+# AND now instantiate recipe => TODO pickle ingredients, instructions ?
+    #new_recipe = Recipe(recipe_name, recipe_ingredients, recipe_instructs, recipe_time, cookbook_id=None)
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print("Recipe name type: ")
+    print(type(recipe_name))
+    print("Recipe ingreds type: ")
+    print(type(recipe_ingredients))
+    print("Recipe instructions type: ")
+    print(type(recipe_instructs))
+    print("Recipe time type: ")
+    print(type(recipe_time))
 
-    
+    #print(recipe_instructs)
+    """
+    new_recipe = Recipe(recipe_name, recipe_ingredients, "cook", recipe_time, cookbook_id=None)
+
+    db.session.add(new_recipe)
+    db.session.commit()
+    """
     return render_template('search.html', recipe_instr=json_data) 
 
 
