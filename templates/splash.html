@@ -1,23 +1,41 @@
 {% extends "base.html" %}
 
+
 {% block content %}
 
+  
 
-      <div>
-        
-        <div class="all-buttons">
-          <div class="button-wrapper">
-            <a href="/login"><input class="button5" type="button" name="button5" value="Login"/></a>
-          </div>
-          <div class="button-wrapper">
-            <a href="/sign-up"><input class="button5" type="button" name="button5" value="Signup"/></a>
-          </div>
-          <div class="button-wrapper">
-            <a href="/search"><input class="button5" type="button" name="button5" value="Search"/></a>
-          </div>
-        </div>
-        
+  <div>
+    <div class="all-buttons">
+      <div class="button-wrapper">
+        <a href="/login"><input class="button5" type="button" name="button5" value="Login"/></a>
+      </div>
+      <div class="button-wrapper">
+        <a href="/sign-up"><input class="button5" type="button" name="button5" value="Signup"/></a>
+      </div>
+      <div class="button-wrapper">
+        <a href="/search"><input class="button5" type="button" name="button5" value="Search"/></a>
       </div>
 
+      <div class="popup button-wrapper about-button" onclick="myFunction()"><div id="about-text">About</div>
+        <span class="popuptext" id="myPopup">Use this app to search recipes and create meal plans!</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  
+
+  
+
+  <script>
+    // When the user clicks on div, open the popup
+    function myFunction() {
+        var popup = document.getElementById("myPopup");
+        popup.classList.toggle("show");
+    }
+  </script>
 
 {% endblock %}
+   
