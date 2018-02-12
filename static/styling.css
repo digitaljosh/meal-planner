@@ -39,17 +39,17 @@ h2 {
 /* The actual popup */
 .popup .popuptext {
     visibility: hidden;
-    width: 160px;
+    width: 240px;
     background-color: #555;
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: 8px 0;
+    padding: 8px;
     position: absolute;
     z-index: 1;
     bottom: 125%;
-    left: 50%;
-    margin-left: -80px;
+    left: -40%;
+    border: 1px solid darkgray;
 }
 
 /* Popup arrow */
@@ -61,7 +61,7 @@ h2 {
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: #555 transparent transparent transparent;
+    border-color: darkgray transparent transparent transparent;
 }
 
 /* Toggle this class - hide and show the popup */
