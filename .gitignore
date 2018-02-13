@@ -104,3 +104,10 @@ ENV/
 .vscode/
 
 Meal-Plan-Env 
+
+# secret keys, tokens, sensitives
+hidden.py
+
+#ignor ricks virt env
+mealvirt
+

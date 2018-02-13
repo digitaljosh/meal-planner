@@ -30,19 +30,19 @@
 
     <div>
         
-        {% if recipe_instr %}
-            <h3>{{ recipe_instr.get('title') }}</h3>
-            <img src="{{ recipe_instr.get('image') }}"/>
+        {% if recipe_instructions %}
+            <h3>{{ recipe_instructions.get('title') }}</h3>
+            <img src="{{ recipe_instructions.get('image') }}"/>
             </br>
             <h4>Ingredients:</h4>
             <ul>
-                {% for i in range(recipe_instr['extendedIngredients']|length) %}
-                    <li>{{ recipe_instr['extendedIngredients'][i]['originalString'] }}</li>
+                {% for i in range(recipe_instructions['extendedIngredients']|length) %}
+                    <li>{{ recipe_instructions['extendedIngredients'][i]['originalString'] }}</li>
                 {% endfor %}
             </ul>
             </br>
             <h4>Recipe Instructions:</h4>
-            <p>{{ recipe_instr.get('instructions') }}</p>
+            <p>{{ recipe_instructions.get('instructions') }}</p>
         {% endif %}
                 
 

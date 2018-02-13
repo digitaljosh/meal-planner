@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+from hidden import local_db_connect
 
 app = Flask(__name__)
 

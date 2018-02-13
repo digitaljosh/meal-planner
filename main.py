@@ -1,18 +1,17 @@
 
-from flask import Flask, render_template, request, json, request
-#from rapidconnect import RapidConnect
+from flask import render_template, redirect, request, session, json, flash
 import requests
 import json
-
-#from flask_sqlalchemy import SQLAlchemy 
-import json 
 import pprint 
-
 from datetime import date
 import calendar
 
-from models import User, Calendar, Recipe
+import recipe_search_list, recipe_info
 from app import app, db
+from models import User, Calendar, Recipe
+from hashy import check_pw_hash
+
+
 
 
 
@@ -21,10 +20,11 @@ from app import app, db
 def recipe_search():
 
     if request.method == 'POST':
-        
+        '''
+        -The following code block calls spoonacular api, using temp data during development-
+    '''
         search_query = request.form['search']
         search_query = search_query.replace(" ","+")
-
         api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&query="
         url = api + search_query
         headers={
@@ -43,7 +43,10 @@ def recipe_search():
         print("########################################")
 
         
-        return render_template('search.html', recipe_list=json_data)
+        #return render_template('search.html', recipe_list=json_data)
+        
+        recipe_list = recipe_search_list.recipe_search_list #call r_s_l variable within r_s_l module
+        return render_template('search.html', recipe_list=recipe_list )
 
     else:
         
@@ -54,6 +57,10 @@ def recipe_search():
 # Get Recipe Information - spoonacular API 
 @app.route('/instructions', methods=['POST', 'GET'])
 def recipe_instructions():
+
+    '''
+    -The following code block calls spoonacular api, using temp data during development-
+    '''
     recipe_id = request.args.get('id')
     api_part1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
     api_part2 = "/information?includeNutrition=false"
@@ -145,6 +152,8 @@ def recipe_instructions():
     return render_template('recipe.html', recipe=new_recipe)
     #return render_template('search.html', recipe_instr=json_data) 
 
+    recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
+    return render_template('search.html', recipe_instructions=recipe_instructions )
 
 
 @app.route("/")
@@ -225,7 +234,7 @@ def login():
 
         if user_to_check.count() == 1:
             user = user_to_check.first()
-            if user.password == tried_pw:
+            if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = tried_name
                 return render_template('calendar.html', username=session['username'])
             else:
