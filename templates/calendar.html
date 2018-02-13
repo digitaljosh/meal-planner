@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'cal-base.html' %}
 
 
 {% block content %}
@@ -37,12 +37,16 @@
 <TD ALIGN=center></TD>
 <TD ALIGN=center></TD>
 <TD ALIGN=center>1
+	<!-- {# <form action="/add-meal/{{ calendar.id }}" method="post"></form> #}-->
+	<form action="/add-meal" method="post"></form>
     <select>
-		<option value="eggs">eggs</option>
+		<option value="tuna casserole">tuna casserole</option>
 		<option value="pancakes">pancakes</option>
 		<option value="cereal">cereal</option>
 		<option value="biscuits">biscuits</option>
 	</select>
+</br>
+	<input type="submit" value="That's for dinner!"/>
 	<p><a href="https://www.w3schools.com/html/">requirements</a>
 </TD>
 </TR>
