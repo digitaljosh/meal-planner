@@ -43,10 +43,11 @@ def recipe_search():
         print("########################################")
 
         
-        #return render_template('search.html', recipe_list=json_data)
-        
+        return render_template('search.html', recipe_list=json_data)
+        """
         recipe_list = recipe_search_list.recipe_search_list #call r_s_l variable within r_s_l module
         return render_template('search.html', recipe_list=recipe_list )
+        """
 
     else:
         
@@ -142,19 +143,39 @@ def recipe_instructions():
     print("Recipe time type: ")
     print(type(recipe_time))
 
-    #print(recipe_instructs)
+    def clean_ingreds(recipe):
+        """splits recipe ingredients from list of one string to list of individual ingredient strings"""
+        ings = recipe.ingredients.split('\'')
+        # remove brackets
+        ingreds = ings[1:-1]
+        return ingreds
+        # TODO remove commas
+
     #TODO convert or make time explicit in minutes 
-    new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
 
-    db.session.add(new_recipe)
-    db.session.commit()
-    
-    return render_template('recipe.html', recipe=new_recipe)
+    # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
+    # instructions, having problems comparing ingredients
+    same_recipe = Recipe.query.filter_by(
+        name=recipe_name,
+        #ingredients=recipe_ingredients,
+        instructions=recipe_instructs).first()
+   
+    if same_recipe:
+        #already in db, just display that one
+        flash("Already have that one on file.", 'positive')
+        return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
+    else:
+        # add to db if not there
+        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
+        db.session.add(new_recipe)
+        db.session.commit()
+   
+        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe))
     #return render_template('search.html', recipe_instr=json_data) 
-
+"""
     recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
     return render_template('search.html', recipe_instructions=recipe_instructions )
-
+"""
 
 @app.route("/")
 def index():
