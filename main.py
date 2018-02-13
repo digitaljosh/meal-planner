@@ -224,7 +224,7 @@ def login():
         try:
             if session['username']:
                 flash("You're logged in!", 'positive')
-                return redirect('/calendar.html', username=session['username'])
+                return render_template('calendar.html', username=session['username'])
         except KeyError:
             return render_template('login.html')
     elif request.method == 'POST':

@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
         {% block head %}
@@ -16,6 +16,12 @@
             <li class="{{category}}">{{ message }}</li>
             {% endfor %}
         </ul>
+
+        <nav>
+            <ul>
+                <li><h3><a href="/logout">Log out!</a></h3></li>
+            </ul>
+        </nav>
         {% endwith %}
 
         
