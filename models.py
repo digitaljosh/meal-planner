@@ -42,9 +42,9 @@ class Day(db.Model):
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    ingredients = db.Column(db.String(500))# maybe pickle to use a list ?
-    instructions = db.Column(db.Text)# may also need to use pickled object 
-    time = db.Column(db.Interval) # timedelta() time it take to perform task
+    ingredients = db.Column(db.Text)# maybe pickle to use a list ?
+    instructions = db.Column(db.Text)# may also need to use pickled object, might be okay though
+    time = db.Column(db.Integer) # time in minutes
     cookbook_id = db.Column(db.Integer, db.ForeignKey('cookbook.id'))
 
     def __init__(self, name, ingredients, instructions, time, cookbook_id):
