@@ -150,8 +150,9 @@ def recipe_instructions():
         ingreds = ings[1:-1]
         return ingreds
         # TODO remove commas
+        
 
-    #TODO convert or make time explicit in minutes 
+     
 
     # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
     # instructions, having problems comparing ingredients
@@ -169,6 +170,11 @@ def recipe_instructions():
         new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
         db.session.add(new_recipe)
         db.session.commit()
+
+        print("$$$$$$$$$$$$$$$$$$$$")
+        print(ingreds)
+        print("$$$$$$$$$$$$$$$$$$$$")
+        
    
         return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe))
     #return render_template('search.html', recipe_instr=json_data) 
