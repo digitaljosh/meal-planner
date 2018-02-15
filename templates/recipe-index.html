@@ -4,7 +4,7 @@
 
 <h1>Here are all the recipes that are currently on file: </h1>
 <ul>
-    {% for recipe in recipes %}
+    {% for recipe in recipes|sort(attribute='name') %}
         <li><a href="{{ url_for('display_recipe', recipe_id=recipe.id) }}">{{ recipe.name }}</li>
     {% endfor %}
 
