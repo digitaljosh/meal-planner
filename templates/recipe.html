@@ -7,7 +7,17 @@
 
 <h1>{{ recipe.name }}</h1>
 <p>======================</p>
-<h3>Estimated time: {{ recipe.time }} minutes</h3>
+{% if recipe.time <= 60 %}
+    <h3>Estimated time: <em>{{ recipe.time }} minutes</em></h3>
+{% else %}
+    {% set recipe_hour = recipe.time//60 %}
+    {% set recipe_mins = recipe.time%60 %}
+    {% if not recipe_mins %}
+        <h3>Estimated time: <em>{{ recipe_hour }} hours</em></h3>
+    {% else %}
+        <h3>Estimated time: <em>{{ recipe_hour }} hours : {{ recipe_mins }} minutes</em></h3>
+    {% endif %}
+{% endif %}
 
 
 <!-- {# <h3>{{ recipe.ingredients }}</h3> #}-->
