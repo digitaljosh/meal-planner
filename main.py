@@ -254,8 +254,17 @@ def recipe_instructions():
 
 @app.route("/recipe/<recipe_id>")
 def display_recipe(recipe_id):
+
     recipe = Recipe.query.filter_by(id=recipe_id).first()
-    return render_template('recipe.html', recipe=recipe)
+
+    def clean_ingreds(recipe):
+        """splits recipe ingredients from list of one string to list of individual ingredient strings"""
+        ings = recipe.ingredients.split('\'')
+        # remove brackets
+        ingreds = ings[1:-1]
+        return ingreds
+
+    return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
 
 
 @app.route("/recipe-index")
