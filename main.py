@@ -5,12 +5,13 @@ import json
 import pprint 
 from datetime import date
 import calendar
+import re 
 
 import recipe_search_list, recipe_info
 from app import app, db
 from models import User, Calendar, Recipe
 from hashy import check_pw_hash
-
+from data_functs import clean_ingreds
 
 
 @app.route("/")
@@ -133,11 +134,8 @@ def recipe_search():
         recipe_list = recipe_search_list.recipe_search_list #call r_s_l variable within r_s_l module
         return render_template('search.html', recipe_list=recipe_list )
         """
-
     else: # method = GET
-        
         return render_template('search.html')
-
 
 
 # Get Recipe Information - spoonacular API 
@@ -215,13 +213,6 @@ def recipe_instructions():
     print("Recipe time type: ")
     print(type(recipe_time))
 
-    def clean_ingreds(recipe):
-        """splits recipe ingredients from list of one string to list of individual ingredient strings"""
-        ings = recipe.ingredients.split('\'')
-        # remove brackets
-        ingreds = ings[1:-1]
-        return ingreds
-    
     # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
     # instructions, having problems comparing ingredients
     same_recipe = Recipe.query.filter_by(
@@ -254,16 +245,8 @@ def recipe_instructions():
 
 @app.route("/recipe/<recipe_id>")
 def display_recipe(recipe_id):
-
+    """ diplays recipe by id with normalized data in clean format """
     recipe = Recipe.query.filter_by(id=recipe_id).first()
-
-    def clean_ingreds(recipe):
-        """splits recipe ingredients from list of one string to list of individual ingredient strings"""
-        ings = recipe.ingredients.split('\'')
-        # remove brackets
-        ingreds = ings[1:-1]
-        return ingreds
-
     return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
 
 
