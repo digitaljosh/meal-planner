@@ -1,10 +1,24 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
 
+<div id="background"></div>
+
 <h1>{{ recipe.name }}</h1>
-<p>======================</p>>
-<h3>{{ recipe.ingredients }}</h3>
+<p>======================</p>
+<h3>Estimated time: {{ recipe.time }} minutes</h3>
+
+
+<!-- {# <h3>{{ recipe.ingredients }}</h3> #}-->
+{% for ingredient in ingredients %}
+<ul>
+    <!-- {# {% if ingredient not in [',', '.'] %} #} -->
+    <!-- TODO find way to ignore standalone comas -->
+    <li>{{ ingredient }}</li>
+    <!--{#  {% endif %}  #}-->
+</ul>
+{% endfor %}
 <p>INSTRUCTIONS</p>
 <h3>{{ recipe.instructions }}</h3>
 

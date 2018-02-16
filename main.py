@@ -22,7 +22,7 @@ def recipe_search():
     if request.method == 'POST':
         '''
         -The following code block calls spoonacular api, using temp data during development-
-    '''
+    '''   
         search_query = request.form['search']
         search_query = search_query.replace(" ","+")
         api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&query="
@@ -34,21 +34,21 @@ def recipe_search():
 
         json_data = requests.get(url, headers=headers).json()
 
+        # make sure Jinja doesn't break if no recipe 
+        if json_data['totalResults'] == 0:
+            flash("No recipe listed, maybe check spelling and try again.", 'negative')
+            return render_template('search.html')
+        else:
+            return render_template('search.html', recipe_list=json_data)
         
-
-        print("########################################")
-        print("json_data Type: ")
-        print(type(json_data))
-        #print(json_data)
-        print("########################################")
-
         
-        #return render_template('search.html', recipe_list=json_data)
-        
+        return render_template('search.html', recipe_list=json_data)
+        """
         recipe_list = recipe_search_list.recipe_search_list #call r_s_l variable within r_s_l module
         return render_template('search.html', recipe_list=recipe_list )
+        """
 
-    else:
+    else: # method = GET
         
         return render_template('search.html')
 
@@ -89,12 +89,9 @@ def recipe_instructions():
 
     recipe_name = dish_name
     print("######################")
-    print("++++++++++++")
     
-    #Might try beautiful soup but didn't want to add to reqs just yet 
+    # Just for us devs to see what/where data lies in dict 
     pp = pprint.PrettyPrinter(indent=4)
-    #print("Ingredients are: " + pp.pprint(json_data[ 'extendedIngredients']['name']))
-    #print(pp.pprint(json_data))
     print("===================")
     ingreds = json_data['extendedIngredients']
     print(pp.pprint(ingreds))
@@ -119,17 +116,7 @@ def recipe_instructions():
     print(pp.pprint(json_data['readyInMinutes']))
 
     recipe_time =  int(json_data['readyInMinutes'])
-    #print("Ingredients are: " + pp.pprint(json_data['name']))# ['extendedIngredients']))#['name']))
-
-    # deserialized_data = json.loads(json_data)
-    # pp = pprint.PrettyPrinter(indent=4)
-    # print("To Python dict: \n")
-    # print(deserialized_data)
-    # print("Type check: " + type(deserialized_data))
-    # print("+++++++++++++\n")
-    # print(pp.pprint(ingredients))
-    
-
+   
 # AND now instantiate recipe => TODO pickle ingredients, instructions ?
     #new_recipe = Recipe(recipe_name, recipe_ingredients, recipe_instructs, recipe_time, cookbook_id=None)
     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
@@ -142,19 +129,42 @@ def recipe_instructions():
     print("Recipe time type: ")
     print(type(recipe_time))
 
-    #print(recipe_instructs)
-    #TODO convert or make time explicit in minutes 
-    new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
-
-    db.session.add(new_recipe)
-    db.session.commit()
+    def clean_ingreds(recipe):
+        """splits recipe ingredients from list of one string to list of individual ingredient strings"""
+        ings = recipe.ingredients.split('\'')
+        # remove brackets
+        ingreds = ings[1:-1]
+        return ingreds
     
-    return render_template('recipe.html', recipe=new_recipe)
-    #return render_template('search.html', recipe_instr=json_data) 
+    # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
+    # instructions, having problems comparing ingredients
+    same_recipe = Recipe.query.filter_by(
+        name=recipe_name,
+        #ingredients=recipe_ingredients,
+        instructions=recipe_instructs).first()
+   
+    if same_recipe:
+        #already in db, just display that one
+        flash("Already have that one on file.", 'positive')
+        return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
 
+    # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
+    elif recipe_ingredients == None or recipe_instructions == None:
+        flash("That isn't a complete recipe, pick another.", 'negative')
+        return redirect('search.html')
+
+    else:
+        # add to db if not there
+        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
+        db.session.add(new_recipe)
+        db.session.commit()        
+   
+        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe))
+    #return render_template('search.html', recipe_instr=json_data) 
+"""
     recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
     return render_template('search.html', recipe_instructions=recipe_instructions )
-
+"""
 
 @app.route("/")
 def index():
