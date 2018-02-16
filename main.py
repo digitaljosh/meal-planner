@@ -5,166 +5,14 @@ import json
 import pprint 
 from datetime import date
 import calendar
+import re 
 
 import recipe_search_list, recipe_info
 from app import app, db
 from models import User, Calendar, Recipe
 from hashy import check_pw_hash
+from data_functs import clean_ingreds
 
-
-
-
-
-#GET Search Recipes - spoonacular
-@app.route('/search', methods=['POST', 'GET'])
-def recipe_search():
-
-    if request.method == 'POST':
-        '''
-        -The following code block calls spoonacular api, using temp data during development-
-    '''   
-        search_query = request.form['search']
-        search_query = search_query.replace(" ","+")
-        api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&query="
-        url = api + search_query
-        headers={
-            "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-            "Accept": "application/json"
-            }
-
-        json_data = requests.get(url, headers=headers).json()
-
-        # make sure Jinja doesn't break if no recipe 
-        if json_data['totalResults'] == 0:
-            flash("No recipe listed, maybe check spelling and try again.", 'negative')
-            return render_template('search.html')
-        else:
-            return render_template('search.html', recipe_list=json_data)
-        
-        
-        return render_template('search.html', recipe_list=json_data)
-        """
-        recipe_list = recipe_search_list.recipe_search_list #call r_s_l variable within r_s_l module
-        return render_template('search.html', recipe_list=recipe_list )
-        """
-
-    else: # method = GET
-        
-        return render_template('search.html')
-
-
-
-# Get Recipe Information - spoonacular API 
-@app.route('/instructions', methods=['POST', 'GET'])
-def recipe_instructions():
-
-    '''
-    -The following code block calls spoonacular api, using temp data during development-
-    '''
-    recipe_id = request.args.get('id')
-    api_part1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
-    api_part2 = "/information?includeNutrition=false"
-    url = api_part1 + recipe_id + api_part2
-    headers={
-    "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-    "Accept": "application/json"
-    }
-
-    json_data = requests.get(url, headers=headers).json()
-
-
-    print("######################")
-    print(type(json_data))
-    #print(json_data)
-    print("Dish Name: ")
-    
-    try:
-        stop_index = json_data['title'].index('-')
-        print("INDEX" + str(stop_index))
-        dish_name = json_data['title'][:stop_index]
-        print(dish_name)
-    except ValueError:
-        dish_name = json_data['title']
-        print(dish_name + "- not the char used in json_data")
-
-    recipe_name = dish_name
-    print("######################")
-    
-    # Just for us devs to see what/where data lies in dict 
-    pp = pprint.PrettyPrinter(indent=4)
-    print("===================")
-    ingreds = json_data['extendedIngredients']
-    print(pp.pprint(ingreds))
-    print(ingreds[4]['originalString'])
-    print(len(ingreds))
-    print("*******************")
-    print("AND the ingredients are: ")
-    recipe_ingredients = []
-    for i in range(0, len(ingreds)):
-        recipe_ingredients.append(ingreds[i]['originalString'])
-        print(ingreds[i]['originalString'])
-
-    print("*********************")
-    
-    print("Instructions ARE: ")
-    print(pp.pprint(json_data['instructions']))
-
-    recipe_instructs = json_data['instructions']
-
-    print("*******************")
-    print("Time to cook: ")
-    print(pp.pprint(json_data['readyInMinutes']))
-
-    recipe_time =  int(json_data['readyInMinutes'])
-   
-# AND now instantiate recipe => TODO pickle ingredients, instructions ?
-    #new_recipe = Recipe(recipe_name, recipe_ingredients, recipe_instructs, recipe_time, cookbook_id=None)
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    print("Recipe name type: ")
-    print(type(recipe_name))
-    print("Recipe ingreds type: ")
-    print(type(recipe_ingredients))
-    print("Recipe instructions type: ")
-    print(type(recipe_instructs))
-    print("Recipe time type: ")
-    print(type(recipe_time))
-
-    def clean_ingreds(recipe):
-        """splits recipe ingredients from list of one string to list of individual ingredient strings"""
-        ings = recipe.ingredients.split('\'')
-        # remove brackets
-        ingreds = ings[1:-1]
-        return ingreds
-    
-    # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
-    # instructions, having problems comparing ingredients
-    same_recipe = Recipe.query.filter_by(
-        name=recipe_name,
-        #ingredients=recipe_ingredients,
-        instructions=recipe_instructs).first()
-   
-    if same_recipe:
-        #already in db, just display that one
-        flash("Already have that one on file.", 'positive')
-        return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
-
-    # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
-    elif recipe_ingredients == None or recipe_instructions == None:
-        flash("That isn't a complete recipe, pick another.", 'negative')
-        return redirect('search.html')
-
-    else:
-        # add to db if not there
-        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
-        db.session.add(new_recipe)
-        db.session.commit()        
-   
-        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe))
-    #return render_template('search.html', recipe_instr=json_data) 
-"""
-    recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
-    return render_template('search.html', recipe_instructions=recipe_instructions )
-"""
 
 @app.route("/")
 def index():
@@ -253,6 +101,160 @@ def login():
         else:
             flash("Either you mistyped your username or you don't have an account.", 'negative')
             return render_template('login.html')
+
+#GET Search Recipes - spoonacular
+@app.route('/search', methods=['POST', 'GET'])
+def recipe_search():
+
+    if request.method == 'POST':
+        '''
+        -The following code block calls spoonacular api, using temp data during development-
+    '''   
+        search_query = request.form['search']
+        search_query = search_query.replace(" ","+")
+        api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&query="
+        url = api + search_query
+        headers={
+            "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
+            "Accept": "application/json"
+            }
+
+        json_data = requests.get(url, headers=headers).json()
+
+        # make sure Jinja doesn't break if no recipe 
+        if json_data['totalResults'] == 0:
+            flash("No recipe listed, maybe check spelling and try again.", 'negative')
+            return render_template('search.html')
+        else:
+            return render_template('search.html', recipe_list=json_data)
+        
+        
+        return render_template('search.html', recipe_list=json_data)
+        """
+        recipe_list = recipe_search_list.recipe_search_list #call r_s_l variable within r_s_l module
+        return render_template('search.html', recipe_list=recipe_list )
+        """
+    else: # method = GET
+        return render_template('search.html')
+
+
+# Get Recipe Information - spoonacular API 
+@app.route('/instructions', methods=['POST', 'GET'])
+def recipe_instructions():
+
+    '''
+    -The following code block calls spoonacular api, using temp data during development-
+    '''
+    recipe_id = request.args.get('id')
+    api_part1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
+    api_part2 = "/information?includeNutrition=false"
+    url = api_part1 + recipe_id + api_part2
+    headers={
+    "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
+    "Accept": "application/json"
+    }
+
+    json_data = requests.get(url, headers=headers).json()
+
+
+    print("######################")
+    print(type(json_data))
+    #print(json_data)
+    print("Dish Name: ")
+    
+    try:
+        stop_index = json_data['title'].index('-')
+        print("INDEX" + str(stop_index))
+        dish_name = json_data['title'][:stop_index]
+        print(dish_name)
+    except ValueError:
+        dish_name = json_data['title']
+        print(dish_name + "- not the char used in json_data")
+
+    recipe_name = dish_name
+    print("######################")
+    
+    # Just for us devs to see what/where data lies in dict 
+    pp = pprint.PrettyPrinter(indent=4)
+    print("===================")
+    ingreds = json_data['extendedIngredients']
+    print(pp.pprint(ingreds))
+    print(ingreds[4]['originalString'])
+    print(len(ingreds))
+    print("*******************")
+    print("AND the ingredients are: ")
+    recipe_ingredients = []
+    for i in range(0, len(ingreds)):
+        recipe_ingredients.append(ingreds[i]['originalString'])
+        print(ingreds[i]['originalString'])
+
+    print("*********************")
+    
+    print("Instructions ARE: ")
+    print(pp.pprint(json_data['instructions']))
+
+    recipe_instructs = json_data['instructions']
+
+    print("*******************")
+    print("Time to cook: ")
+    print(pp.pprint(json_data['readyInMinutes']))
+
+    recipe_time =  int(json_data['readyInMinutes'])
+   
+# AND now instantiate recipe => TODO pickle ingredients, instructions ?
+    #new_recipe = Recipe(recipe_name, recipe_ingredients, recipe_instructs, recipe_time, cookbook_id=None)
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print("Recipe name type: ")
+    print(type(recipe_name))
+    print("Recipe ingreds type: ")
+    print(type(recipe_ingredients))
+    print("Recipe instructions type: ")
+    print(type(recipe_instructs))
+    print("Recipe time type: ")
+    print(type(recipe_time))
+
+    # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
+    # instructions, having problems comparing ingredients
+    same_recipe = Recipe.query.filter_by(
+        name=recipe_name,
+        #ingredients=recipe_ingredients,
+        instructions=recipe_instructs).first()
+   
+    if same_recipe:
+        #already in db, just display that one
+        flash("Already have that one on file.", 'positive')
+        return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
+
+    # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
+    elif recipe_ingredients == None or recipe_instructions == None:
+        flash("That isn't a complete recipe, pick another.", 'negative')
+        return redirect('search.html')
+
+    else:
+        # add to db if not there
+        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
+        db.session.add(new_recipe)
+        db.session.commit()        
+   
+        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe))
+    #return render_template('search.html', recipe_instr=json_data) 
+"""
+    recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
+    return render_template('search.html', recipe_instructions=recipe_instructions )
+"""
+
+@app.route("/recipe/<recipe_id>")
+def display_recipe(recipe_id):
+    """ diplays recipe by id with normalized data in clean format """
+    recipe = Recipe.query.filter_by(id=recipe_id).first()
+    return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
+
+
+@app.route("/recipe-index")
+def display_index():
+    recipes = Recipe.query.all()
+    return render_template('recipe-index.html', recipes=recipes)
+
 
 @app.route('/logout')
 def logout():

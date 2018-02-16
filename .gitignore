@@ -107,6 +107,7 @@ Meal-Plan-Env
 
 # secret keys, tokens, sensitives
 hidden.py
+hashy.py
 
 #ignor ricks virt env
 mealvirt
