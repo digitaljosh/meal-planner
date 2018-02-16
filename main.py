@@ -1,5 +1,5 @@
 
-from flask import render_template, redirect, request, session, json, flash
+from flask import render_template, redirect, request, session, jsonify, flash
 import requests
 import json
 import pprint 
@@ -12,6 +12,30 @@ from app import app, db
 from models import User, Calendar, Recipe
 from hashy import check_pw_hash
 from data_functs import clean_ingreds
+
+
+
+#calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
+@app.route('/full-calendar')
+def full_cal():
+    return render_template('json.html')
+
+@app.route('/data')
+def return_data():
+    ''' Just displays the json events scheduled on calendar '''
+    start_date = request.args.get('start', '')
+    end_date = request.args.get('end', '')
+
+    # You'd normally use the variables above to limit the data returned
+    # you don't want to return ALL events like in this code
+    # but since no db or any real storage is implemented I'm just
+    # returning data from a text file that contains json elements
+
+    with open("events.json", "r") as input_data:
+        # you should use something else here than just plaintext
+        # check out jsonfiy method or the built in json module
+        # http://flask.pocoo.org/docs/0.10/api/#module-flask.json
+        return input_data.read()
 
 
 @app.route("/")
