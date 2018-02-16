@@ -6,6 +6,19 @@
 <h1>Hey {{ username }}, this page is Under Construction</h1>
 <p>this is a test for calendar by date object</p>
 
+{{ cal | safe }}
+
+{% if username %}
+    <div>
+        <div class="all-buttons">
+            <div class="button-wrapper">
+			<a href="/search"><input class="button5" type="button" name="button5" value="Search"/></a>
+			<a href="/recipe-index"><input class="button5" type="button" name="button5" value="Recipes"/></a>
+          </div>
+        </div>
+    </div>
+{% endif %}
+
 <!DOCTYPE html>
 <!--  calendar -->
 <html>
@@ -157,17 +170,6 @@ function myFunction() {
 </html>
 
 
-{{ cal | safe }}
 
-{% if username %}
-    <div>
-        <div class="all-buttons">
-            <div class="button-wrapper">
-			<a href="/search"><input class="button5" type="button" name="button5" value="Search"/></a>
-			<a href="/recipe-index"><input class="button5" type="button" name="button5" value="Recipes"/></a>
-          </div>
-        </div>
-    </div>
-{% endif %}
 
 {% endblock %}
