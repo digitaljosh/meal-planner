@@ -16,21 +16,10 @@ from data_functs import clean_ingreds
 
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
-@app.route('/full-calendar')
-def full_cal():
-    return render_template('json.html')
 
 @app.route('/data')
 def return_data():
     ''' Just displays the json events scheduled on calendar '''
-    start_date = request.args.get('start', '')
-    end_date = request.args.get('end', '')
-
-    # You'd normally use the variables above to limit the data returned
-    # you don't want to return ALL events like in this code
-    # but since no db or any real storage is implemented I'm just
-    # returning data from a text file that contains json elements
-
     with open("events.json", "r") as input_data:
         # you should use something else here than just plaintext
         # check out jsonfiy method or the built in json module
@@ -76,6 +65,7 @@ def signup():
             # and commit to database
             db.session.add(new_user)
             db.session.commit()
+            """
             # here is where we are going to establish a new calendar for user ? for this month
             # TODO is the calendar object for the year !
             today = date.today()
@@ -87,14 +77,14 @@ def signup():
             print("newCal year =  " + str(new_user_calendar.year))
             db.session.add(new_user_calendar)
             db.session.commit()
-
+            """
             session['username'] = new_user.username
-            cal = Calendar.query.filter_by(user_ids=new_user.id).first()
+            # cal = Calendar.query.filter_by(user_ids=new_user.id).first()
 
-            print("%%%%%%%%%%%%%%%%%" + str(cal.year))
-            py_cal_html = calendar.HTMLCalendar()
-            cal_HTML = py_cal_html.formatyearpage(cal.year)
-            return render_template('calendar.html', username=session['username'], cal=cal_HTML)
+            # print("%%%%%%%%%%%%%%%%%" + str(cal.year))
+            # py_cal_html = calendar.HTMLCalendar()
+            # cal_HTML = py_cal_html.formatyearpage(cal.year)
+            return render_template('full-calendar.html', username=session['username'])
 
 
         
@@ -106,7 +96,7 @@ def login():
         try:
             if session['username']:
                 flash("You're logged in!", 'positive')
-                return render_template('calendar.html', username=session['username'])
+                return render_template('full-calendar.html', username=session['username'])
         except KeyError:
             return render_template('login.html')
     elif request.method == 'POST':
@@ -118,13 +108,55 @@ def login():
             user = user_to_check.first()
             if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = tried_name
-                return render_template('calendar.html', username=session['username'])
+                return render_template('full-calendar.html', username=session['username'])
             else:
                 flash("Nice try!", 'negative')
                 return redirect('/login')
         else:
             flash("Either you mistyped your username or you don't have an account.", 'negative')
             return render_template('login.html')
+
+@app.route('/full-calendar', methods=['POST', 'GET'])
+def cal_display():
+    if request.method == 'GET':
+       
+        return render_template('full-calendar.html')
+    else:
+        date = request.form['date']
+        dinner = request.form['meal']
+       
+        #event = json.dumps({'start':date, 'title': dinner})#, 'url': '/recipe/'+dinner})
+        #TODO in dincal app proper instantiate as Event object here
+        #db.session.commit(event)
+        '''
+        new_events = Event.query.findAll()
+        with open('events.json', 'w') as events:
+            events.write('[')
+            event_dict = {}
+            for event in new_events:
+                event_dict{"title":event.meal, "start":event.date}
+            events.write(json.dumps(event_dict))
+            events.write(']')    
+        '''
+       
+
+        with open('events.json', 'r') as infile:
+            
+            data = infile.read()
+            data = data.replace("]", "")
+
+            with open('events.json', 'w') as outfile:
+
+                outfile.write(data)
+
+        event = {'start': date, 'title': dinner}
+        with open('events.json', 'a') as events:
+            events.write(",{}\n]".format(json.dumps(event)))
+            #json.dump(event, events, ensure_ascii=False)
+
+       
+        return render_template('full-calendar.html')
+    
 
 #GET Search Recipes - spoonacular
 @app.route('/search', methods=['POST', 'GET'])

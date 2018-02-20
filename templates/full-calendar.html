@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<link href="{{ url_for('static', filename='fullcalendar.min.css') }}" rel='stylesheet' />
+<link href="{{ url_for('static', filename='fullcalendar.print.css') }}" rel='stylesheet' media='print' />
+<script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
+<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
+<script src="{{ url_for('static', filename='pop-up.js') }}"></script>
+<script>
+	$(document).ready(function() {
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay'
+			},
+			defaultDate: '2018-02-12',
+			editable: true,
+			eventLimit: true, // allow "more" link when too many events
+			events: {
+				
+				url: 'data',
+				error: function() {
+					$('#script-warning').show();
+				}
+			},
+			loading: function(bool) {
+				$('#loading').toggle(bool);
+			}
+		});
+	});
+</script>
+<style>
+	body {
+		margin: 0;
+		padding: 0;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+	#script-warning {
+		display: none;
+		background: #eee;
+		border-bottom: 1px solid #ddd;
+		padding: 0 10px;
+		line-height: 40px;
+		text-align: center;
+		font-weight: bold;
+		font-size: 12px;
+		color: red;
+	}
+	#loading {
+		display: none;
+		position: absolute;
+		top: 10px;
+		right: 10px;
+	}
+	#calendar {
+		max-width: 900px;
+		margin: 40px auto;
+		padding: 0 10px;
+	}
+</style>
+</head>
+<body>
+<h1>Hey {{ username }}</h1>
+	<div id='script-warning'>
+		Error getting data from <code>/data</code> endpoint.
+	</div>
+	
+	<div id='loading'>loading...</div>
+
+	
+	
+
+	
+	<!-- TODO need to div each day? in div calendar-->
+<!-- Below is the inspected element for a day, probably can ignore fc-past for now -->
+<!-- <td class="fc-day fc-widget-content fc-mon/wed/thur fc-past/future" data-date="2018-02-15"></td> -->
+
+	<form method="POST">
+	
+	<!-- dinnerFunction() in pop-up.js -->
+	<div id="pop-up-confirm">
+			<button onclick="dinnerFunction()">test</button>
+	</div>
+
+	</form>
+	<form  action="/" method="post" role="form">
+		<h2 class="dinner">Schedule a dinner: </h2>
+		<input type="text" name="date" class="form-control" placeholder="2018-02-24">
+		<input type="text" name="meal" class="form-control" placeholder="What's for dinner?">
+		<!-- <input type="password" name="password" class="form-control" placeholder="Password" required> -->
+		<input type="submit" id="submit" value="Dinner!"/>
+		<!-- <button class="btn btn-lg btn-primary btn-block" type="button">When? </button> -->
+	</form>
+    <div id='calendar'></div>
+	<!-- <form method="POST">
+
+	<div id="pop-up-confirm">
+
+		 When is dinner?<br><input type="text" name="myInputs[]">
+
+	</div>
+
+	<input type="button" value="What's for dinner?" onClick="addInput('pop-up-confirm');">
+
+</form> -->
+
+
+</body>
+</html>
+
+
+<!-- grid events @ fullcalendar.css #500-575 -->
+
+<!-- IN EACH DATE BLOCK SOMETHING LIKE THE FOLLOWING?
+
+	AJAX onreadystate change => click event triggered,[ getResponseHeader(param) (?), where param is date]
+	POST and/or GET Requests
+	request.onreadystatechange = day_space
+
+
+function day_space(space, date) {
+	if (space == '') {
+		var dinner = prompt("What's for dinner", "search");
+		return recipe_search(dinner);
+	}
+	else {
+		return pop_up_menu(space);
+	}
+}
+
+funtion pop_up_menu(recipe) {
+	var menu = prompt(radio-button form)
+} -->
