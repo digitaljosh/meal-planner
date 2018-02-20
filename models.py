@@ -16,52 +16,42 @@ class User(db.Model):
         self.pw_hash = make_pw_hash(password)
         self.email = email
 
-class Calendar(db.Model):
+
+class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    #TODO date object ?
-    #month = db.Column(db.Integer[1-12])#
-    year = db.Column(db.Integer) #DateTime
-    #user_ids = db.relationship('User', backref='calendar')
-    user_ids =  db.Column(db.Integer, db.ForeignKey('user.id'))
-    dates = db.relationship('Day', backref='month')
+    meal = db.Column(db.String(100), db.ForeignKey('recipe.name'))
+    date = db.Column(db.String(10))
+    #recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, year, user_ids):
-        self.year = year 
-        self.user_ids = user_ids
-
-class Day(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    meal = db.Column(db.String(100))
-    recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'))
-    cal_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
-
-    def __init__(self, cal_id, meal=None):
+    def __init__(self, date, user_id, meal=None):
         self.meal = meal
-        self.cal_id = cal_id
+        self.date = date
+        self.user_id = user_id
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(100), unique=True, nullable=False)
     ingredients = db.Column(db.Text)# maybe pickle to use a list ?
     instructions = db.Column(db.Text)# may also need to use pickled object, might be okay though
     time = db.Column(db.Integer) # time in minutes
-    cookbook_id = db.Column(db.Integer, db.ForeignKey('cookbook.id'))
+    #cookbook_id = db.Column(db.Integer, db.ForeignKey('cookbook.id'))
 
     def __init__(self, name, ingredients, instructions, time, cookbook_id):
         self.name = name
         self.ingredients = ingredients
         self.instructions = instructions
         self.time = time
-        self.cookbook_id = cookbook_id
+        #self.cookbook_id = cookbook_id
 
 
-class Cookbook(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    recipes = db.relationship('Recipe', backref='cookbook')
+# class Cookbook(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+#     recipes = db.relationship('Recipe', backref='cookbook')
 
-    def __init__(self, owner_id):
-        self.owner_id = owner_id
+#     def __init__(self, owner_id):
+#         self.owner_id = owner_id
 
         
 

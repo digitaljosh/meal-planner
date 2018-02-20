@@ -9,7 +9,7 @@ import re
 
 import recipe_search_list, recipe_info
 from app import app, db
-from models import User, Calendar, Recipe
+from models import User, Event, Recipe
 from hashy import check_pw_hash
 from data_functs import clean_ingreds
 
