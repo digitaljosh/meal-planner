@@ -288,7 +288,7 @@ def recipe_instructions():
 
     else:
         # add to db if not there
-        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
+        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time)#, cookbook_id=None)
         db.session.add(new_recipe)
         db.session.commit()        
    
@@ -299,10 +299,10 @@ def recipe_instructions():
     return render_template('search.html', recipe_instructions=recipe_instructions )
 """
 
-@app.route("/recipe/<recipe_id>")
-def display_recipe(recipe_id):
+@app.route("/recipe/<recipe_name>")
+def display_recipe(recipe_name):
     """ diplays recipe by id with normalized data in clean format """
-    recipe = Recipe.query.filter_by(id=recipe_id).first()
+    recipe = Recipe.query.filter_by(name=recipe_name).first()
     return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
 
 
