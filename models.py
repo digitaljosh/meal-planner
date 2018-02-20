@@ -20,6 +20,7 @@ class User(db.Model):
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     meal = db.Column(db.String(100), db.ForeignKey('recipe.name'))
+    #meal = db.Column(db.Recipe)
     date = db.Column(db.String(10))
     #recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -37,7 +38,7 @@ class Recipe(db.Model):
     time = db.Column(db.Integer) # time in minutes
     #cookbook_id = db.Column(db.Integer, db.ForeignKey('cookbook.id'))
 
-    def __init__(self, name, ingredients, instructions, time, cookbook_id):
+    def __init__(self, name, ingredients, instructions, time):
         self.name = name
         self.ingredients = ingredients
         self.instructions = instructions

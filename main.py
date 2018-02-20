@@ -6,6 +6,8 @@ import pprint
 from datetime import date
 import calendar
 import re 
+import sqlalchemy
+#from sqlalchemy import IntegrityError
 
 import recipe_search_list, recipe_info
 from app import app, db
@@ -16,6 +18,13 @@ from data_functs import clean_ingreds
 
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
+
+@app.before_request
+def login_required():
+    not_allowed_routes = ['cal_display',]
+    if request.endpoint in not_allowed_routes and 'username' not in session:
+        flash("You need to be logged in to see your calendar!", 'negative')
+        return redirect('/')
 
 @app.route('/data')
 def return_data():
@@ -124,10 +133,23 @@ def cal_display():
     else:
         date = request.form['date']
         dinner = request.form['meal']
-       
+        name = session['username']
+        print("#########" + name)
+        user = User.query.filter_by(username=name).first()
+        recipe = Recipe.query.filter_by(name=dinner).first()
         #event = json.dumps({'start':date, 'title': dinner})#, 'url': '/recipe/'+dinner})
         #TODO in dincal app proper instantiate as Event object here
-        #db.session.commit(event)
+
+        #TODO can't add event until Recipe created
+        try:
+            new_event = Event(meal=recipe.name, date=date, user_id=user.id)
+            db.session.add(new_event)
+            db.session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            flash("You don't have a recipe for that yet", 'negative')
+            return render_template('full-calendar.html')
+
+
         '''
         new_events = Event.query.findAll()
         with open('events.json', 'w') as events:
@@ -288,7 +310,7 @@ def recipe_instructions():
 
     else:
         # add to db if not there
-        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time)#, cookbook_id=None)
+        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time)
         db.session.add(new_recipe)
         db.session.commit()        
    
