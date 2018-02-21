@@ -148,6 +148,9 @@ def cal_display():
         except sqlalchemy.exc.IntegrityError:
             flash("You don't have a recipe for that yet", 'negative')
             return render_template('full-calendar.html')
+        except AttributeError:
+            flash("NO dinner date created. Enter both a date and a meal.", 'negative')
+            return render_template('full-calendar.html')
 
 
         '''
@@ -163,16 +166,18 @@ def cal_display():
        
 
         with open('events.json', 'r') as infile:
-            
+            # this reads the file into a variable dat which we use to remove the trailing ] 
+            # of the list. 
             data = infile.read()
             data = data.replace("]", "")
 
             with open('events.json', 'w') as outfile:
-
+                # now we overwrite the file with data without ], thus leaving the list open 
                 outfile.write(data)
 
         event = {'start': date, 'title': dinner}
         with open('events.json', 'a') as events:
+            # now we reopen the file to append ('a') an event and return the closing ]
             events.write(",{}\n]".format(json.dumps(event)))
             #json.dump(event, events, ensure_ascii=False)
 
@@ -351,6 +356,22 @@ def display_index():
     recipes = Recipe.query.all()
     return render_template('recipe-index.html', recipes=recipes)
 
+@app.route("/ingredients")
+def display_ingredients():
+    user = User.query.filter_by(username=session['username']).first()
+    events = Event.query.filter_by(user_id=user.id).all() # could filter by date ?
+    #TODO look into structuring date column so we can filter by month or next week
+    meals = []
+    for event in events:
+        meals.append(event.meal)
+    recipes = []
+    for meal in meals:
+        recipes.append(Recipe.query.filter_by(name=meal).first())
+    
+    ingreds = []
+    for recipe in recipes:
+        ingreds.append(recipe.ingredients)
+    return render_template('ingredients.html', ingredients=ingreds)
 
 @app.route('/logout')
 def logout():
