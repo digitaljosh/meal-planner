@@ -338,6 +338,22 @@ def display_index():
     recipes = Recipe.query.all()
     return render_template('recipe-index.html', recipes=recipes)
 
+@app.route("/ingredients")
+def display_ingredients():
+    user = User.query.filter_by(username=session['username']).first()
+    events = Event.query.filter_by(user_id=user.id).all() # could filter by date ?
+    #TODO look into structuring date column so we can filter by month or next week
+    meals = []
+    for event in events:
+        meals.append(event.meal)
+    recipes = []
+    for meal in meals:
+        recipes.append(Recipe.query.filter_by(name=meal).first())
+    
+    ingreds = []
+    for recipe in recipes:
+        ingreds.append(recipe.ingredients)
+    return render_template('ingredients.html', ingredients=ingreds)
 
 @app.route('/logout')
 def logout():

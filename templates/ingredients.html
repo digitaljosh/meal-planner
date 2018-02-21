@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<ul>
+        {% for ingredient in ingredients %}
+        <!-- |sort(attribute='name') %} add a sort function ? -->
+            <li>{{ ingredient }}</li>
+            <!-- add a link to store where you can buy ? -->
+        {% endfor %}
+    
+    </ul>
+
+
+{% endblock %}
