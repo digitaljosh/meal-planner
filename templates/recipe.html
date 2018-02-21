@@ -5,6 +5,17 @@
 
 <div id="background"></div>
 
+<!-- Display if not in db -->
+{% if new %}
+    <form action="{{ url_for('save_recipe') }}" method="post">
+        <input type="hidden" name="name" value="{{ recipe.name }}"/>
+        <input type="hidden" name="time" value="{{ recipe.time }}"/>
+        <input type="hidden" name="ingredients" value="{{ recipe.ingredients }}"/>
+        <input type="hidden" name="instructions" value="{{ recipe.instructions }}"/>
+        <input type="submit" class="btn" value="Save Recipe"/>
+    </form>
+{% endif %}
+
 <h1>{{ recipe.name }}</h1>
 <p>======================</p>
 {% if recipe.time <= 60 %}
