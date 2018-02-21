@@ -311,15 +311,33 @@ def recipe_instructions():
     else:
         # add to db if not there
         new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time)
-        db.session.add(new_recipe)
-        db.session.commit()        
+        new = True
+        #db.session.add(new_recipe)
+        #db.session.commit()        
    
-        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe))
+        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
     #return render_template('search.html', recipe_instr=json_data) 
 """
     recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
     return render_template('search.html', recipe_instructions=recipe_instructions )
 """
+
+# save recipe route
+@app.route("/recipe-added", methods=['POST'])
+def save_recipe():
+    name = request.form['name']
+    time = request.form['time']
+    ingredients = request.form['ingredients']
+    instructions = request.form['instructions']
+
+    new_recipe = Recipe(name, str(ingredients), instructions, time)
+    db.session.add(new_recipe)
+    db.session.commit()
+
+    flash("Recipe saved!", 'positive')
+    return render_template('search.html')
+
+
 
 @app.route("/recipe/<recipe_name>")
 def display_recipe(recipe_name):
