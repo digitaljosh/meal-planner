@@ -344,11 +344,22 @@ def save_recipe():
 
 
 
-@app.route("/recipe/<recipe_name>")
-def display_recipe(recipe_name):
-    """ diplays recipe by id with normalized data in clean format """
-    recipe = Recipe.query.filter_by(name=recipe_name).first()
-    return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
+@app.route("/recipe", methods=['POST'])
+def display_recipe():
+    print("hitting recipe!!")
+    if request.method == 'POST':
+        print("######################")
+        recipe_name = request.form["recipe_name"]
+        print(recipe_name)
+        # recipe_name = content["recipe_name"]
+        # print(recipe_name)
+        print("##################")
+        print("ok I got the recipe", recipe_name)
+        print("######################")
+        """ diplays recipe by id with normalized data in clean format """
+        recipe = Recipe.query.filter_by(name=recipe_name).first()
+        print(recipe)
+        return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
 
 
 @app.route("/recipe-index")

@@ -6,36 +6,19 @@
 <html>
 <head>
 <meta charset='utf-8' />
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <link href="{{ url_for('static', filename='fullcalendar.min.css') }}" rel='stylesheet' />
 <link href="{{ url_for('static', filename='fullcalendar.print.css') }}" rel='stylesheet' media='print' />
 <script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
-<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>
+<!--<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>-->
 <script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
 <script src="{{ url_for('static', filename='pop-up.js') }}"></script>
-<script>
-	$(document).ready(function() {
-		$('#calendar').fullCalendar({
-			header: {
-				left: 'prev,next today',
-				center: 'title',
-				right: 'month,agendaWeek,agendaDay'
-			},
-			defaultDate: '2018-02-12',
-			editable: true,
-			eventLimit: true, // allow "more" link when too many events
-			events: {
-				
-				url: 'data',
-				error: function() {
-					$('#script-warning').show();
-				}
-			},
-			loading: function(bool) {
-				$('#loading').toggle(bool);
-			}
-		});
-	});
-</script>
+
 <style>
 	body {
 		margin: 0;
@@ -68,7 +51,85 @@
 </style>
 </head>
 <body>
-<h1>Hey {{ username }}</h1>
+
+	<div id='calendar'></div>
+
+	<div class="modal fade" id="getCodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel"></h4>
+				</div>
+				<div class="modal-body" id="getCode" style="overflow-x: scroll;">
+					//ajax success content here.
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<script>
+		$(document).ready(function() {
+			$('#calendar').fullCalendar({
+				header: {
+					left: 'prev,next today',
+					center: 'title',
+					right: 'month,agendaWeek,agendaDay'
+				},
+				eventClick:  function(event, jsEvent, view) {
+					recipe_name = event.title;
+					recipe_name = {"recipe_name":recipe_name}
+					getRecipeId(recipe_name);
+					
+				},
+				defaultDate: '2018-02-12',
+				editable: true,
+				eventLimit: true, // allow "more" link when too many events
+				events: {
+					
+					url: 'data',
+					error: function() {
+						$('#script-warning').show();
+					}
+				},
+				loading: function(bool) {
+					$('#loading').toggle(bool);
+				}
+			});
+		});
+	
+	
+		function getRecipeId(recipe_name) {
+			alert(recipe_name)
+			
+			console.log(recipe_name)
+			$.ajax({
+				url: '/recipe',
+				data: recipe_name,
+				// contentType: application/json,
+				type: 'POST',
+				success: function(response){
+					console.log(response);
+					jQuery("#getCodeModal").modal("toggle");
+					jQuery("#getCode").html(response);
+					console.log(response, "ok get the data!!!!!");
+				},
+				error: function(error){
+					console.log(error);
+				}
+			});
+			// var url = "localhost:5000/recipe/" + number;
+			// window.parent.location.href = url;
+		}
+		
+		
+	</script>
+
+
+
+	<h1>Hey {{ username }}</h1>
 	<div id='script-warning'>
 		Error getting data from <code>/data</code> endpoint.
 	</div>
@@ -113,7 +174,7 @@
         </form>
 
 
-    <div id='calendar'></div>
+    
 
 
 	<!-- <form method="POST">
@@ -127,6 +188,8 @@
 	<input type="button" value="What's for dinner?" onClick="addInput('pop-up-confirm');">
 
 </form> -->
+
+
 
 
 </body>
