@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% block head %}
+        <title>Plan:Eat</title>
+        <link rel="stylesheet" type="text/css" href="/static/cal-style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% endblock %}
+    </head>
+
+    <body class="body">
+
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        <ul>
+            {% for category, message in messages %}
+            <li class="{{category}}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+
+        <nav>
+            <ul>
+                <li><h3><a href="/logout">Log out!</a></h3></li>
+            </ul>
+        </nav>
+        {% endwith %}
+
+        
+
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>

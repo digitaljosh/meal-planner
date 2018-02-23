@@ -1,17 +1,39 @@
 
-from flask import render_template, redirect, request, session, json, flash
+from flask import render_template, redirect, request, session, jsonify, flash
 import requests
 import json
 import pprint 
 from datetime import date
 import calendar
 import re 
+import sqlalchemy
+#from sqlalchemy import IntegrityError
 
 import recipe_search_list, recipe_info
 from app import app, db
-from models import User, Calendar, Recipe
+from models import User, Event, Recipe
 from hashy import check_pw_hash
 from data_functs import clean_ingreds
+
+
+
+#calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
+
+@app.before_request
+def login_required():
+    not_allowed_routes = ['cal_display',]
+    if request.endpoint in not_allowed_routes and 'username' not in session:
+        flash("You need to be logged in to see your calendar!", 'negative')
+        return redirect('/')
+
+@app.route('/data')
+def return_data():
+    ''' Just displays the json events scheduled on calendar '''
+    with open("events.json", "r") as input_data:
+        # you should use something else here than just plaintext
+        # check out jsonfiy method or the built in json module
+        # http://flask.pocoo.org/docs/0.10/api/#module-flask.json
+        return input_data.read()
 
 
 @app.route("/")
@@ -52,6 +74,7 @@ def signup():
             # and commit to database
             db.session.add(new_user)
             db.session.commit()
+            """
             # here is where we are going to establish a new calendar for user ? for this month
             # TODO is the calendar object for the year !
             today = date.today()
@@ -63,14 +86,14 @@ def signup():
             print("newCal year =  " + str(new_user_calendar.year))
             db.session.add(new_user_calendar)
             db.session.commit()
-
+            """
             session['username'] = new_user.username
-            cal = Calendar.query.filter_by(user_ids=new_user.id).first()
+            # cal = Calendar.query.filter_by(user_ids=new_user.id).first()
 
-            print("%%%%%%%%%%%%%%%%%" + str(cal.year))
-            py_cal_html = calendar.HTMLCalendar()
-            cal_HTML = py_cal_html.formatyearpage(cal.year)
-            return render_template('calendar.html', username=session['username'], cal=cal_HTML)
+            # print("%%%%%%%%%%%%%%%%%" + str(cal.year))
+            # py_cal_html = calendar.HTMLCalendar()
+            # cal_HTML = py_cal_html.formatyearpage(cal.year)
+            return render_template('full-calendar.html', username=session['username'])
 
 
         
@@ -82,7 +105,7 @@ def login():
         try:
             if session['username']:
                 flash("You're logged in!", 'positive')
-                return render_template('calendar.html', username=session['username'])
+                return render_template('full-calendar.html', username=session['username'])
         except KeyError:
             return render_template('login.html')
     elif request.method == 'POST':
@@ -94,13 +117,73 @@ def login():
             user = user_to_check.first()
             if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = tried_name
-                return render_template('calendar.html', username=session['username'])
+                return render_template('full-calendar.html', username=session['username'])
             else:
                 flash("Nice try!", 'negative')
                 return redirect('/login')
         else:
             flash("Either you mistyped your username or you don't have an account.", 'negative')
             return render_template('login.html')
+
+@app.route('/full-calendar', methods=['POST', 'GET'])
+def cal_display():
+    if request.method == 'GET':
+       
+        return render_template('full-calendar.html')
+    else:
+        date = request.form['date']
+        dinner = request.form['meal']
+        name = session['username']
+        print("#########" + name)
+        user = User.query.filter_by(username=name).first()
+        recipe = Recipe.query.filter_by(name=dinner).first()
+        #event = json.dumps({'start':date, 'title': dinner})#, 'url': '/recipe/'+dinner})
+        #TODO in dincal app proper instantiate as Event object here
+
+        #TODO can't add event until Recipe created
+        try:
+            new_event = Event(meal=recipe.name, date=date, user_id=user.id)
+            db.session.add(new_event)
+            db.session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            flash("You don't have a recipe for that yet", 'negative')
+            return render_template('full-calendar.html')
+        except AttributeError:
+            flash("NO dinner date created. Enter both a date and a meal.", 'negative')
+            return render_template('full-calendar.html')
+
+
+        '''
+        new_events = Event.query.findAll()
+        with open('events.json', 'w') as events:
+            events.write('[')
+            event_dict = {}
+            for event in new_events:
+                event_dict{"title":event.meal, "start":event.date}
+            events.write(json.dumps(event_dict))
+            events.write(']')    
+        '''
+       
+
+        with open('events.json', 'r') as infile:
+            # this reads the file into a variable dat which we use to remove the trailing ] 
+            # of the list. 
+            data = infile.read()
+            data = data.replace("]", "")
+
+            with open('events.json', 'w') as outfile:
+                # now we overwrite the file with data without ], thus leaving the list open 
+                outfile.write(data)
+
+        event = {'start': date, 'title': dinner}
+        with open('events.json', 'a') as events:
+            # now we reopen the file to append ('a') an event and return the closing ]
+            events.write(",{}\n]".format(json.dumps(event)))
+            #json.dump(event, events, ensure_ascii=False)
+
+       
+        return render_template('full-calendar.html')
+    
 
 #GET Search Recipes - spoonacular
 @app.route('/search', methods=['POST', 'GET'])
@@ -232,21 +315,39 @@ def recipe_instructions():
 
     else:
         # add to db if not there
-        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook_id=None)
-        db.session.add(new_recipe)
-        db.session.commit()        
+        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time)
+        new = True
+        #db.session.add(new_recipe)
+        #db.session.commit()        
    
-        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe))
+        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
     #return render_template('search.html', recipe_instr=json_data) 
 """
     recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
     return render_template('search.html', recipe_instructions=recipe_instructions )
 """
 
-@app.route("/recipe/<recipe_id>")
-def display_recipe(recipe_id):
+# save recipe route
+@app.route("/recipe-added", methods=['POST'])
+def save_recipe():
+    name = request.form['name']
+    time = request.form['time']
+    ingredients = request.form['ingredients']
+    instructions = request.form['instructions']
+
+    new_recipe = Recipe(name, str(ingredients), instructions, time)
+    db.session.add(new_recipe)
+    db.session.commit()
+
+    flash("Recipe saved!", 'positive')
+    return render_template('search.html')
+
+
+
+@app.route("/recipe/<recipe_name>")
+def display_recipe(recipe_name):
     """ diplays recipe by id with normalized data in clean format """
-    recipe = Recipe.query.filter_by(id=recipe_id).first()
+    recipe = Recipe.query.filter_by(name=recipe_name).first()
     return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
 
 
@@ -255,6 +356,22 @@ def display_index():
     recipes = Recipe.query.all()
     return render_template('recipe-index.html', recipes=recipes)
 
+@app.route("/ingredients")
+def display_ingredients():
+    user = User.query.filter_by(username=session['username']).first()
+    events = Event.query.filter_by(user_id=user.id).all() # could filter by date ?
+    #TODO look into structuring date column so we can filter by month or next week
+    meals = []
+    for event in events:
+        meals.append(event.meal)
+    recipes = []
+    for meal in meals:
+        recipes.append(Recipe.query.filter_by(name=meal).first())
+    
+    ingreds = []
+    for recipe in recipes:
+        ingreds.append(recipe.ingredients)
+    return render_template('ingredients.html', ingredients=ingreds)
 
 @app.route('/logout')
 def logout():
