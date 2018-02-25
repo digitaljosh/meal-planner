@@ -1,6 +1,15 @@
 .body {
+    background-color: cornflowerblue;
+    background-image: url(/static/images/splash-background.jpeg) ;
+    background-position: center center;
+    background-repeat:  no-repeat;
+    background-attachment: fixed;
+    background-size:  cover;
+    background-color: #999;
+}
+
+#calendar {
     background-color: beige;
-    
 }
 
 /* Begin Flash Messages */
