@@ -9,7 +9,11 @@
 <link href="{{ url_for('static', filename='fullcalendar.min.css') }}" rel='stylesheet' />
 <link href="{{ url_for('static', filename='fullcalendar.print.css') }}" rel='stylesheet' media='print' />
 <script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
-<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script> -->
+<script
+			  src="https://code.jquery.com/jquery-3.3.1.min.js"
+			  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			  crossorigin="anonymous"></script>
 <script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
 <script src="{{ url_for('static', filename='pop-up.js') }}"></script>
 <script>
@@ -21,7 +25,7 @@
 				right: 'month,agendaWeek,agendaDay'
 			},
 			defaultDate: '2018-02-12',
-			editable: true,
+			editable: true, // changed from true
 			eventLimit: true, // allow "more" link when too many events
 			events: {
 				
@@ -75,13 +79,7 @@
 	
 	<div id='loading'>loading...</div>
 
-	
-	
 
-	
-	<!-- TODO need to div each day? in div calendar-->
-<!-- Below is the inspected element for a day, probably can ignore fc-past for now -->
-<!-- <td class="fc-day fc-widget-content fc-mon/wed/thur fc-past/future" data-date="2018-02-15"></td> -->
 
 	<form method="POST">
 	

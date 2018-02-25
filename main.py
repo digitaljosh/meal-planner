@@ -352,6 +352,9 @@ def display_ingredients():
     
     ingreds = []
     for recipe in recipes:
+        #TODO clean up ingredients below doesn't work BTW
+        # nice_ings = clean_ingreds(recipe)
+        # ingreds.append(nice_ings) 
         ingreds.append(recipe.ingredients)
     return render_template('ingredients.html', ingredients=ingreds)
 

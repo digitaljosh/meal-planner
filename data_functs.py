@@ -16,3 +16,5 @@ def clean_ingreds(recipe):
             ingred = ingred[:-1]
             fresh_ingredients.append(ingred)
         return fresh_ingredients
+
+# def good_display-ingredients(ingredients):
