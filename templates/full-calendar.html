@@ -156,7 +156,8 @@
 
 
 
-	<h1>Hey {{ username }}</h1>
+	<h1>Hey {{ user.username }}</h1>
+	
 	<div id='script-warning'>
 		Error getting data from <code>/data</code> endpoint.
 	</div>
@@ -194,6 +195,16 @@
         <input type="submit" id="ingredients" value="Ingredients Needed"/>
         </form>
 
+	<form action="/remove-meal" method="post"> 
+	<!-- {#<form action="{{ url_for('delete_meal_event', event_id=event.id) }}" method="post"> #} -->
+		<p>Would you like to cancel your plans?</p>
+		<select name="dinner_to_remove">
+			{% for event in events %}
+			<option value={{event.id}}>{{ event.date }}</option>
+			{% endfor %}
+		</select>
+		<input type="submit" id="remove" value="REMOVE"/>
+	</form>
 
     
 
