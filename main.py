@@ -74,27 +74,15 @@ def signup():
             # and commit to database
             db.session.add(new_user)
             db.session.commit()
-            """
-            # here is where we are going to establish a new calendar for user ? for this month
-            # TODO is the calendar object for the year !
-            today = date.today()
-            print("++++++++++= " + str(today.year))
-            print("User id =  " + str(new_user.id))
-            #new_user_calendar = Calendar(year=int(today.year), user_ids=new_user.id)
-            # new calendar for user for current year(need to think about if set up in December for instance)
-            new_user_calendar = Calendar(today.year, new_user.id)
-            print("newCal year =  " + str(new_user_calendar.year))
-            db.session.add(new_user_calendar)
-            db.session.commit()
-            """
+           
+            # set current session
             session['username'] = new_user.username
-            # cal = Calendar.query.filter_by(user_ids=new_user.id).first()
-
-            # print("%%%%%%%%%%%%%%%%%" + str(cal.year))
-            # py_cal_html = calendar.HTMLCalendar()
-            # cal_HTML = py_cal_html.formatyearpage(cal.year)
-
-            return render_template('full-calendar.html', user= getUserByName(session['username']))#  username=session['username'])
+            
+            #since new user no events yet
+            #TODO this is where we may add a dinner buddy's events by name or id
+            events = []
+            write_events(events)
+            return render_template('full-calendar.html', user= getUserByName(session['username']), events=events)
 
 
         
@@ -118,11 +106,7 @@ def login():
             user = user_to_check.first()
             if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = user.username
-                print("###################################3Okay")
                 evs = getUsersEvents(tried_name)
-                for ev in evs:
-                    print("^^^^^" + str(ev.id))
-                print(session['username'])
                 #new function see data_functs rewrites events.json
                 write_events(evs)
                 return redirect('/full-calendar')#, user=getUserByName(session['username']), events=getUsersEvents(session['username']))
@@ -135,25 +119,20 @@ def login():
 
 @app.route('/full-calendar', methods=['POST', 'GET'])
 def cal_display():
-    
+    ''' Displays calendar as populated by user's events'''
     user = getUserByName(session['username'])
-    print("++++++++++++++++++++++++" + user.username)
+   
     if request.method == 'GET':
-        print("*************************" + user.username)
+        # simply displays events in current state
         events = getUsersEvents(user.username)
         write_events(events)
         return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username))
     else:
-        print("********************NOPE, POST")
+        # displays calendar with updated changes
         date = request.form['date']
         dinner = request.form['meal']
-        #name = session['username']
-        #print("#########" + name)
-        #user = User.query.filter_by(username=name).first()
         recipe = Recipe.query.filter_by(name=dinner).first()
-        #event = json.dumps({'start':date, 'title': dinner})#, 'url': '/recipe/'+dinner})
-        #TODO in dincal app proper instantiate as Event object here
-
+        
         #TODO can't add event until Recipe created
         try:
             new_event = Event(meal=recipe.name, date=date, user_id=user.id)
@@ -166,43 +145,7 @@ def cal_display():
             flash("NO dinner date created. Enter both a date and a meal.", 'negative')
             return render_template('full-calendar.html', user=user)
 
-
-        
-        #new_events = Event.query.filter_by(user_id=user.id).all()
-
-        # with open('events.json', 'w') as events:
-        #     #events.write('[')
-        #     event_dict = []
-        #     for event in new_events:
-        #         event_dict.append({"title":event.meal, "start":event.date})
-        #     #events.write(json.dumps(event_dict))
-        #     events.write(']')    
-        
-        
-        '''
-        with open('events.json', 'r') as infile:
-            # this reads the file into a variable dat which we use to remove the trailing ] 
-            # of the list. 
-            data = infile.read()
-            data = data.replace("]", "")
-
-            with open('events.json', 'w') as outfile:
-                # now we overwrite the file with data without ], thus leaving the list open 
-                outfile.write(data)
-
-        # TODO place a qualifier here where event is only added for that user line157
-        """
-        We either keep populating events.json with event each time for specific user or create seperate files 
-        for each user. events/<user>.json . and figure out if we are going to pub/sub how we pass this info as url(?) to
-        subscribers.
-        """
-        event = {'start': date, 'title': dinner}
-        with open('events.json', 'a') as events:
-            # now we reopen the file to append ('a') an event and return the closing ]
-            events.write(",{}\n]".format(json.dumps(event)))
-            #json.dump(event, events, ensure_ascii=False)
-
-        '''
+        # retrieve the events from updated db
         event_list = Event.query.filter_by(user_id=user.id).all()
         write_events(event_list)
         return render_template('full-calendar.html', events=event_list, user=user)
@@ -390,8 +333,6 @@ def display_recipe(recipe_name):
     recipe = Recipe.query.filter_by(name=recipe_name).first()
     return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
 
-    
-
 
 @app.route("/recipe-index")
 def display_index():
@@ -400,9 +341,9 @@ def display_index():
 
 @app.route("/ingredients")
 def display_ingredients():
+    '''diplays a list of ingredients for recipes of all events'''
+    #TODO need to clean up display AND place constraints eg(only next two weeks, none from past events) 
     user = User.query.filter_by(username=session['username']).first()
-    
-    #user = getUserByName(session['username'])
     events = getUsersEvents(user.username)
     #events = Event.query.filter_by(user_id=user.id).all() # could filter by date ?
     #TODO look into structuring date column so we can filter by month or next week
@@ -439,9 +380,6 @@ def delete_meal_event():
     events = getUsersEvents(user.username)
     write_events(events)
     return render_template('full-calendar.html', user=user, events=events)
-
-
-
 
 
 
