@@ -15,37 +15,10 @@
 <link href="{{ url_for('static', filename='fullcalendar.min.css') }}" rel='stylesheet' />
 <link href="{{ url_for('static', filename='fullcalendar.print.css') }}" rel='stylesheet' media='print' />
 <script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
-<!-- <script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script> -->
-<script
-			  src="https://code.jquery.com/jquery-3.3.1.min.js"
-			  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-			  crossorigin="anonymous"></script>
+<!--<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>-->
 <script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
 <script src="{{ url_for('static', filename='pop-up.js') }}"></script>
-<script>
-	$(document).ready(function() {
-		$('#calendar').fullCalendar({
-			header: {
-				left: 'prev,next today',
-				center: 'title',
-				right: 'month,agendaWeek,agendaDay'
-			},
-			defaultDate: '2018-02-12',
-			editable: true, // changed from true
-			eventLimit: true, // allow "more" link when too many events
-			events: {
-				
-				url: 'data',
-				error: function() {
-					$('#script-warning').show();
-				}
-			},
-			loading: function(bool) {
-				$('#loading').toggle(bool);
-			}
-		});
-	});
-</script>
+
 <style>
 	body {
 		margin: 0;
@@ -157,14 +130,17 @@
 
 
 	<h1>Hey {{ user.username }}</h1>
-	
 	<div id='script-warning'>
 		Error getting data from <code>/data</code> endpoint.
 	</div>
 	
 	<div id='loading'>loading...</div>
 
+	
+	
 
+	
+	
 
 	<form method="POST">
 	
@@ -193,62 +169,60 @@
 
     <form action="/ingredients" method="get">
         <input type="submit" id="ingredients" value="Ingredients Needed"/>
-        </form>
+	</form>
+	
 
-	<form action="/remove-meal" method="post"> 
+	<form action="/remove-meal" method="post">
 	<!-- {#<form action="{{ url_for('delete_meal_event', event_id=event.id) }}" method="post"> #} -->
 		<p>Would you like to cancel your plans?</p>
 		<select name="dinner_to_remove">
 			{% for event in events %}
-			<option value={{event.id}}>{{ event.date }}</option>
+			<option value="{{ event.id }}">{{ event.date }}</option>
 			{% endfor %}
 		</select>
 		<input type="submit" id="remove" value="REMOVE"/>
 	</form>
 
+
+	<!-- <form method="POST">
+		<div id="pop-up-confirm">
+			 When is dinner?<br><input type="text" name="myInputs[]">
+		</div>
+		<input type="button" value="What's for dinner?" onClick="addInput('pop-up-confirm');">
+	</form> -->
+
+	</body>
+	<!-- </html> -->
+
+	<!-- grid events @ fullcalendar.css #500-575 -->
+
+	<!-- IN EACH DATE BLOCK SOMETHING LIKE THE FOLLOWING?
+
+		AJAX onreadystate change => click event triggered, [ getResponseHeader(param) (?), where param is date]
+		POST and/or GET Requests
+		request.onreadystatechange = day_space
+
+	
+	function day_space(space, date) {
+		if (space == '') {
+			var dinner = prompt("What's for dinner", "search");
+			return recipe_search(dinner);
+		}
+		else {
+			return pop_up_menu(space);
+		}
+	}
+
+	function pop_up_menu(recipe) {
+		var menu = prompt(radio-button form)
+	}	-->
+
     
 
 
-	<!-- <form method="POST">
-
-	<div id="pop-up-confirm">
-
-		 When is dinner?<br><input type="text" name="myInputs[]">
-
-	</div>
-
-	<input type="button" value="What's for dinner?" onClick="addInput('pop-up-confirm');">
-
-</form> -->
 
 
 
 
-</body>
-<!-- </html> -->
-
-
-<!-- grid events @ fullcalendar.css #500-575 -->
-
-<!-- IN EACH DATE BLOCK SOMETHING LIKE THE FOLLOWING?
-
-	AJAX onreadystate change => click event triggered,[ getResponseHeader(param) (?), where param is date]
-	POST and/or GET Requests
-	request.onreadystatechange = day_space
-
-
-function day_space(space, date) {
-	if (space == '') {
-		var dinner = prompt("What's for dinner", "search");
-		return recipe_search(dinner);
-	}
-	else {
-		return pop_up_menu(space);
-	}
-}
-
-funtion pop_up_menu(recipe) {
-	var menu = prompt(radio-button form)
-} -->
 
 {% endblock %}
