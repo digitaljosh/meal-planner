@@ -1,7 +1,9 @@
 import re
 import json
-from models import User, Event
+import datetime
 
+from models import User, Event
+from app import db
 
 
 def clean_ingreds(recipe):
@@ -39,5 +41,27 @@ def write_events(events):
             for event in events:
                 event_dicts.append({"title":event.meal, "start":event.date})
             event_list.write(json.dumps(event_dicts))
-            #events.write(']')    
+            #events.write(']') 
+
+
+def make_users_events_current(username):
+    ''' Drops events that have occured from table '''
+    all_events = getUsersEvents(username)
+    up_to_dates = []
+    today = datetime.date.today()
+    print(today)
+    for event in all_events:
+        date = datetime.datetime.strptime(event.date, "%Y-%m-%d").date()
+        print(date)
+        if date >= today:
+        #if event.date > today:
+            up_to_dates.append(event)
+        else:
+            Event.query.filter_by(id=event.id).delete()
+            db.session.commit()
+
+    return up_to_dates
+
+
+
         

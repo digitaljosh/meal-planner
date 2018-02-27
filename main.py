@@ -13,7 +13,7 @@ import recipe_search_list, recipe_info
 from app import app, db
 from models import User, Event, Recipe
 from hashy import check_pw_hash
-from data_functs import clean_ingreds, getUserByName, getUsersEvents, write_events
+from data_functs import clean_ingreds, getUserByName, getUsersEvents, write_events, make_users_events_current
 
 
 
@@ -125,7 +125,14 @@ def cal_display():
     if request.method == 'GET':
         # simply displays events in current state
         events = getUsersEvents(user.username)
-        write_events(events)
+
+        # strips events of those that have passed
+        current_events = make_users_events_current(user.username)
+        print("!!!!!!!!!!!!!!!!!!!!!!!!")
+        for each in current_events:
+            print(each.date)
+        print("!!!!!!!!!!!!!!!!!!!!!!!")
+        write_events(current_events)
         return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username))
     else:
         # displays calendar with updated changes
@@ -146,6 +153,7 @@ def cal_display():
             return render_template('full-calendar.html', user=user)
 
         # retrieve the events from updated db
+        make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
         write_events(event_list)
         return render_template('full-calendar.html', events=event_list, user=user)
