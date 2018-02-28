@@ -13,7 +13,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <link href="{{ url_for('static', filename='fullcalendar.min.css') }}" rel='stylesheet' />
-<link href="{{ url_for('static', filename='fullcalendar.print.css') }}" rel='stylesheet' media='print' />
+<link href="{{ url_for('static', filename='fullcalendar-edit.print.css') }}" rel='stylesheet' media='print' />
 <script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
 <!--<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>-->
 <script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
@@ -53,6 +53,14 @@
 <body>
 
 	<div id='calendar'></div>
+
+	<button class="printBtn hidden-print">Print</button>
+
+	<script type="text/javascript">
+		$('.printBtn').on('click', function (){
+			window.print();
+		});
+	</script>
 
 	<div class="modal fade" id="getCodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			<div class="modal-dialog modal-lg">
