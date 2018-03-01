@@ -112,3 +112,6 @@ hashy.py
 #ignor ricks virt env
 mealvirt
 
+# ignore event specifics (?)
+# events.jason
+

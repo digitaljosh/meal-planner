@@ -6,36 +6,19 @@
 <html>
 <head>
 <meta charset='utf-8' />
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <link href="{{ url_for('static', filename='fullcalendar.min.css') }}" rel='stylesheet' />
-<link href="{{ url_for('static', filename='fullcalendar.print.css') }}" rel='stylesheet' media='print' />
+<link href="{{ url_for('static', filename='fullcalendar-edit.print.css') }}" rel='stylesheet' media='print' />
 <script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
-<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>
+<!--<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>-->
 <script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
 <script src="{{ url_for('static', filename='pop-up.js') }}"></script>
-<script>
-	$(document).ready(function() {
-		$('#calendar').fullCalendar({
-			header: {
-				left: 'prev,next today',
-				center: 'title',
-				right: 'month,agendaWeek,agendaDay'
-			},
-			defaultDate: '2018-02-12',
-			editable: true,
-			eventLimit: true, // allow "more" link when too many events
-			events: {
-				
-				url: 'data',
-				error: function() {
-					$('#script-warning').show();
-				}
-			},
-			loading: function(bool) {
-				$('#loading').toggle(bool);
-			}
-		});
-	});
-</script>
+
 <style>
 	body {
 		margin: 0;
@@ -68,7 +51,93 @@
 </style>
 </head>
 <body>
-<h1>Hey {{ username }}</h1>
+
+	<div id='calendar'></div>
+
+	<button class="printBtn hidden-print">Print</button>
+
+	<script type="text/javascript">
+		$('.printBtn').on('click', function (){
+			window.print();
+		});
+	</script>
+
+	<div class="modal fade" id="getCodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel"></h4>
+				</div>
+				<div class="modal-body" id="getCode" style="overflow-x: scroll;">
+					//ajax success content here.
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<script>
+		$(document).ready(function() {
+			$('#calendar').fullCalendar({
+				header: {
+					left: 'prev,next today',
+					center: 'title',
+					right: 'month,agendaWeek,agendaDay'
+				},
+				eventClick:  function(event, jsEvent, view) {
+					recipe_name = event.title;
+					recipe_name = {"recipe_name":recipe_name}
+					getRecipeId(recipe_name);
+					
+				},
+				defaultDate: '2018-02-12',
+				editable: true,
+				eventLimit: true, // allow "more" link when too many events
+				events: {
+					
+					url: 'data',
+					error: function() {
+						$('#script-warning').show();
+					}
+				},
+				loading: function(bool) {
+					$('#loading').toggle(bool);
+				}
+			});
+		});
+	
+	
+		function getRecipeId(recipe_name) {
+			alert(recipe_name)
+			
+			console.log(recipe_name)
+			$.ajax({
+				url: '/modal-recipe',
+				data: recipe_name,
+				// contentType: application/json,
+				type: 'POST',
+				success: function(response){
+					console.log(response);
+					jQuery("#getCodeModal").modal("toggle");
+					jQuery("#getCode").html(response);
+					console.log(response, "ok get the data!!!!!");
+				},
+				error: function(error){
+					console.log(error);
+				}
+			});
+			// var url = "localhost:5000/recipe/" + number;
+			// window.parent.location.href = url;
+		}
+		
+		
+	</script>
+
+
+
+	<h1>Hey {{ user.username }}</h1>
 	<div id='script-warning'>
 		Error getting data from <code>/data</code> endpoint.
 	</div>
@@ -79,9 +148,7 @@
 	
 
 	
-	<!-- TODO need to div each day? in div calendar-->
-<!-- Below is the inspected element for a day, probably can ignore fc-past for now -->
-<!-- <td class="fc-day fc-widget-content fc-mon/wed/thur fc-past/future" data-date="2018-02-15"></td> -->
+	
 
 	<form method="POST">
 	
@@ -110,50 +177,60 @@
 
     <form action="/ingredients" method="get">
         <input type="submit" id="ingredients" value="Ingredients Needed"/>
-        </form>
+	</form>
+	
 
-
-    <div id='calendar'></div>
+	<form action="/remove-meal" method="post">
+	<!-- {#<form action="{{ url_for('delete_meal_event', event_id=event.id) }}" method="post"> #} -->
+		<p>Would you like to cancel your plans?</p>
+		<select name="dinner_to_remove">
+			{% for event in events %}
+			<option value="{{ event.id }}">{{ event.date }}</option>
+			{% endfor %}
+		</select>
+		<input type="submit" id="remove" value="REMOVE"/>
+	</form>
 
 
 	<!-- <form method="POST">
+		<div id="pop-up-confirm">
+			 When is dinner?<br><input type="text" name="myInputs[]">
+		</div>
+		<input type="button" value="What's for dinner?" onClick="addInput('pop-up-confirm');">
+	</form> -->
 
-	<div id="pop-up-confirm">
+	</body>
+	<!-- </html> -->
 
-		 When is dinner?<br><input type="text" name="myInputs[]">
+	<!-- grid events @ fullcalendar.css #500-575 -->
 
-	</div>
+	<!-- IN EACH DATE BLOCK SOMETHING LIKE THE FOLLOWING?
 
-	<input type="button" value="What's for dinner?" onClick="addInput('pop-up-confirm');">
+		AJAX onreadystate change => click event triggered, [ getResponseHeader(param) (?), where param is date]
+		POST and/or GET Requests
+		request.onreadystatechange = day_space
 
-</form> -->
-
-
-</body>
-<!-- </html> -->
-
-
-<!-- grid events @ fullcalendar.css #500-575 -->
-
-<!-- IN EACH DATE BLOCK SOMETHING LIKE THE FOLLOWING?
-
-	AJAX onreadystate change => click event triggered,[ getResponseHeader(param) (?), where param is date]
-	POST and/or GET Requests
-	request.onreadystatechange = day_space
-
-
-function day_space(space, date) {
-	if (space == '') {
-		var dinner = prompt("What's for dinner", "search");
-		return recipe_search(dinner);
+	
+	function day_space(space, date) {
+		if (space == '') {
+			var dinner = prompt("What's for dinner", "search");
+			return recipe_search(dinner);
+		}
+		else {
+			return pop_up_menu(space);
+		}
 	}
-	else {
-		return pop_up_menu(space);
-	}
-}
 
-funtion pop_up_menu(recipe) {
-	var menu = prompt(radio-button form)
-} -->
+	function pop_up_menu(recipe) {
+		var menu = prompt(radio-button form)
+	}	-->
+
+    
+
+
+
+
+
+
 
 {% endblock %}

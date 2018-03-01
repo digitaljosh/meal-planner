@@ -1,5 +1,5 @@
 
-from flask import render_template, redirect, request, session, jsonify, flash
+from flask import render_template, redirect, request,json, session, jsonify, flash
 import requests
 import json
 import pprint 
@@ -13,7 +13,7 @@ import recipe_search_list, recipe_info
 from app import app, db
 from models import User, Event, Recipe
 from hashy import check_pw_hash
-from data_functs import clean_ingreds
+from data_functs import clean_ingreds, getUserByName, getUsersEvents, write_events, make_users_events_current
 
 
 
@@ -74,38 +74,27 @@ def signup():
             # and commit to database
             db.session.add(new_user)
             db.session.commit()
-            """
-            # here is where we are going to establish a new calendar for user ? for this month
-            # TODO is the calendar object for the year !
-            today = date.today()
-            print("++++++++++= " + str(today.year))
-            print("User id =  " + str(new_user.id))
-            #new_user_calendar = Calendar(year=int(today.year), user_ids=new_user.id)
-            # new calendar for user for current year(need to think about if set up in December for instance)
-            new_user_calendar = Calendar(today.year, new_user.id)
-            print("newCal year =  " + str(new_user_calendar.year))
-            db.session.add(new_user_calendar)
-            db.session.commit()
-            """
+           
+            # set current session
             session['username'] = new_user.username
-            # cal = Calendar.query.filter_by(user_ids=new_user.id).first()
-
-            # print("%%%%%%%%%%%%%%%%%" + str(cal.year))
-            # py_cal_html = calendar.HTMLCalendar()
-            # cal_HTML = py_cal_html.formatyearpage(cal.year)
-            return render_template('full-calendar.html', username=session['username'])
+            
+            #since new user no events yet
+            #TODO this is where we may add a dinner buddy's events by name or id
+            events = []
+            write_events(events)
+            return render_template('full-calendar.html', user= getUserByName(session['username']), events=events)
 
 
         
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # just loops back home for now since no db
     if request.method == 'GET':
         try:
             if session['username']:
+                name = session['username']
                 flash("You're logged in!", 'positive')
-                return render_template('full-calendar.html', username=session['username'])
+                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name))#username=session['username'])
         except KeyError:
             return render_template('login.html')
     elif request.method == 'POST':
@@ -116,8 +105,11 @@ def login():
         if user_to_check.count() == 1:
             user = user_to_check.first()
             if user and check_pw_hash(tried_pw, user.pw_hash):
-                session['username'] = tried_name
-                return render_template('full-calendar.html', username=session['username'])
+                session['username'] = user.username
+                evs = getUsersEvents(tried_name)
+                #new function see data_functs rewrites events.json
+                write_events(evs)
+                return redirect('/full-calendar')#, user=getUserByName(session['username']), events=getUsersEvents(session['username']))
             else:
                 flash("Nice try!", 'negative')
                 return redirect('/login')
@@ -127,19 +119,27 @@ def login():
 
 @app.route('/full-calendar', methods=['POST', 'GET'])
 def cal_display():
+    ''' Displays calendar as populated by user's events'''
+    user = getUserByName(session['username'])
+   
     if request.method == 'GET':
-       
-        return render_template('full-calendar.html')
+        # simply displays events in current state
+        events = getUsersEvents(user.username)
+
+        # strips events of those that have passed
+        current_events = make_users_events_current(user.username)
+        print("!!!!!!!!!!!!!!!!!!!!!!!!")
+        for each in current_events:
+            print(each.date)
+        print("!!!!!!!!!!!!!!!!!!!!!!!")
+        write_events(current_events)
+        return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username))
     else:
+        # displays calendar with updated changes
         date = request.form['date']
         dinner = request.form['meal']
-        name = session['username']
-        print("#########" + name)
-        user = User.query.filter_by(username=name).first()
         recipe = Recipe.query.filter_by(name=dinner).first()
-        #event = json.dumps({'start':date, 'title': dinner})#, 'url': '/recipe/'+dinner})
-        #TODO in dincal app proper instantiate as Event object here
-
+        
         #TODO can't add event until Recipe created
         try:
             new_event = Event(meal=recipe.name, date=date, user_id=user.id)
@@ -147,43 +147,17 @@ def cal_display():
             db.session.commit()
         except sqlalchemy.exc.IntegrityError:
             flash("You don't have a recipe for that yet", 'negative')
-            return render_template('full-calendar.html')
+            return render_template('full-calendar.html', user=user)
         except AttributeError:
             flash("NO dinner date created. Enter both a date and a meal.", 'negative')
-            return render_template('full-calendar.html')
+            return render_template('full-calendar.html', user=user)
 
+        # retrieve the events from updated db
+        make_users_events_current(user.username) # keeps users from adding events to the past
+        event_list = Event.query.filter_by(user_id=user.id).all()
+        write_events(event_list)
+        return render_template('full-calendar.html', events=event_list, user=user)
 
-        '''
-        new_events = Event.query.findAll()
-        with open('events.json', 'w') as events:
-            events.write('[')
-            event_dict = {}
-            for event in new_events:
-                event_dict{"title":event.meal, "start":event.date}
-            events.write(json.dumps(event_dict))
-            events.write(']')    
-        '''
-       
-
-        with open('events.json', 'r') as infile:
-            # this reads the file into a variable dat which we use to remove the trailing ] 
-            # of the list. 
-            data = infile.read()
-            data = data.replace("]", "")
-
-            with open('events.json', 'w') as outfile:
-                # now we overwrite the file with data without ], thus leaving the list open 
-                outfile.write(data)
-
-        event = {'start': date, 'title': dinner}
-        with open('events.json', 'a') as events:
-            # now we reopen the file to append ('a') an event and return the closing ]
-            events.write(",{}\n]".format(json.dumps(event)))
-            #json.dump(event, events, ensure_ascii=False)
-
-       
-        return render_template('full-calendar.html')
-    
 
 #GET Search Recipes - spoonacular
 @app.route('/search', methods=['POST', 'GET'])
@@ -343,10 +317,27 @@ def save_recipe():
     return render_template('search.html')
 
 
+# display recipe instructions in modal
+@app.route("/modal-recipe", methods=['POST'])
+def display_modal_recipe():
+
+    print("######################")
+    recipe_name = request.form["recipe_name"]
+    print(recipe_name)
+    # recipe_name = content["recipe_name"]
+    # print(recipe_name)
+    print("##################")
+    print("ok I got the recipe", recipe_name)
+    print("######################")
+    """ diplays recipe by id with normalized data in clean format """
+    recipe = Recipe.query.filter_by(name=recipe_name).first()
+    print(recipe)
+    return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
+
 
 @app.route("/recipe/<recipe_name>")
 def display_recipe(recipe_name):
-    """ diplays recipe by id with normalized data in clean format """
+    """ diplays recipe by name with normalized data in clean format """
     recipe = Recipe.query.filter_by(name=recipe_name).first()
     return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
 
@@ -358,8 +349,11 @@ def display_index():
 
 @app.route("/ingredients")
 def display_ingredients():
+    '''diplays a list of ingredients for recipes of all events'''
+    #TODO need to clean up display AND place constraints eg(only next two weeks, none from past events) 
     user = User.query.filter_by(username=session['username']).first()
-    events = Event.query.filter_by(user_id=user.id).all() # could filter by date ?
+    events = getUsersEvents(user.username)
+    #events = Event.query.filter_by(user_id=user.id).all() # could filter by date ?
     #TODO look into structuring date column so we can filter by month or next week
     meals = []
     for event in events:
@@ -370,8 +364,32 @@ def display_ingredients():
     
     ingreds = []
     for recipe in recipes:
+        #TODO clean up ingredients below doesn't work BTW
+        # nice_ings = clean_ingreds(recipe)
+        # ingreds.append(nice_ings) 
         ingreds.append(recipe.ingredients)
     return render_template('ingredients.html', ingredients=ingreds)
+
+
+@app.route('/remove-meal', methods=['POST'])
+def delete_meal_event():
+    '''for now just removes event using dropdown form'''
+    event_id = request.form['dinner_to_remove']
+    # returns id as string from form
+    ev_id = int(event_id)
+    ev_to_get_id_from = Event.query.filter_by(id=ev_id).first()
+    #use the event to get user  session['username'] not working here
+    user_id = ev_to_get_id_from.user_id
+    user = User.query.filter_by(id=user_id).first()
+    # now that we've got the user identity we can delete event 
+    Event.query.filter_by(id=event_id).delete()
+    db.session.commit()
+    
+    events = getUsersEvents(user.username)
+    write_events(events)
+    return render_template('full-calendar.html', user=user, events=events)
+
+
 
 @app.route('/logout')
 def logout():
