@@ -18,7 +18,12 @@ from data_functs import clean_ingreds, getUserByName, getUsersEvents, write_even
 
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
+all_users = User.query.all()
+'''
+might make another column for user; public(bool)
 
+all_public_users = User.query.filter_by(public=True).all()
+'''
 @app.before_request
 def login_required():
     not_allowed_routes = ['cal_display',]
@@ -82,7 +87,7 @@ def signup():
             #TODO this is where we may add a dinner buddy's events by name or id
             events = []
             write_events(events)
-            return render_template('full-calendar.html', user= getUserByName(session['username']), events=events)
+            return render_template('full-calendar.html', user= getUserByName(session['username']), events=events, other_users=all_users)
 
 
         
@@ -94,7 +99,7 @@ def login():
             if session['username']:
                 name = session['username']
                 flash("You're logged in!", 'positive')
-                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name))#username=session['username'])
+                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), other_users=all_users)#username=session['username'])
         except KeyError:
             return render_template('login.html')
     elif request.method == 'POST':
@@ -133,7 +138,7 @@ def cal_display():
             print(each.date)
         print("!!!!!!!!!!!!!!!!!!!!!!!")
         write_events(current_events)
-        return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username))
+        return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username), other_users=all_users)
     else:
         # displays calendar with updated changes
         date = request.form['date']
@@ -147,16 +152,16 @@ def cal_display():
             db.session.commit()
         except sqlalchemy.exc.IntegrityError:
             flash("You don't have a recipe for that yet", 'negative')
-            return render_template('full-calendar.html', user=user)
+            return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username), other_users=all_users)
         except AttributeError:
             flash("NO dinner date created. Enter both a date and a meal.", 'negative')
-            return render_template('full-calendar.html', user=user)
+            return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username), other_users=all_users)
 
         # retrieve the events from updated db
         make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
         write_events(event_list)
-        return render_template('full-calendar.html', events=event_list, user=user)
+        return render_template('full-calendar.html', events=event_list, user=user, other_users=all_users)
 
 
 #GET Search Recipes - spoonacular
@@ -387,8 +392,22 @@ def delete_meal_event():
     
     events = getUsersEvents(user.username)
     write_events(events)
-    return render_template('full-calendar.html', user=user, events=events)
+    return render_template('full-calendar.html', user=user, events=events, other_users=all_users)
 
+@app.route('/other-calendars', methods=['POST'])
+def view_other_calendars():
+    ''' populates events.json with someones elses events by name'''
+    print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%why not ')
+    user = User.query.filter_by(username=session['username']).first()
+    print("&&&&&&&&&&&&" + user.username)
+    user_name = request.form['other_cal_view']
+    print("@@@@@@@@@@@@@@@@" + str(user_name))
+    other_events = getUsersEvents(user_name)
+    for ev in other_events:
+        print("^^^" + ev.meal + ":" + ev.date)
+
+    write_events(other_events)
+    return render_template('full-calendar.html', user=user, events=other_events, other_users=all_users)
 
 
 @app.route('/logout')

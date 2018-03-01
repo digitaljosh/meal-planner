@@ -179,6 +179,15 @@
         <input type="submit" id="ingredients" value="Ingredients Needed"/>
 	</form>
 	
+	<form action="/other-calendars" method="post">
+		<p>Would you like to view your friends calendars?</p>
+		<select name="other_cal_view">
+		{% for user in other_users %}
+		<option value="{{ user.username }}">{{ user.username }}'s calendar</option>
+		{% endfor %}
+			</select>
+		<input type="submit" id="other_cal" value="Let's see"/>
+	</form>
 
 	<form action="/remove-meal" method="post">
 	<!-- {#<form action="{{ url_for('delete_meal_event', event_id=event.id) }}" method="post"> #} -->
