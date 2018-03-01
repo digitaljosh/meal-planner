@@ -87,7 +87,7 @@ def signup():
             #TODO this is where we may add a dinner buddy's events by name or id
             events = []
             write_events(events)
-            return render_template('full-calendar.html', user= getUserByName(session['username']), events=events, other_users=all_users)
+            return render_template('full-calendar.html', user= getUserByName(session['username']), events=events, other_users=all_users)#, remove=True)
 
 
         
@@ -99,7 +99,7 @@ def login():
             if session['username']:
                 name = session['username']
                 flash("You're logged in!", 'positive')
-                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), other_users=all_users)#username=session['username'])
+                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), other_users=all_users)#, remove=True)
         except KeyError:
             return render_template('login.html')
     elif request.method == 'POST':
@@ -397,17 +397,12 @@ def delete_meal_event():
 @app.route('/other-calendars', methods=['POST'])
 def view_other_calendars():
     ''' populates events.json with someones elses events by name'''
-    print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%why not ')
+    
     user = User.query.filter_by(username=session['username']).first()
-    print("&&&&&&&&&&&&" + user.username)
     user_name = request.form['other_cal_view']
-    print("@@@@@@@@@@@@@@@@" + str(user_name))
     other_events = getUsersEvents(user_name)
-    for ev in other_events:
-        print("^^^" + ev.meal + ":" + ev.date)
-
     write_events(other_events)
-    return render_template('full-calendar.html', user=user, events=other_events, other_users=all_users)
+    return render_template('full-calendar.html', user=user, events=other_events, other_users=all_users, calendar_shown=user_name, no_remove=True)
 
 
 @app.route('/logout')

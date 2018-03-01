@@ -48,9 +48,19 @@
 		margin: 40px auto;
 		padding: 0 10px;
 	}
+	h1 {
+		text-align: center;
+		color: yellowgreen;
+	}
 </style>
 </head>
 <body>
+
+	{% if calendar_shown %}
+		<h1>{{ calendar_shown }}'s calendar.</h1>
+	{% else %}
+		<h1>{{ user.username }}'s calendar.</h1>
+	{% endif %}
 
 	<div id='calendar'></div>
 
@@ -265,6 +275,7 @@
 		<input type="submit" id="other_cal" value="Let's see"/>
 	</form>
 
+	{% if not no_remove %}
 	<form action="/remove-meal" method="post">
 	<!-- {#<form action="{{ url_for('delete_meal_event', event_id=event.id) }}" method="post"> #} -->
 		<p>Would you like to cancel your plans?</p>
@@ -275,6 +286,7 @@
 		</select>
 		<input type="submit" id="remove" value="REMOVE"/>
 	</form>
+	{% endif %}
 
 
 	<!-- <form method="POST">
