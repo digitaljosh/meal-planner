@@ -147,6 +147,82 @@
 	
 	
 
+
+
+
+		<!-- Button trigger modal -->
+	<button class="btn" data-toggle="modal" data-target="#createRecipeModal">
+		Create Recipe
+	</button>
+
+	<!-- Modal -->
+	<div class="modal fade" id="createRecipeModal" tabindex="-1" role="dialog" 
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<button type="button" class="close" 
+					data-dismiss="modal">
+						<span aria-hidden="true">&times;</span>
+						<span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Create Recipe
+					</h4>
+				</div>
+				
+				<!-- Modal Body -->
+				<div class="modal-body">
+					
+					<form class="form-horizontal" action="{{ url_for('save_recipe') }}" method="post" role="form">
+					<div class="form-group">
+						<label class="col-sm-2 control-label"
+								for="inputEmail3">Name</label>
+						<div class="col-sm-10">
+							<input name="name" type="text" class="form-control" 
+							id="inputEmail3" placeholder="Name"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label"
+							for="inputPassword3" >Time</label>
+						<div class="col-sm-10">
+							<input name="time" type="text" class="form-control"
+								id="inputPassword3" placeholder="Minutes"/>
+						</div>
+					</div>
+					<div class="form-group">
+							<label  class="col-sm-2 control-label"
+									for="inputEmail3">Ingredients</label>
+							<div class="col-sm-10">
+								<textarea name="ingredients" type="text" class="form-control" 
+								id="inputEmail3" placeholder="Ingredients"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"
+								for="inputPassword3" >Instructions</label>
+							<div class="col-sm-10">
+								<textarea name="instructions" type="text" class="form-control"
+									id="inputPassword3" placeholder="Instructions"></textarea>
+							</div>
+						</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-default">Create</button>
+						</div>
+					</div>
+					</form>        
+				</div>
+				
+			</div>
+		</div>
+	</div>
+
+
+
+
 	
 	
 
