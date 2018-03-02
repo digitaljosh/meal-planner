@@ -102,7 +102,8 @@
 					getRecipeId(recipe_name);
 					
 				},
-				defaultDate: '2018-02-12',
+				// TODO javascript datetime.today() ?
+				defaultDate: '2018-03-12',
 				editable: true,
 				eventLimit: true, // allow "more" link when too many events
 				events: {
@@ -246,7 +247,8 @@
 	</form>
 	<form  action="/full-calendar" method="post" role="form">
 		<h2 class="dinner">Schedule a dinner: </h2>
-		<input type="text" name="date" class="form-control" placeholder="2018-02-24">
+		<!-- TODO use script to get todays date for place holder -->
+		<input type="text" name="date" class="form-control" placeholder="2018-03-05">
 		<input type="text" name="meal" class="form-control" placeholder="What's for dinner?">
 		<!-- <input type="password" name="password" class="form-control" placeholder="Password" required> -->
 		<input type="submit" id="submit" value="Dinner!"/>
@@ -288,13 +290,6 @@
 	</form>
 	{% endif %}
 
-
-	<!-- <form method="POST">
-		<div id="pop-up-confirm">
-			 When is dinner?<br><input type="text" name="myInputs[]">
-		</div>
-		<input type="button" value="What's for dinner?" onClick="addInput('pop-up-confirm');">
-	</form> -->
 
 	</body>
 	<!-- </html> -->
