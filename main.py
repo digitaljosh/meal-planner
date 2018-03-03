@@ -27,8 +27,8 @@ from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_eve
 '''
 might make another column for user; public(bool)
 
-all_public_users = User.query.filter_by(public=True).all()
-'''
+
+
 @app.before_request
 def login_required():
     not_allowed_routes = ['cal_display',]
@@ -107,9 +107,11 @@ def login():
     if request.method == 'GET':
         try:
             if session['username']:
+                recipes = Recipe.query.all()
                 name = session['username']
                 flash("You're logged in!", 'positive')
                 return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name))#, other_users=all_users)#, remove=True)
+                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), recipes=recipes)#username=session['username'])
         except KeyError:
             return render_template('login.html')
         except AttributeError: # no one in db yet NoneType
@@ -146,11 +148,17 @@ def cal_display():
         # strips events of those that have passed
         current_events = make_users_events_current(user.username)
         write_events(current_events)
-        return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username))#, other_users=all_users)
-    else:
+        recipes = Recipe.query.all()
+        return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username), recipes=recipes)
+    else: # 'POST'
         # displays calendar with updated changes
+        recipes = Recipe.query.all()
         date = request.form['date']
         dinner = request.form['meal']
+        print("#"*10 + "DATE & DINNER" + "#"*10)
+        print(date)
+        print(dinner)
+        print("#"*10)
         recipe = Recipe.query.filter_by(name=dinner).first()
         
         #TODO can't add event until Recipe created
@@ -160,16 +168,16 @@ def cal_display():
             db.session.commit()
         except sqlalchemy.exc.IntegrityError:
             flash("You don't have a recipe for that yet", 'negative')
-            return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username))#, other_users=all_users)
+            return render_template('full-calendar.html', user=user, recipes=recipes)
         except AttributeError:
             flash("NO dinner date created. Enter both a date and a meal.", 'negative')
-            return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username))#, other_users=all_users)
+            return render_template('full-calendar.html', user=user, recipes=recipes)
 
         # retrieve the events from updated db
         make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
         write_events(event_list)
-        return render_template('full-calendar.html', events=event_list, user=user)#, other_users=all_users)
+        return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
 
 #GET Search Recipes - spoonacular
@@ -397,7 +405,8 @@ def delete_meal_event():
     
     events = getUsersEvents(user.username)
     write_events(events)
-    return render_template('full-calendar.html', user=user, events=events)#, other_users=all_users)
+    recipes = Recipe.query.all()
+    return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
 # @app.route('/other-calendars', methods=['POST'])
 # def view_other_calendars():
