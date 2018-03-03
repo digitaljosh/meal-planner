@@ -396,7 +396,8 @@ def delete_meal_event():
     
     events = getUsersEvents(user.username)
     write_events(events)
-    return render_template('full-calendar.html', user=user, events=events)
+    recipes = Recipe.query.all()
+    return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
 
 
