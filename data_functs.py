@@ -20,7 +20,8 @@ def clean_ingreds(recipe):
             fresh_ingredients.append(ingred)
         return fresh_ingredients
 
-# def good_display-ingredients(ingredients):
+def good_display_ingredients(list_of_ingredients):
+    lists = list_of_ingredients.split(',')
 
 
 def getUserByName(username):
@@ -62,6 +63,24 @@ def make_users_events_current(username):
 
     return up_to_dates
 
+def get_meals_for_the_week(username):
+    ''' returns the events the user has planned for the next week '''
+    week_events = []
+    all_events = getUsersEvents(username)
+    today = datetime.date.today()
+    week_from_date = today + datetime.timedelta(days=7)
+    for event in all_events:
+        date = datetime.datetime.strptime(event.date, "%Y-%m-%d").date()
+        if date >= today and date <= week_from_date:
+            week_events.append(event)
+    return week_events
 
+def get_today_string():
+    today_string = "{date:%Y-%m-%d}".format(date=datetime.datetime.now())
+    return today_string
 
-        
+def get_week_from_string():
+    today = datetime.datetime.today()
+    week_from_date = today + datetime.timedelta(days=7)
+    week_from = "{date:%Y-%m-%d}".format(date=week_from_date)
+    return week_from

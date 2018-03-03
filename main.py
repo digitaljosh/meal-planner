@@ -3,7 +3,8 @@ from flask import render_template, redirect, request,json, session, jsonify, fla
 import requests
 import json
 import pprint 
-from datetime import date
+import datetime
+#from datetime import date, timedelta, datetime
 import calendar
 import re 
 import sqlalchemy
@@ -13,12 +14,15 @@ import recipe_search_list, recipe_info
 from app import app, db
 from models import User, Event, Recipe
 from hashy import check_pw_hash
-from data_functs import clean_ingreds, getUserByName, getUsersEvents, write_events, make_users_events_current
+from data_functs import clean_ingreds, getUserByName, getUsersEvents, write_events, make_users_events_current, get_meals_for_the_week, get_today_string, get_week_from_string
 
 
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
 all_users = User.query.all()
+today_string = "{date:%Y-%m-%d}".format(date=datetime.datetime.now())
+week_from_date = datetime.datetime.now() + datetime.timedelta(days=7)
+week_from = "{date:%Y-%m-%d}".format(date=week_from_date)
 '''
 might make another column for user; public(bool)
 
@@ -312,6 +316,10 @@ def save_recipe():
     name = request.form['name']
     time = request.form['time']
     ingredients = request.form['ingredients']
+    # keeps format consistent for recipes manually entered
+    if type(ingredients) == str:
+        ingredients = ingredients.split()
+   
     instructions = request.form['instructions']
 
     new_recipe = Recipe(name, str(ingredients), instructions, time)
@@ -357,10 +365,12 @@ def display_ingredients():
     '''diplays a list of ingredients for recipes of all events'''
     #TODO need to clean up display AND place constraints eg(only next two weeks, none from past events) 
     user = User.query.filter_by(username=session['username']).first()
-    events = getUsersEvents(user.username)
+    #events = getUsersEvents(user.username)
     #events = Event.query.filter_by(user_id=user.id).all() # could filter by date ?
     #TODO look into structuring date column so we can filter by month or next week
     meals = []
+    
+    events = get_meals_for_the_week(user.username)
     for event in events:
         meals.append(event.meal)
     recipes = []
@@ -370,10 +380,10 @@ def display_ingredients():
     ingreds = []
     for recipe in recipes:
         #TODO clean up ingredients below doesn't work BTW
-        # nice_ings = clean_ingreds(recipe)
-        # ingreds.append(nice_ings) 
-        ingreds.append(recipe.ingredients)
-    return render_template('ingredients.html', ingredients=ingreds)
+        nice_ings = clean_ingreds(recipe)
+        ingreds.append(nice_ings) 
+        #ingreds.append(recipe.ingredients)
+    return render_template('ingredients.html', username=user.username, ingredients=ingreds, start=get_today_string(), end=get_week_from_string())
 
 
 @app.route('/remove-meal', methods=['POST'])
