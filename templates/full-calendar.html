@@ -155,10 +155,6 @@
 	
 	<div id='loading'>loading...</div>
 
-	
-	
-
-
 
 
 		<!-- Button trigger modal -->
@@ -232,19 +228,6 @@
 	</div>
 
 
-
-
-	
-	
-
-	<form method="POST">
-	
-	<!-- dinnerFunction() in pop-up.js -->
-	<div id="pop-up-confirm">
-			<button onclick="dinnerFunction()">test</button>
-	</div>
-
-	</form>
 	<form  action="/full-calendar" method="post" role="form">
 		<h2 class="dinner">Schedule a dinner: </h2>
 		<!-- TODO use script to get todays date for place holder -->
@@ -292,37 +275,6 @@
 
 
 	</body>
-	<!-- </html> -->
-
-	<!-- grid events @ fullcalendar.css #500-575 -->
-
-	<!-- IN EACH DATE BLOCK SOMETHING LIKE THE FOLLOWING?
-
-		AJAX onreadystate change => click event triggered, [ getResponseHeader(param) (?), where param is date]
-		POST and/or GET Requests
-		request.onreadystatechange = day_space
-
 	
-	function day_space(space, date) {
-		if (space == '') {
-			var dinner = prompt("What's for dinner", "search");
-			return recipe_search(dinner);
-		}
-		else {
-			return pop_up_menu(space);
-		}
-	}
-
-	function pop_up_menu(recipe) {
-		var menu = prompt(radio-button form)
-	}	-->
-
-    
-
-
-
-
-
-
 
 {% endblock %}

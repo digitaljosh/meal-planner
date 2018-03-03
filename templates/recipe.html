@@ -31,13 +31,12 @@
 {% endif %}
 
 
-<!-- {# <h3>{{ recipe.ingredients }}</h3> #}-->
+
 {% for ingredient in ingredients %}
 <ul>
-    <!-- {# {% if ingredient not in [',', '.'] %} #} -->
-    <!-- TODO find way to ignore standalone comas -->
+    
     <li>{{ ingredient }}</li>
-    <!--{#  {% endif %}  #}-->
+  
 </ul>
 {% endfor %}
 <p>INSTRUCTIONS</p>

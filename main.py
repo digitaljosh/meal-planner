@@ -14,15 +14,16 @@ import recipe_search_list, recipe_info
 from app import app, db
 from models import User, Event, Recipe
 from hashy import check_pw_hash
-from data_functs import clean_ingreds, getUserByName, getUsersEvents, write_events, make_users_events_current, get_meals_for_the_week, get_today_string, get_week_from_string
+
+from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
+                        make_users_events_current, get_meals_for_the_week, get_today_string,
+                        get_week_from_string, get_nouns)
 
 
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
 all_users = User.query.all()
-today_string = "{date:%Y-%m-%d}".format(date=datetime.datetime.now())
-week_from_date = datetime.datetime.now() + datetime.timedelta(days=7)
-week_from = "{date:%Y-%m-%d}".format(date=week_from_date)
+
 '''
 might make another column for user; public(bool)
 
@@ -134,13 +135,8 @@ def cal_display():
     if request.method == 'GET':
         # simply displays events in current state
         events = getUsersEvents(user.username)
-
         # strips events of those that have passed
         current_events = make_users_events_current(user.username)
-        print("!!!!!!!!!!!!!!!!!!!!!!!!")
-        for each in current_events:
-            print(each.date)
-        print("!!!!!!!!!!!!!!!!!!!!!!!")
         write_events(current_events)
         return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username), other_users=all_users)
     else:
@@ -222,12 +218,6 @@ def recipe_instructions():
 
     json_data = requests.get(url, headers=headers).json()
 
-
-    print("######################")
-    print(type(json_data))
-    #print(json_data)
-    print("Dish Name: ")
-    
     try:
         stop_index = json_data['title'].index('-')
         print("INDEX" + str(stop_index))
@@ -238,17 +228,6 @@ def recipe_instructions():
         print(dish_name + "- not the char used in json_data")
 
     recipe_name = dish_name
-    print("######################")
-    
-    # Just for us devs to see what/where data lies in dict 
-    pp = pprint.PrettyPrinter(indent=4)
-    print("===================")
-    ingreds = json_data['extendedIngredients']
-    print(pp.pprint(ingreds))
-    print(ingreds[4]['originalString'])
-    print(len(ingreds))
-    print("*******************")
-    print("AND the ingredients are: ")
     recipe_ingredients = []
     for i in range(0, len(ingreds)):
         recipe_ingredients.append(ingreds[i]['originalString'])
@@ -267,24 +246,8 @@ def recipe_instructions():
 
     recipe_time =  int(json_data['readyInMinutes'])
    
-# AND now instantiate recipe => TODO pickle ingredients, instructions ?
-    #new_recipe = Recipe(recipe_name, recipe_ingredients, recipe_instructs, recipe_time, cookbook_id=None)
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    print("Recipe name type: ")
-    print(type(recipe_name))
-    print("Recipe ingreds type: ")
-    print(type(recipe_ingredients))
-    print("Recipe instructions type: ")
-    print(type(recipe_instructs))
-    print("Recipe time type: ")
-    print(type(recipe_time))
-
     # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
-    # instructions, having problems comparing ingredients
-    same_recipe = Recipe.query.filter_by(
-        name=recipe_name,
-        #ingredients=recipe_ingredients,
-        instructions=recipe_instructs).first()
+    same_recipe = Recipe.query.filter_by(name=recipe_name, instructions=recipe_instructs).first()
    
     if same_recipe:
         #already in db, just display that one
@@ -313,6 +276,7 @@ def recipe_instructions():
 # save recipe route
 @app.route("/recipe-added", methods=['POST'])
 def save_recipe():
+    
     name = request.form['name']
     time = request.form['time']
     ingredients = request.form['ingredients']
@@ -328,6 +292,10 @@ def save_recipe():
 
     flash("Recipe saved!", 'positive')
     return render_template('search.html')
+    # TODO return user to calendar instead of search
+    # user = getUserByName(session['username'])
+    # events = getUsersEvents(session['username'])
+    # return render_template('full-calendar.html', user=user, events=events, other_users=all_users, calendar_shown=user_name)
 
 
 # display recipe instructions in modal
@@ -357,6 +325,7 @@ def display_recipe(recipe_name):
 
 @app.route("/recipe-index")
 def display_index():
+    ''' displays list of all the recipes for that user '''
     recipes = Recipe.query.all()
     return render_template('recipe-index.html', recipes=recipes)
 
@@ -365,11 +334,7 @@ def display_ingredients():
     '''diplays a list of ingredients for recipes of all events'''
     #TODO need to clean up display AND place constraints eg(only next two weeks, none from past events) 
     user = User.query.filter_by(username=session['username']).first()
-    #events = getUsersEvents(user.username)
-    #events = Event.query.filter_by(user_id=user.id).all() # could filter by date ?
-    #TODO look into structuring date column so we can filter by month or next week
     meals = []
-    
     events = get_meals_for_the_week(user.username)
     for event in events:
         meals.append(event.meal)
@@ -379,10 +344,16 @@ def display_ingredients():
     
     ingreds = []
     for recipe in recipes:
-        #TODO clean up ingredients below doesn't work BTW
         nice_ings = clean_ingreds(recipe)
+        # TODO use below to return list of ingredients without amounts or adectives
+        '''
+        staples = get_nouns(recipe.ingredients)
+        ingreds.append(staples)
+        '''
         ingreds.append(nice_ings) 
-        #ingreds.append(recipe.ingredients)
+    
+    
+
     return render_template('ingredients.html', username=user.username, ingredients=ingreds, start=get_today_string(), end=get_week_from_string())
 
 
