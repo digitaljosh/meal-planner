@@ -27,7 +27,7 @@ from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_eve
 '''
 might make another column for user; public(bool)
 
-
+'''
 
 @app.before_request
 def login_required():
