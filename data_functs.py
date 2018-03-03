@@ -3,7 +3,7 @@ import json
 import datetime
 import nltk
 
-from models import User, Event
+from models import User, Event, Cookbook, Recipe
 from app import db
 
 
@@ -33,6 +33,19 @@ def getUsersEvents(username):
     user = getUserByName(username)
     events = Event.query.filter_by(user_id=user.id).all()
     return events
+
+def getListUserRecipes(username):
+    user = getUserByName(username)
+    user_cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
+    #print("$$$$$$$$$$$$$$$$$$$$$$$$$$" + user_cookbook.recipes)
+    recipes_list = user_cookbook.recipes
+    for recipe in recipes_list:
+         print("$$$$$$$$$$$$$$$$$$$$$$$$$$$" + recipe.name)
+    # recipes = []
+    # for  recipe_id in recipes_ids:
+    #     recipes.append(Recipe.query.filter_by(id=recipe_id).first())
+    #return recipe_list
+    return user_cookbook.recipes
 
 
 def write_events(events):

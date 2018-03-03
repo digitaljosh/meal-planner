@@ -5,7 +5,6 @@ from hashy import make_pw_hash
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50))
-    #TODO hash password
     pw_hash = db.Column(db.String(100))
     email = db.Column(db.String(100))
     #calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
@@ -36,23 +35,25 @@ class Recipe(db.Model):
     ingredients = db.Column(db.Text)# maybe pickle to use a list ?
     instructions = db.Column(db.Text)# may also need to use pickled object, might be okay though
     time = db.Column(db.Integer) # time in minutes
-    #cookbook_id = db.Column(db.Integer, db.ForeignKey('cookbook.id'))
+    cookbook_id = db.Column(db.Integer, db.ForeignKey('cookbook.id'))
 
-    def __init__(self, name, ingredients, instructions, time):
+    def __init__(self, name, ingredients, instructions, time, cookbook_id):
         self.name = name
         self.ingredients = ingredients
         self.instructions = instructions
         self.time = time
-        #self.cookbook_id = cookbook_id
+        self.cookbook_id = cookbook_id
 
 
-# class Cookbook(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-#     recipes = db.relationship('Recipe', backref='cookbook')
+class Cookbook(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    recipes = db.relationship('Recipe', backref='cookbook')
 
-#     def __init__(self, owner_id):
-#         self.owner_id = owner_id
+    def __init__(self, owner_id):
+        self.owner_id = owner_id
+
+    
 
         
 

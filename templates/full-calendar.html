@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<!-- <!DOCTYPE html> -->
+
 <html>
 <head>
 <meta charset='utf-8' />
@@ -15,9 +15,9 @@
 <link href="{{ url_for('static', filename='fullcalendar.min.css') }}" rel='stylesheet' />
 <link href="{{ url_for('static', filename='fullcalendar-edit.print.css') }}" rel='stylesheet' media='print' />
 <script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
-<!--<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>-->
+
 <script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
-<script src="{{ url_for('static', filename='pop-up.js') }}"></script>
+
 
 <style>
 	body {
@@ -247,10 +247,10 @@
     </form>
 
     <form action="/ingredients" method="get">
-        <input type="submit" id="ingredients" value="Ingredients Needed"/>
+        <input type="submit" id="ingredients" value="Shopping List"/>
 	</form>
 	
-	<form action="/other-calendars" method="post">
+	<!-- <form action="/other-calendars" method="post">
 		<p>Would you like to view your friends calendars?</p>
 		<select name="other_cal_view">
 		{% for user in other_users %}
@@ -258,9 +258,9 @@
 		{% endfor %}
 			</select>
 		<input type="submit" id="other_cal" value="Let's see"/>
-	</form>
+	</form> -->
 
-	{% if not no_remove %}
+	<!--  {% if not no_remove %} -->
 	<form action="/remove-meal" method="post">
 	<!-- {#<form action="{{ url_for('delete_meal_event', event_id=event.id) }}" method="post"> #} -->
 		<p>Would you like to cancel your plans?</p>
@@ -271,7 +271,7 @@
 		</select>
 		<input type="submit" id="remove" value="REMOVE"/>
 	</form>
-	{% endif %}
+	<!-- {% endif %} -->
 
 
 	</body>
