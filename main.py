@@ -19,6 +19,8 @@ from data_functs import clean_ingreds, getUserByName, getUsersEvents, write_even
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
 
+
+
 @app.before_request
 def login_required():
     not_allowed_routes = ['cal_display',]
@@ -92,9 +94,10 @@ def login():
     if request.method == 'GET':
         try:
             if session['username']:
+                recipes = Recipe.query.all()
                 name = session['username']
                 flash("You're logged in!", 'positive')
-                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name))#username=session['username'])
+                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), recipes=recipes)#username=session['username'])
         except KeyError:
             return render_template('login.html')
     elif request.method == 'POST':
@@ -133,11 +136,17 @@ def cal_display():
             print(each.date)
         print("!!!!!!!!!!!!!!!!!!!!!!!")
         write_events(current_events)
-        return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username))
-    else:
+        recipes = Recipe.query.all()
+        return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username), recipes=recipes)
+    else: # 'POST'
         # displays calendar with updated changes
+        recipes = Recipe.query.all()
         date = request.form['date']
         dinner = request.form['meal']
+        print("#"*10 + "DATE & DINNER" + "#"*10)
+        print(date)
+        print(dinner)
+        print("#"*10)
         recipe = Recipe.query.filter_by(name=dinner).first()
         
         #TODO can't add event until Recipe created
@@ -147,16 +156,16 @@ def cal_display():
             db.session.commit()
         except sqlalchemy.exc.IntegrityError:
             flash("You don't have a recipe for that yet", 'negative')
-            return render_template('full-calendar.html', user=user)
+            return render_template('full-calendar.html', user=user, recipes=recipes)
         except AttributeError:
             flash("NO dinner date created. Enter both a date and a meal.", 'negative')
-            return render_template('full-calendar.html', user=user)
+            return render_template('full-calendar.html', user=user, recipes=recipes)
 
         # retrieve the events from updated db
         make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
         write_events(event_list)
-        return render_template('full-calendar.html', events=event_list, user=user)
+        return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
 
 #GET Search Recipes - spoonacular

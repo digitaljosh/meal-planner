@@ -62,6 +62,7 @@
 		});
 	</script>
 
+<!-- start recipe instructions modal -->
 	<div class="modal fade" id="getCodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
@@ -75,7 +76,7 @@
 			</div>
 		</div>
 	</div>
-
+<!-- end recipe instructions modal -->
 
 
 	<script>
@@ -91,6 +92,10 @@
 					recipe_name = {"recipe_name":recipe_name}
 					getRecipeId(recipe_name);
 					
+				},
+				dayClick: function(date, jsEvent, view) {
+					date = date.format()
+					addMeal(date)
 				},
 				defaultDate: '2018-02-12',
 				editable: true,
@@ -131,9 +136,72 @@
 			// var url = "localhost:5000/recipe/" + number;
 			// window.parent.location.href = url;
 		}
+
+
+		function addMeal(date) {
+			jQuery("#addMeal").modal("toggle");
+			jQuery("#addMealDate").val(date);
+		}
 		
 		
 	</script>
+
+
+
+
+<!-- on dayClick() access this modal to input desired meal for that calendar day -->
+
+	<div class="modal fade" id="addMeal" tabindex="-1" role="dialog" 
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<button type="button" class="close" 
+				data-dismiss="modal">
+					<span aria-hidden="true">&times;</span>
+					<span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					Add Meal
+				</h4>
+			</div>
+			
+			<!-- Modal Body -->
+			<div class="modal-body">
+				
+				<form class="form-horizontal" action="/full-calendar" method="post" role="form">
+					<div class="form-group">
+						<label class="col-sm-2 control-label"
+								for="inputEmail3">Meal
+						</label>
+						<div class="col-sm-10">
+							<select name="meal">
+								{% for recipe in recipes %}
+									<option value="{{ recipe.name }}">{{ recipe.name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<input name="date" type="hidden" id="addMealDate" value="{{ date }}"/>
+					</div>
+					
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default">
+								Add Meal
+							</button>
+						</div>
+					</div>
+				</form> 
+			</div>
+		</div>
+	</div>
+	</div>
+
+<!-- end dayClick() modal -->
+
+
+
 
 
 
@@ -150,7 +218,7 @@
 
 
 
-		<!-- Button trigger modal -->
+<!-- Button trigger CREATE RECIPE modal -->
 	<button class="btn" data-toggle="modal" data-target="#createRecipeModal">
 		Create Recipe
 	</button>
@@ -220,25 +288,25 @@
 		</div>
 	</div>
 
-
+<!-- End CREATE RECIPE modal -->
 
 
 	
 	
 
 	<form method="POST">
-	
 	<!-- dinnerFunction() in pop-up.js -->
 	<div id="pop-up-confirm">
 			<button onclick="dinnerFunction()">test</button>
 	</div>
-
 	</form>
+
+
 	<form  action="/full-calendar" method="post" role="form">
 		<h2 class="dinner">Schedule a dinner: </h2>
-		<input type="text" name="date" class="form-control" placeholder="2018-02-24">
+		<!--<input type="text" name="date" class="form-control" placeholder="2018-02-24">
 		<input type="text" name="meal" class="form-control" placeholder="What's for dinner?">
-		<!-- <input type="password" name="password" class="form-control" placeholder="Password" required> -->
+		<input type="password" name="password" class="form-control" placeholder="Password" required> -->
 		<input type="submit" id="submit" value="Dinner!"/>
 		<!-- <button class="btn btn-lg btn-primary btn-block" type="button">When? </button> -->
     </form>
