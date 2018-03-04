@@ -107,10 +107,10 @@ def login():
     if request.method == 'GET':
         try:
             if session['username']:
-                recipes = Recipe.query.all()
+                #recipes = Recipe.query.all()
                 name = session['username']
                 flash("You're logged in!", 'positive')
-                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name))#, other_users=all_users)#, remove=True)
+                recipes = getListUserRecipes(name)
                 return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), recipes=recipes)#username=session['username'])
         except KeyError:
             return render_template('login.html')
@@ -148,11 +148,13 @@ def cal_display():
         # strips events of those that have passed
         current_events = make_users_events_current(user.username)
         write_events(current_events)
-        recipes = Recipe.query.all()
+        #recipes = Recipe.query.all()
+        recipes = getListUserRecipes(user.username)
         return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username), recipes=recipes)
     else: # 'POST'
         # displays calendar with updated changes
-        recipes = Recipe.query.all()
+        #recipes = Recipe.query.all()
+        recipes = getListUserRecipes(user.username)
         date = request.form['date']
         dinner = request.form['meal']
         print("#"*10 + "DATE & DINNER" + "#"*10)
@@ -376,13 +378,15 @@ def display_ingredients():
     
     ingreds = []
     for recipe in recipes:
-        nice_ings = clean_ingreds(recipe)
+
+        ingreds.append(recipe.ingredients)
+        #nice_ings = clean_ingreds(recipe)
         # TODO use below to return list of ingredients without amounts or adjectives
         '''
         staples = get_nouns(recipe.ingredients)
         ingreds.append(staples)
         '''
-        ingreds.append(nice_ings) 
+       # ingreds.append(nice_ings) 
     
     
 
