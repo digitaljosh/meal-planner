@@ -299,17 +299,18 @@ def save_recipe():
     ingredients = request.form['ingredients']
     print(type(ingredients))
     # keeps format consistent for recipes manually entered
-    if type(ingredients) == str:
-        ingredients = ingredients.split()
-   
+    #TODO seems to be dropping the first entry
+    if type(ingredients) == str and '[' not in ingredients :
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Manual" + ingredients)
+        ingredients = ingredients.splitlines()
+    else:
+        print("############################## API CALLED")
+        
     instructions = request.form['instructions']
 
     user = getUserByName(session['username'])
     c_book = Cookbook.query.filter_by(owner_id=user.id).first()
-    #print(type(session['cookbook-id']))
-    print("###############################" + user.username)
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + str(c_book.id))
-    #print("#############################" + str(session['cookbook-id']))
+
 
     same_recipe = Recipe.query.filter_by(name=name, instructions=instructions).first()
     if same_recipe:
@@ -378,15 +379,17 @@ def display_ingredients():
     
     ingreds = []
     for recipe in recipes:
-
-        ingreds.append(recipe.ingredients)
-        #nice_ings = clean_ingreds(recipe)
+        print("%%%%%%%%%%%%%%%%%%" + recipe.ingredients)
+       #ingreds.append(recipe.ingredients)
+        
+        nice_ings = clean_ingreds(recipe)
         # TODO use below to return list of ingredients without amounts or adjectives
         '''
         staples = get_nouns(recipe.ingredients)
         ingreds.append(staples)
         '''
-       # ingreds.append(nice_ings) 
+        ingreds.append(nice_ings) 
+    print("#########################" + str(ingreds))
     
     
 
