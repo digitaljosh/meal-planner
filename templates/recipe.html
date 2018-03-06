@@ -16,6 +16,14 @@
     </form>
 {% endif %}
 
+<form action="{{ url_for('delete_recipe') }}" method="post">
+    <input type="hidden" name="name" value="{{ recipe.name }}"/>
+    
+    <input type="submit" class="btn" value="Remove from Cookbook"/>
+</form>
+
+
+
 <h1>{{ recipe.name }}</h1>
 <p>======================</p>
 {% if recipe.time <= 60 %}

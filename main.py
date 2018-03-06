@@ -150,7 +150,7 @@ def cal_display():
         write_events(current_events)
         #recipes = Recipe.query.all()
         recipes = getListUserRecipes(user.username)
-        return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username), recipes=recipes)
+        return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
     else: # 'POST'
         # displays calendar with updated changes
         #recipes = Recipe.query.all()
@@ -332,6 +332,23 @@ def save_recipe():
     # events = getUsersEvents(session['username'])
     # return render_template('full-calendar.html', user=user, events=events, other_users=all_users, calendar_shown=user_name)
 
+
+@app.route("/remove-recipe", methods=['POST'])
+def delete_recipe():
+    recipe_name = request.form["name"]
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + recipe_name)
+    #need to remove any event with that recipe first
+    events_to_go = Event.query.filter_by(meal=recipe_name).all()
+    for event in events_to_go:
+        Event.query.filter_by(id=event.id).delete()
+    
+
+    Recipe.query.filter_by(name=recipe_name).delete()
+    db.session.commit()
+
+    recipes = getListUserRecipes(session['username'])
+    return render_template('recipe-index.html', recipes=recipes, username=session['username'])
+    #return render_template("recipe_index.html")
 
 # display recipe instructions in modal
 @app.route("/modal-recipe", methods=['POST'])
