@@ -4,13 +4,11 @@ h2 {
     font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif
 }
 .body {
-    background-color: cornflowerblue;
     background-image: url(/static/images/splash-background.jpeg) ;
     background-position: center center;
     background-repeat:  no-repeat;
     background-attachment: fixed;
     background-size:  cover;
-    background-color: #999;
 }
 
 
@@ -40,16 +38,15 @@ h2 {
 .popup .popuptext {
     visibility: hidden;
     width: 240px;
-    background-color: rgba(104, 104, 104, 0.822);
+    background-color: rgba(75, 75, 75, 0.911);
     color: #fff;
     text-align: center;
-    border-radius: 6px;
+    border-radius: 12px;
     padding: 8px;
     position: absolute;
     z-index: 1;
     bottom: 125%;
     left: -40%;
-    border: 1px solid darkgray;
 }
 
 /* Popup arrow */
@@ -61,7 +58,7 @@ h2 {
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: darkgray transparent transparent transparent;
+    border-color: rgba(75, 75, 75, 0.911) transparent transparent transparent;
 }
 
 /* Toggle this class - hide and show the popup */
@@ -91,23 +88,22 @@ h2 {
   border: 0;
   outline: 0;
   text-align: center;
-  border: 2px solid #000;
-  border-radius: 2px;
+  background: #B86D52;
+  border: 2px solid black;
+  border-radius: 12px;
   font-family: 'Georgia';
   font-size: 22px;
   font-weight: 750;
-  color: #000;
+  color: #fff;
   transition: 300ms;
 }
 
 .about-button:hover {
-  color: #fff;
+  color: black;
   font-weight: 750;
 }
 
-#about-text {
-  padding-top: 5px;
-}
+
 /* End About Button Style */
 
 /* Begin Splash Buttons - except 'About' */
@@ -128,19 +124,19 @@ h2 {
     width: 150px;
     border: 0;
     outline: 0;
-    background-color: transparent;
-    border: 2px solid #000;
-    border-radius: 2px;
+    background: #B86D52;
+    border: 2px solid black;
+    border-radius: 12px;
     font-family: 'Georgia';
     font-size: 22px;
     font-weight: 750;
-    color: #000;
+    color: #fff;
     transition: 300ms;
     opacity: 1;
     }
 
 .button5:hover {
-    color: #fff;
+    color: #000;
     font-weight: 750;
     opacity: 1;
     }
@@ -148,7 +144,10 @@ h2 {
   /* End Splash Button */
 
   
-
+#login-button {
+    margin-left: 18%;
+    transform: translateX(-18%);
+}
 
 
   
