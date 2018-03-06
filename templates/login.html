@@ -10,29 +10,30 @@
 
 <div class="container">
 
-    <h1>Login</h1>
-    <p>If you don't have an account please <a href="/sign-up">sign up</a></p>
-    <p>Start planning your meals today!</p>
-
-    <form action="/login" method="post" class="form-horizontal" name="login">
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="email">Username:</label>
-            <div class="col-sm-10">
-                <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
-            </div>
+    <div class="form-wrap">
+        <div class="form-inner">
+            <p id="login-title">Login</p>
+        
+            <form action="/login" method="post" class="form-horizontal" name="login">
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="email" placeholder="Enter username" name="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-10">          
+                        <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd">
+                    </div>
+                </div>
+                <div class="form-group">        
+                    <div class="login-button">
+                        <button type="submit" class="btn btn-default">Submit</button>
+                        <span id="signup-link">No account? Signup <a href="/sign-up">here</a></span>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="pwd">Password:</label>
-            <div class="col-sm-10">          
-                <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd">
-            </div>
-        </div>
-        <div class="form-group">        
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Submit</button>
-            </div>
-        </div>
-    </form> 
+    </div> 
 
 </div>  
 {% endblock %}
