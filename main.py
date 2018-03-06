@@ -3,7 +3,8 @@ from flask import render_template, redirect, request,json, session, jsonify, fla
 import requests
 import json
 import pprint 
-from datetime import date
+import datetime
+#from datetime import date, timedelta, datetime
 import calendar
 import re 
 import sqlalchemy
@@ -11,13 +12,22 @@ import sqlalchemy
 
 import recipe_search_list, recipe_info
 from app import app, db
-from models import User, Event, Recipe
+from models import User, Event, Recipe, Cookbook
 from hashy import check_pw_hash
-from data_functs import clean_ingreds, getUserByName, getUsersEvents, write_events, make_users_events_current
+
+from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
+                        make_users_events_current, get_meals_for_the_week, get_today_string,
+                        get_week_from_string, get_nouns, getListUserRecipes)
 
 
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
+#all_user = User.query.all()
+
+'''
+might make another column for user; public(bool)
+
+'''
 
 @app.before_request
 def login_required():
@@ -71,13 +81,18 @@ def signup():
         else:
             # everything entered correctly we instantiate 
             new_user = User(name, p_word, email)
+           
             # and commit to database
             db.session.add(new_user)
             db.session.commit()
-           
+            # now create a cookbook for that user
+            print("$$$$$$$$$$$$$$$$$$$$$$$$$$" + str(new_user.id))
+            new_cookbook = Cookbook(owner_id=new_user.id)
+            db.session.add(new_cookbook)
+            db.session.commit()
             # set current session
             session['username'] = new_user.username
-            
+            session['cookbook-id'] = new_cookbook.id
             #since new user no events yet
             #TODO this is where we may add a dinner buddy's events by name or id
             events = []
@@ -92,11 +107,16 @@ def login():
     if request.method == 'GET':
         try:
             if session['username']:
+                #recipes = Recipe.query.all()
                 name = session['username']
                 flash("You're logged in!", 'positive')
-                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name))#username=session['username'])
+                recipes = getListUserRecipes(name)
+                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), recipes=recipes)#username=session['username'])
         except KeyError:
             return render_template('login.html')
+        except AttributeError: # no one in db yet NoneType
+            flash("This is your first rodeo", 'negative')
+            return render_template('sign-up.html')
     elif request.method == 'POST':
         tried_name = request.form['username']
         tried_pw = request.form['password']
@@ -125,19 +145,22 @@ def cal_display():
     if request.method == 'GET':
         # simply displays events in current state
         events = getUsersEvents(user.username)
-
         # strips events of those that have passed
         current_events = make_users_events_current(user.username)
-        print("!!!!!!!!!!!!!!!!!!!!!!!!")
-        for each in current_events:
-            print(each.date)
-        print("!!!!!!!!!!!!!!!!!!!!!!!")
         write_events(current_events)
-        return render_template('full-calendar.html', user=user, events=getUsersEvents(user.username))
-    else:
+        #recipes = Recipe.query.all()
+        recipes = getListUserRecipes(user.username)
+        return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
+    else: # 'POST'
         # displays calendar with updated changes
+        #recipes = Recipe.query.all()
+        recipes = getListUserRecipes(user.username)
         date = request.form['date']
         dinner = request.form['meal']
+        print("#"*10 + "DATE & DINNER" + "#"*10)
+        print(date)
+        print(dinner)
+        print("#"*10)
         recipe = Recipe.query.filter_by(name=dinner).first()
         
         #TODO can't add event until Recipe created
@@ -147,16 +170,16 @@ def cal_display():
             db.session.commit()
         except sqlalchemy.exc.IntegrityError:
             flash("You don't have a recipe for that yet", 'negative')
-            return render_template('full-calendar.html', user=user)
+            return render_template('full-calendar.html', user=user, recipes=recipes)
         except AttributeError:
             flash("NO dinner date created. Enter both a date and a meal.", 'negative')
-            return render_template('full-calendar.html', user=user)
+            return render_template('full-calendar.html', user=user, recipes=recipes)
 
         # retrieve the events from updated db
         make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
         write_events(event_list)
-        return render_template('full-calendar.html', events=event_list, user=user)
+        return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
 
 #GET Search Recipes - spoonacular
@@ -213,12 +236,6 @@ def recipe_instructions():
 
     json_data = requests.get(url, headers=headers).json()
 
-
-    print("######################")
-    print(type(json_data))
-    #print(json_data)
-    print("Dish Name: ")
-    
     try:
         stop_index = json_data['title'].index('-')
         print("INDEX" + str(stop_index))
@@ -228,58 +245,25 @@ def recipe_instructions():
         dish_name = json_data['title']
         print(dish_name + "- not the char used in json_data")
 
-    recipe_name = dish_name
-    print("######################")
-    
-    # Just for us devs to see what/where data lies in dict 
-    pp = pprint.PrettyPrinter(indent=4)
-    print("===================")
     ingreds = json_data['extendedIngredients']
-    print(pp.pprint(ingreds))
-    print(ingreds[4]['originalString'])
-    print(len(ingreds))
-    print("*******************")
-    print("AND the ingredients are: ")
+   
+    recipe_name = dish_name
     recipe_ingredients = []
     for i in range(0, len(ingreds)):
         recipe_ingredients.append(ingreds[i]['originalString'])
         print(ingreds[i]['originalString'])
 
-    print("*********************")
-    
-    print("Instructions ARE: ")
-    print(pp.pprint(json_data['instructions']))
 
     recipe_instructs = json_data['instructions']
 
-    print("*******************")
-    print("Time to cook: ")
-    print(pp.pprint(json_data['readyInMinutes']))
-
     recipe_time =  int(json_data['readyInMinutes'])
    
-# AND now instantiate recipe => TODO pickle ingredients, instructions ?
-    #new_recipe = Recipe(recipe_name, recipe_ingredients, recipe_instructs, recipe_time, cookbook_id=None)
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    print("Recipe name type: ")
-    print(type(recipe_name))
-    print("Recipe ingreds type: ")
-    print(type(recipe_ingredients))
-    print("Recipe instructions type: ")
-    print(type(recipe_instructs))
-    print("Recipe time type: ")
-    print(type(recipe_time))
-
     # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
-    # instructions, having problems comparing ingredients
-    same_recipe = Recipe.query.filter_by(
-        name=recipe_name,
-        #ingredients=recipe_ingredients,
-        instructions=recipe_instructs).first()
+    same_recipe = Recipe.query.filter_by(name=recipe_name, instructions=recipe_instructs).first()
    
     if same_recipe:
         #already in db, just display that one
-        flash("Already have that one on file.", 'positive')
+        # flash("Already have that one on file.", 'positive')
         return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
 
     # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
@@ -289,7 +273,12 @@ def recipe_instructions():
 
     else:
         # add to db if not there
-        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time)
+        #number = session['cookbook-id']
+        user = User.query.filter_by(username=session['username']).first()
+        cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
+        print("####################" + str(cookbook.id))
+        
+        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
         new = True
         #db.session.add(new_recipe)
         #db.session.commit()        
@@ -304,18 +293,62 @@ def recipe_instructions():
 # save recipe route
 @app.route("/recipe-added", methods=['POST'])
 def save_recipe():
+    
     name = request.form['name']
     time = request.form['time']
     ingredients = request.form['ingredients']
+    print(type(ingredients))
+    # keeps format consistent for recipes manually entered
+    #TODO seems to be dropping the first entry
+    if type(ingredients) == str and '[' not in ingredients :
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Manual" + ingredients)
+        ingredients = ingredients.splitlines()
+    else:
+        print("############################## API CALLED")
+        
     instructions = request.form['instructions']
 
-    new_recipe = Recipe(name, str(ingredients), instructions, time)
+    user = getUserByName(session['username'])
+    c_book = Cookbook.query.filter_by(owner_id=user.id).first()
+
+
+    same_recipe = Recipe.query.filter_by(name=name, instructions=instructions).first()
+    if same_recipe:
+        new_recipe = Recipe(same_recipe.name, same_recipe.ingredients, same_recipe.instructions, c_book.id)
+        # makes a new Recipe with same stuff for this users cookbook    
+        db.session.add(new_recipe)
+        db.session.commit()
+
+        flash("Recipe saved!", 'positive')
+        return render_template('search.html')
+    new_recipe = Recipe(name, str(ingredients), instructions, time, c_book.id)
     db.session.add(new_recipe)
     db.session.commit()
 
     flash("Recipe saved!", 'positive')
     return render_template('search.html')
+    # TODO return user to calendar instead of search
+    # user = getUserByName(session['username'])
+    # events = getUsersEvents(session['username'])
+    # return render_template('full-calendar.html', user=user, events=events, other_users=all_users, calendar_shown=user_name)
 
+
+@app.route("/remove-recipe", methods=['POST'])
+def delete_recipe():
+    recipe_name = request.form["name"]
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + recipe_name)
+    #need to remove any event with that recipe first
+    events_to_go = Event.query.filter_by(meal=recipe_name).all()
+    for event in events_to_go:
+        Event.query.filter_by(id=event.id).delete()
+    
+
+    Recipe.query.filter_by(name=recipe_name).delete()
+    db.session.commit()
+
+    recipes = getListUserRecipes(session['username'])
+    return render_template('recipe-index.html', recipes=recipes, username=session['username'])
+    #return render_template("recipe_index.html")
 
 # display recipe instructions in modal
 @app.route("/modal-recipe", methods=['POST'])
@@ -344,18 +377,17 @@ def display_recipe(recipe_name):
 
 @app.route("/recipe-index")
 def display_index():
-    recipes = Recipe.query.all()
-    return render_template('recipe-index.html', recipes=recipes)
+    ''' displays list of all the recipes for that user '''
+    recipes = getListUserRecipes(session['username'])
+    return render_template('recipe-index.html', recipes=recipes, username=session['username'])
 
 @app.route("/ingredients")
 def display_ingredients():
     '''diplays a list of ingredients for recipes of all events'''
     #TODO need to clean up display AND place constraints eg(only next two weeks, none from past events) 
     user = User.query.filter_by(username=session['username']).first()
-    events = getUsersEvents(user.username)
-    #events = Event.query.filter_by(user_id=user.id).all() # could filter by date ?
-    #TODO look into structuring date column so we can filter by month or next week
     meals = []
+    events = get_meals_for_the_week(user.username)
     for event in events:
         meals.append(event.meal)
     recipes = []
@@ -364,11 +396,21 @@ def display_ingredients():
     
     ingreds = []
     for recipe in recipes:
-        #TODO clean up ingredients below doesn't work BTW
-        # nice_ings = clean_ingreds(recipe)
-        # ingreds.append(nice_ings) 
-        ingreds.append(recipe.ingredients)
-    return render_template('ingredients.html', ingredients=ingreds)
+        print("%%%%%%%%%%%%%%%%%%" + recipe.ingredients)
+       #ingreds.append(recipe.ingredients)
+        
+        nice_ings = clean_ingreds(recipe)
+        # TODO use below to return list of ingredients without amounts or adjectives
+        '''
+        staples = get_nouns(recipe.ingredients)
+        ingreds.append(staples)
+        '''
+        ingreds.append(nice_ings) 
+    print("#########################" + str(ingreds))
+    
+    
+
+    return render_template('ingredients.html', username=user.username, ingredients=ingreds, start=get_today_string(), end=get_week_from_string())
 
 
 @app.route('/remove-meal', methods=['POST'])
@@ -387,8 +429,18 @@ def delete_meal_event():
     
     events = getUsersEvents(user.username)
     write_events(events)
-    return render_template('full-calendar.html', user=user, events=events)
+    recipes = Recipe.query.all()
+    return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
+# @app.route('/other-calendars', methods=['POST'])
+# def view_other_calendars():
+#     ''' populates events.json with someones elses events by name'''
+    
+#     user = User.query.filter_by(username=session['username']).first()
+#     user_name = request.form['other_cal_view']
+#     other_events = getUsersEvents(user_name)
+#     write_events(other_events)
+#     return render_template('full-calendar.html', user=user, events=other_events, other_users=all_users, calendar_shown=user_name, no_remove=True)
 
 
 @app.route('/logout')

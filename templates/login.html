@@ -5,7 +5,7 @@
 <h1>Log on in!</h1>
 <p>If you don't have an account, you may <a href="/sign-up">sign on up</a> for one, it's free and it shows!</p>
 <p>Start planning your meals today!</p>
-<form action="/login" method="post">
+<!-- <form action="/login" method="post">
     <table>
         <tr>
             <td><label for="username">Username</label></td>
@@ -21,6 +21,20 @@
         </tr>
     </table>
     <input type="submit" value="Login">
-</form>
-
+</form> -->
+<div class="container">
+    <form action="/login" method="post" name="login">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" name="username">
+        </div>
+    
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" class="form-control" name="password">
+        </div>
+        
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form> 
+    </div>  
 {% endblock %}

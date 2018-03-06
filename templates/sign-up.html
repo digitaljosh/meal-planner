@@ -3,9 +3,10 @@
 {% block content %}
 <h1>Set yourself up!</h1>
 
-    <form action="/sign-up" method="post" name="signup">
+    <!-- <form action="/sign-up" method="post" name="signup">
         <div><label>Username</label><input type="text" name="username" value="{{ username }}" required>
 
+            
             <div><label>E-Mail</label><input type="email" name="email" value="{{ email }}" required>
                 
             
@@ -14,6 +15,28 @@
         <div><label>Confirm Password</label><input type="password" name="conf_pass" required>
             
         
-        <input type="submit" value="well?" />
+        <input type="submit" value="well?" /> -->
+
+      <div class="container">
+        <form action="/sign-up" method="post" name="signup">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" name="username">
+            </div>
+            <div class="form-group">
+              <label for="email">Email address:</label>
+              <input type="email" class="form-control" name="email">
+            </div>
+            <div class="form-group">
+              <label for="passw">Password:</label>
+              <input type="password" class="form-control" name="passw">
+            </div>
+            <div class="form-group">
+                <label for="conf_pass">Confirm Password:</label>
+                <input type="password" class="form-control" name="conf_pass">
+              </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form> 
+        </div>  
 {% endblock %}
 

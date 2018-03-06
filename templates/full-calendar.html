@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<!-- <!DOCTYPE html> -->
+
 <html>
 <head>
 <meta charset='utf-8' />
@@ -15,9 +15,9 @@
 <link href="{{ url_for('static', filename='fullcalendar.min.css') }}" rel='stylesheet' />
 <link href="{{ url_for('static', filename='fullcalendar-edit.print.css') }}" rel='stylesheet' media='print' />
 <script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
-<!--<script src="{{ url_for('static', filename='lib/jquery.min.js') }}"></script>-->
+
 <script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
-<script src="{{ url_for('static', filename='pop-up.js') }}"></script>
+
 
 <style>
 	body {
@@ -48,9 +48,19 @@
 		margin: 40px auto;
 		padding: 0 10px;
 	}
+	h1 {
+		text-align: center;
+		color: yellowgreen;
+	}
 </style>
 </head>
 <body>
+
+	{% if calendar_shown %}
+		<h1>{{ calendar_shown }}'s calendar.</h1>
+	{% else %}
+		<h1>{{ user.username }}'s calendar.</h1>
+	{% endif %}
 
 	<div id='calendar'></div>
 
@@ -62,6 +72,7 @@
 		});
 	</script>
 
+<!-- start recipe instructions modal -->
 	<div class="modal fade" id="getCodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
@@ -75,7 +86,7 @@
 			</div>
 		</div>
 	</div>
-
+<!-- end recipe instructions modal -->
 
 
 	<script>
@@ -92,9 +103,14 @@
 					getRecipeId(recipe_name);
 					
 				},
-				defaultDate: '2018-02-12',
+				dayClick: function(date, jsEvent, view) {
+					date = date.format()
+					addMeal(date)
+				},
+				defaultDate: '2018-03-12',
 				editable: true,
-				eventLimit: true, // allow "more" link when too many events
+				eventLimit: true,
+				eventStartEditable: false,
 				events: {
 					
 					url: 'data',
@@ -110,8 +126,6 @@
 	
 	
 		function getRecipeId(recipe_name) {
-			alert(recipe_name)
-			
 			console.log(recipe_name)
 			$.ajax({
 				url: '/modal-recipe',
@@ -119,21 +133,78 @@
 				// contentType: application/json,
 				type: 'POST',
 				success: function(response){
-					console.log(response);
+					//console.log(response);
 					jQuery("#getCodeModal").modal("toggle");
 					jQuery("#getCode").html(response);
-					console.log(response, "ok get the data!!!!!");
+					//console.log(response, "ok get the data!!!!!");
 				},
 				error: function(error){
 					console.log(error);
 				}
 			});
-			// var url = "localhost:5000/recipe/" + number;
-			// window.parent.location.href = url;
+		}
+
+		function addMeal(date) {
+			jQuery("#addMeal").modal("toggle");
+			jQuery("#addMealDate").val(date);
 		}
 		
-		
 	</script>
+
+
+
+
+<!-- start ADD MEAL modal -->
+	<div class="modal fade" id="addMeal" tabindex="-1" role="dialog" 
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<button type="button" class="close" 
+				data-dismiss="modal">
+					<span aria-hidden="true">&times;</span>
+					<span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					Add Meal
+				</h4>
+			</div>
+			
+			<!-- Modal Body -->
+			<div class="modal-body">
+				
+				<form class="form-horizontal" action="/full-calendar" method="post" role="form">
+					<div class="form-group">
+						<label class="col-sm-2 control-label"
+								for="inputEmail3">Meal
+						</label>
+						<div class="col-sm-10">
+							<select name="meal">
+								{% for recipe in recipes %}
+									<option value="{{ recipe.name }}">{{ recipe.name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<input name="date" type="hidden" id="addMealDate" value="{{ date }}"/>
+					</div>
+					
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default">
+								Add Meal
+							</button>
+						</div>
+					</div>
+				</form> 
+			</div>
+		</div>
+	</div>
+	</div>
+<!-- end ADD MEAL modal -->
+
+
+
 
 
 
@@ -144,13 +215,9 @@
 	
 	<div id='loading'>loading...</div>
 
-	
-	
 
 
-
-
-		<!-- Button trigger modal -->
+<!-- start CREATE RECIPE modal -->
 	<button class="btn" data-toggle="modal" data-target="#createRecipeModal">
 		Create Recipe
 	</button>
@@ -160,6 +227,7 @@
 		aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
+
 				<!-- Modal Header -->
 				<div class="modal-header">
 					<button type="button" class="close" 
@@ -220,44 +288,23 @@
 		</div>
 	</div>
 
-
-
-
+	<div>
+		<div class="all-buttons">
+		  <div class="button-wrapper">
+			<a href="/recipe-index"><input class="button5" type="button" name="button5" value="CookBook"/></a>
+		  </div>
+		  <div class="button-wrapper">
+			<a href="/search"><input class="button5" type="button" name="button5" value="Recipe Search"/></a>
+		  </div>
+		  <div class="button-wrapper">
+			<a href="/ingredients"><input class="button5" type="button" name="button5" value="Shopping List"/></a>
+		  </div>
+		 
+		</div>
 	
 	
-
-	<form method="POST">
-	
-	<!-- dinnerFunction() in pop-up.js -->
-	<div id="pop-up-confirm">
-			<button onclick="dinnerFunction()">test</button>
-	</div>
-
-	</form>
-	<form  action="/full-calendar" method="post" role="form">
-		<h2 class="dinner">Schedule a dinner: </h2>
-		<input type="text" name="date" class="form-control" placeholder="2018-02-24">
-		<input type="text" name="meal" class="form-control" placeholder="What's for dinner?">
-		<!-- <input type="password" name="password" class="form-control" placeholder="Password" required> -->
-		<input type="submit" id="submit" value="Dinner!"/>
-		<!-- <button class="btn btn-lg btn-primary btn-block" type="button">When? </button> -->
-    </form>
-    
-    <form action="/recipe-index" method="get">
-    <input type="submit" id="recipe-index" value="Recipes"/>
-    </form>
-
-    <form action="/search" method="get">
-    <input type="submit" id="search" value="Search"/>
-    </form>
-
-    <form action="/ingredients" method="get">
-        <input type="submit" id="ingredients" value="Ingredients Needed"/>
-	</form>
-	
-
+<!-- start REMOVE MEAL form -->
 	<form action="/remove-meal" method="post">
-	<!-- {#<form action="{{ url_for('delete_meal_event', event_id=event.id) }}" method="post"> #} -->
 		<p>Would you like to cancel your plans?</p>
 		<select name="dinner_to_remove">
 			{% for event in events %}
@@ -266,47 +313,11 @@
 		</select>
 		<input type="submit" id="remove" value="REMOVE"/>
 	</form>
+<!-- end REMOVE MEAL form -->
 
 
-	<!-- <form method="POST">
-		<div id="pop-up-confirm">
-			 When is dinner?<br><input type="text" name="myInputs[]">
-		</div>
-		<input type="button" value="What's for dinner?" onClick="addInput('pop-up-confirm');">
-	</form> -->
 
 	</body>
-	<!-- </html> -->
-
-	<!-- grid events @ fullcalendar.css #500-575 -->
-
-	<!-- IN EACH DATE BLOCK SOMETHING LIKE THE FOLLOWING?
-
-		AJAX onreadystate change => click event triggered, [ getResponseHeader(param) (?), where param is date]
-		POST and/or GET Requests
-		request.onreadystatechange = day_space
-
 	
-	function day_space(space, date) {
-		if (space == '') {
-			var dinner = prompt("What's for dinner", "search");
-			return recipe_search(dinner);
-		}
-		else {
-			return pop_up_menu(space);
-		}
-	}
-
-	function pop_up_menu(recipe) {
-		var menu = prompt(radio-button form)
-	}	-->
-
-    
-
-
-
-
-
-
 
 {% endblock %}

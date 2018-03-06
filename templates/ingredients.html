@@ -2,15 +2,15 @@
 
 {% block content %}
 
+<h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
 
 <ul>
-        {% for ingredient in ingredients %}
-        <!-- |sort(attribute='name') %} add a sort function ? -->
-            <li>{{ ingredient }}</li>
-            <!-- add a link to store where you can buy ? -->
-        {% endfor %}
+    {% for ingredient_list in ingredients %}
+    {% for ingredient in ingredient_list %}
+    <li>{{ ingredient }}</li>
+    {% endfor %}
+    {% endfor %}
+</ul>
+
     
-    </ul>
-
-
 {% endblock %}
