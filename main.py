@@ -9,6 +9,7 @@ import calendar
 import re 
 import sqlalchemy
 #from sqlalchemy import IntegrityError
+from collections import Counter
 
 import recipe_search_list, recipe_info
 from app import app, db
@@ -17,7 +18,7 @@ from hashy import check_pw_hash
 
 from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
                         make_users_events_current, get_meals_for_the_week, get_today_string,
-                        get_week_from_string, get_nouns, getListUserRecipes)
+                        get_week_from_string, get_nouns, getListUserRecipes, multiply_amts)
 
 
 
@@ -386,19 +387,26 @@ def display_ingredients():
     '''diplays a list of ingredients for recipes of all events'''
     #TODO need to clean up display AND place constraints eg(only next two weeks, none from past events) 
     user = User.query.filter_by(username=session['username']).first()
+    ingred_counter_dict = {}
     meals = []
     events = get_meals_for_the_week(user.username)
     for event in events:
+        # if not event.meal in ingred_counter_dict:
+        #     ingred_counter_dict[event.meal] = 1
+        # else:
+        #     ingred_counter_dict[event.meal] += 1
         meals.append(event.meal)
+    print("!!!!!!!!!!!!!!!!!!!!!" + str(ingred_counter_dict))
     recipes = []
     for meal in meals:
+        #print("$$$$$" + meal + ":" + str(ingred_counter_dict[meal]))
         recipes.append(Recipe.query.filter_by(name=meal).first())
     
     ingreds = []
     for recipe in recipes:
-        print("%%%%%%%%%%%%%%%%%%" + recipe.ingredients)
+       # print("%%%%%%%%%%%%%%%%%%" + recipe.ingredients)
        #ingreds.append(recipe.ingredients)
-        
+        #print("$$$$$" + meal + ":" + str(ingred_counter_dict[recipe.name]))
         nice_ings = clean_ingreds(recipe)
         # TODO use below to return list of ingredients without amounts or adjectives
         '''
@@ -406,11 +414,37 @@ def display_ingredients():
         ingreds.append(staples)
         '''
         ingreds.append(nice_ings) 
-    print("#########################" + str(ingreds))
+    for item in ingreds:
+        item_count_key = str(item)
+        if not item_count_key in ingred_counter_dict:
+            ingred_counter_dict[item_count_key] = 1
+        else:
+            ingred_counter_dict[item_count_key] += 1
+
+    counted_ingreds = []
+    for item in ingreds:
+        print("**" + str(ingred_counter_dict[str(item)]))
+        for x in item:
+            new_item = multiply_amts(x, ingred_counter_dict[str(item)])
+        #new_item = multiply_amts(item, ingred_counter_dict[str(item)])
+        #print("+++++++++++++++++++++++++++++" + str(ingred_counter_dict))
+            print("^^" + str(new_item))
+            counted_ingreds.append(new_item)
+        #print(ingred_counter_dict[item])
+    print(str(counted_ingreds))
+    # since lists not hashable must convert to tuples
+    no_dupes = set(tuple(thing) for thing in counted_ingreds)
+    counted_ingredients = list(no_dupes)
+    for item in counted_ingredients:
+        ",".join(item)
+    print("%%%%%%%%%%%%%%%%%%%" + str(counted_ingredients))
+
+    #print("#########################" + str(counted_ingredients))
+    
     
     
 
-    return render_template('ingredients.html', username=user.username, ingredients=ingreds, start=get_today_string(), end=get_week_from_string())
+    return render_template('ingredients.html', username=user.username, ingredients=counted_ingredients, start=get_today_string(), end=get_week_from_string())
 
 
 @app.route('/remove-meal', methods=['POST'])
