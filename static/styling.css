@@ -180,6 +180,19 @@ h2 {
       margin-left: 38%;
   }
 
+  /*  dropdown options button  
+
+  .dropdown-menu > li > a:hover {
+    background-color: #000;
+} */
+
+
+.dropdown-menu > li > a:hover {
+    background-color: rgb(175, 175, 175);
+} 
+
+
+
 
 
   

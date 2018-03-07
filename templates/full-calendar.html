@@ -17,6 +17,7 @@
 <script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
 
 <script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="/static/styling.css">
 
 
 <style>
@@ -50,8 +51,11 @@
 	}
 	h1 {
 		text-align: center;
-		color: yellowgreen;
+		color: #9acd32;
 	}
+
+	
+
 </style>
 </head>
 <body>
@@ -61,6 +65,26 @@
 	{% else %}
 		<h1>{{ user.username }}'s calendar.</h1>
 	{% endif %}
+
+	<div class="dropdown">
+		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options
+			<span class="caret"></span></button>
+		<ul class="dropdown-menu">
+			<li><a class="dropdown-item" href="#">Create Recipe</a></li>
+			<li><a class="dropdown-item" href="#">Recipe Search</a></li>
+			<li><a class="dropdown-item" href="#">Shopping List</a></li>
+			<div class="dropdown-divider"></div>
+			<li><a class="dropdown-item" href="#">My Cookbook</a></li>
+		</ul>
+	</div>
+
+
+
+
+
+
+	
+
 
 	<div id='calendar'></div>
 
