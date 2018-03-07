@@ -60,41 +60,86 @@
 </head>
 <body>
 
+	<!--
 	{% if calendar_shown %}
-		<h1>{{ calendar_shown }}'s calendar.</h1>
+		<h1>{{ calendar_shown }}'s calendar</h1>
 	{% else %}
-		<h1>{{ user.username }}'s calendar.</h1>
+		<h1>{{ user.username }}'s calendar</h1>
 	{% endif %}
+	-->
 
-	<div class="dropdown">
-		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options
-			<span class="caret"></span></button>
-		<ul class="dropdown-menu">
-			<li><a class="dropdown-item" href="#">Create Recipe</a></li>
-			<li><a class="dropdown-item" href="#">Recipe Search</a></li>
-			<li><a class="dropdown-item" href="#">Shopping List</a></li>
-			<div class="dropdown-divider"></div>
-			<li><a class="dropdown-item" href="#">My Cookbook</a></li>
-		</ul>
+	
+	<div style="display: inline-block; position: relative; margin-left: 12%;" id='calendar'></div>
+
+
+
+	<div style="max-width: 150px; display: inline-block; position: relative;">
+		<div class="dropdown">
+			<button type="button" class="button5 dropdown-toggle" data-toggle="dropdown">Options
+				<span class="caret"></span></button>
+			<ul class="dropdown-menu" style="text-align: center;">
+				<li><a class="dropdown-item" data-toggle="modal" data-target="#createRecipeModal" href="#">Create Recipe</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item" href="/search">Recipe Search</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item" href="/recipe-index">My Cookbook</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item" href="/ingredients">Shopping List</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item printBtn hidden-print" href="#">Print Calendar</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item" href="/logout">Logout</a></li>
+			</ul>
+		</div>
 	</div>
 
 
+	<!--  Old buttons.....
+
+	<button class="btn" data-toggle="modal" data-target="#createRecipeModal">
+		Create Recipe
+	</button>
+
+	<div>
+		<button class="printBtn hidden-print">Print</button>
+	</div>
+
+	<div>
+		<div class="all-buttons">
+		  <div class="button-wrapper">
+			<a href="/recipe-index"><input class="button5" type="button" name="button5" value="CookBook"/></a>
+		  </div>
+		  <div class="button-wrapper">
+			<a href="/search"><input class="button5" type="button" name="button5" value="Recipe Search"/></a>
+		  </div>
+		  <div class="button-wrapper">
+			<a href="/ingredients"><input class="button5" type="button" name="button5" value="Shopping List"/></a>
+		  </div>	 
+	</div>
 
 
+	REMOVE MEAL BUTTON
 
+	<form action="/remove-meal" method="post">
+		<p>Would you like to cancel your plans?</p>
+		<select name="dinner_to_remove">
+			{% for event in events %}
+			<option value="{{ event.id }}">{{ event.date }}</option>
+			{% endfor %}
+		</select>
+		<input type="submit" id="remove" value="REMOVE"/>
+	</form>
 
+	-->
 	
 
-
-	<div id='calendar'></div>
-
-	<button class="printBtn hidden-print">Print</button>
 
 	<script type="text/javascript">
 		$('.printBtn').on('click', function (){
 			window.print();
 		});
 	</script>
+
 
 <!-- start recipe instructions modal -->
 	<div class="modal fade" id="getCodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -111,6 +156,7 @@
 		</div>
 	</div>
 <!-- end recipe instructions modal -->
+
 
 
 	<script>
@@ -232,20 +278,15 @@
 
 
 
-	<h1>Hey {{ user.username }}</h1>
 	<div id='script-warning'>
 		Error getting data from <code>/data</code> endpoint.
 	</div>
 	
-	<div id='loading'>loading...</div>
 
 
 
 <!-- start CREATE RECIPE modal -->
-	<button class="btn" data-toggle="modal" data-target="#createRecipeModal">
-		Create Recipe
-	</button>
-
+	
 	<!-- Modal -->
 	<div class="modal fade" id="createRecipeModal" tabindex="-1" role="dialog" 
 		aria-labelledby="myModalLabel" aria-hidden="true">
@@ -312,36 +353,8 @@
 		</div>
 	</div>
 
-	<div>
-		<div class="all-buttons">
-		  <div class="button-wrapper">
-			<a href="/recipe-index"><input class="button5" type="button" name="button5" value="CookBook"/></a>
-		  </div>
-		  <div class="button-wrapper">
-			<a href="/search"><input class="button5" type="button" name="button5" value="Recipe Search"/></a>
-		  </div>
-		  <div class="button-wrapper">
-			<a href="/ingredients"><input class="button5" type="button" name="button5" value="Shopping List"/></a>
-		  </div>
-		 
-		</div>
 	
-	
-<!-- start REMOVE MEAL form -->
-	<form action="/remove-meal" method="post">
-		<p>Would you like to cancel your plans?</p>
-		<select name="dinner_to_remove">
-			{% for event in events %}
-			<option value="{{ event.id }}">{{ event.date }}</option>
-			{% endfor %}
-		</select>
-		<input type="submit" id="remove" value="REMOVE"/>
-	</form>
-<!-- end REMOVE MEAL form -->
-
-
-
-	</body>
+</body>
 	
 
 {% endblock %}

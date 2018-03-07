@@ -1,6 +1,5 @@
 h2 {
     text-align: center;
-    color: white;
     font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif
 }
 .body {
@@ -45,11 +44,11 @@ h2 {
     padding: 8px;
     position: absolute;
     z-index: 1;
-    bottom: 125%;
-    left: -35%;
+    bottom: -500%;
+    left: -30%;
 }
 
-/* Popup arrow */
+/* Popup arrow 
 .popup .popuptext::after {
     content: "";
     position: absolute;
@@ -59,7 +58,7 @@ h2 {
     border-width: 5px;
     border-style: solid;
     border-color: rgba(75, 75, 75, 0.911) transparent transparent transparent;
-}
+} */
 
 /* Toggle this class - hide and show the popup */
 .popup .show {
@@ -88,9 +87,8 @@ h2 {
   border: 0;
   outline: 0;
   text-align: center;
-  background: #B86D52;
+  background: rgba(253, 253, 253, 0.575);
   border: 2px solid black;
-  border-radius: 12px;
   font-family: 'Georgia';
   font-size: 22px;
   font-weight: 750;
@@ -99,7 +97,7 @@ h2 {
 }
 
 .about-button:hover {
-  color: #fff;
+  color: rgb(4, 23, 199);
   font-weight: 750;
 }
 
@@ -111,6 +109,7 @@ h2 {
 .all-buttons {
     width: 300px;
     margin: auto;
+    padding-top: 8%;
   }
 
 .button-wrapper {
@@ -124,9 +123,8 @@ h2 {
     width: 150px;
     border: 0;
     outline: 0;
-    background: #B86D52;
+    background: rgba(253, 253, 253, 0.575);
     border: 2px solid black;
-    border-radius: 12px;
     font-family: 'Georgia';
     font-size: 22px;
     font-weight: 750;
@@ -136,7 +134,7 @@ h2 {
     }
 
 .button5:hover {
-    color: #fff;
+    color: rgb(4, 23, 199);
     font-weight: 750;
     opacity: 1;
     }
@@ -144,7 +142,11 @@ h2 {
   /* End Splash Button */
 
   
-  /*  login form  */
+  /*  login and sign up form  */
+
+  #form-container {
+      margin-top: 8%;
+  }
 
   .form-wrap {
     width: 40%;
@@ -154,7 +156,7 @@ h2 {
   }
 
   .control-label {
-      color: #fff;
+      color: rgb(37, 37, 37);
   }
 
   .form-inner {
@@ -180,12 +182,11 @@ h2 {
       margin-left: 38%;
   }
 
-  /*  dropdown options button  
+  /*  dropdown button on calendar page  */
 
-  .dropdown-menu > li > a:hover {
-    background-color: #000;
-} */
-
+.dropdown {
+    margin-left: 50%;
+}
 
 .dropdown-menu > li > a:hover {
     background-color: rgb(175, 175, 175);
