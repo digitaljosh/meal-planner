@@ -1,16 +1,13 @@
 h2 {
     text-align: center;
-    color: white;
     font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif
 }
 .body {
-    background-color: cornflowerblue;
     background-image: url(/static/images/splash-background.jpeg) ;
     background-position: center center;
     background-repeat:  no-repeat;
     background-attachment: fixed;
     background-size:  cover;
-    background-color: #999;
 }
 
 
@@ -40,19 +37,18 @@ h2 {
 .popup .popuptext {
     visibility: hidden;
     width: 240px;
-    background-color: rgba(104, 104, 104, 0.822);
+    background-color: rgba(75, 75, 75, 0.952);
     color: #fff;
     text-align: center;
-    border-radius: 6px;
+    border-radius: 12px;
     padding: 8px;
     position: absolute;
     z-index: 1;
-    bottom: 125%;
-    left: -40%;
-    border: 1px solid darkgray;
+    bottom: -500%;
+    left: -30%;
 }
 
-/* Popup arrow */
+/* Popup arrow 
 .popup .popuptext::after {
     content: "";
     position: absolute;
@@ -61,8 +57,8 @@ h2 {
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: darkgray transparent transparent transparent;
-}
+    border-color: rgba(75, 75, 75, 0.911) transparent transparent transparent;
+} */
 
 /* Toggle this class - hide and show the popup */
 .popup .show {
@@ -91,8 +87,8 @@ h2 {
   border: 0;
   outline: 0;
   text-align: center;
-  border: 2px solid #000;
-  border-radius: 2px;
+  background: rgba(253, 253, 253, 0.575);
+  border: 2px solid black;
   font-family: 'Georgia';
   font-size: 22px;
   font-weight: 750;
@@ -101,13 +97,11 @@ h2 {
 }
 
 .about-button:hover {
-  color: #fff;
+  color: rgb(4, 23, 199);
   font-weight: 750;
 }
 
-#about-text {
-  padding-top: 5px;
-}
+
 /* End About Button Style */
 
 /* Begin Splash Buttons - except 'About' */
@@ -115,6 +109,7 @@ h2 {
 .all-buttons {
     width: 300px;
     margin: auto;
+    padding-top: 8%;
   }
 
 .button-wrapper {
@@ -128,9 +123,8 @@ h2 {
     width: 150px;
     border: 0;
     outline: 0;
-    background-color: transparent;
-    border: 2px solid #000;
-    border-radius: 2px;
+    background: rgba(253, 253, 253, 0.575);
+    border: 2px solid black;
     font-family: 'Georgia';
     font-size: 22px;
     font-weight: 750;
@@ -140,7 +134,7 @@ h2 {
     }
 
 .button5:hover {
-    color: #fff;
+    color: rgb(4, 23, 199);
     font-weight: 750;
     opacity: 1;
     }
@@ -148,6 +142,57 @@ h2 {
   /* End Splash Button */
 
   
+  /*  login and sign up form  */
+
+  #form-container {
+      margin-top: 8%;
+  }
+
+  .form-wrap {
+    width: 40%;
+    margin: 0 auto;
+    background-color: rgba(75, 75, 75, 0.788)
+
+  }
+
+  .control-label {
+      color: rgb(37, 37, 37);
+  }
+
+  .form-inner {
+      padding: 5%;
+  }
+
+  .form-control {
+      margin-left: 10%;
+  }
+
+  .login-button {
+      margin-left: 11%;
+  }
+
+  #signup-link {
+      margin-left: 20%;
+      color: #000;
+  }
+
+  #login-title {
+      color: #000;
+      font-size: 28px;
+      margin-left: 38%;
+  }
+
+  /*  dropdown button on calendar page  */
+
+.dropdown {
+    margin-left: 50%;
+}
+
+.dropdown-menu > li > a:hover {
+    background-color: rgb(175, 175, 175);
+} 
+
+
 
 
 

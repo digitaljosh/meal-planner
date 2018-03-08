@@ -1,40 +1,39 @@
 {% extends 'base.html' %}
-
+{% block head %}
+{{super()}}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+{% endblock %}
 
 {% block content %}
-<h1>Log on in!</h1>
-<p>If you don't have an account, you may <a href="/sign-up">sign on up</a> for one, it's free and it shows!</p>
-<p>Start planning your meals today!</p>
-<!-- <form action="/login" method="post">
-    <table>
-        <tr>
-            <td><label for="username">Username</label></td>
-            <td>
-                <input name="username" type="text" value="{{ name }}">
-            </td>
-        </tr>
-        <tr>
-            <td><label for="password">Password</label></td>
-            <td>
-                <input name="password" type="password">
-            </td>
-        </tr>
-    </table>
-    <input type="submit" value="Login">
-</form> -->
-<div class="container">
-    <form action="/login" method="post" name="login">
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" class="form-control" name="username">
-        </div>
-    
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" class="form-control" name="password">
-        </div>
+
+
+
+<div class="container" id="form-container">
+
+    <div class="form-wrap">
+        <div class="form-inner">
+            <p id="login-title">Login</p>
         
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form> 
-    </div>  
+            <form action="/login" method="post" class="form-horizontal" name="login">
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="username" placeholder="Username" name="username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-10">          
+                        <input type="password" class="form-control" id="pwd" placeholder="Password" name="password">
+                    </div>
+                </div>
+                <div class="form-group">        
+                    <div class="login-button">
+                        <button type="submit" class="btn btn-default">Submit</button>
+                        <span id="signup-link">No account? Sign up <a href="/sign-up">here</a></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div> 
+
+</div>  
 {% endblock %}
