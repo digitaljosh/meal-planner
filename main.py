@@ -435,6 +435,9 @@ def display_ingredients():
     for x in counted_ingreds:
         if x not in counted_ingredients:
             counted_ingredients.append(x)
+    
+
+
 
     return render_template('ingredients.html', username=user.username, ingredients=counted_ingredients, start=get_today_string(), end=get_week_from_string())
 
