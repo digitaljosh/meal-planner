@@ -23,8 +23,10 @@ def clean_ingreds(recipe):
             fresh_ingredients.append(ingred)
         return fresh_ingredients
 
-def good_display_ingredients(list_of_ingredients):
-    lists = list_of_ingredients.split(',')
+def good_display_ingredient(ingredient):
+    
+    ingredient.replace(",", "").replace("[", "").replace("'", "").replace("]", "")
+    return ingredient 
 
 
 def getUserByName(username):
@@ -194,5 +196,7 @@ def multiply_amts(list_of_ingredients, how_many_times_in_list):
                     split_list_of_ingredients[loc] = str(fr)
                 except ValueError:
                     pass
+        
 
     return split_list_of_ingredients
+

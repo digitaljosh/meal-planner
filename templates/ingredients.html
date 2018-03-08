@@ -5,11 +5,10 @@
 <h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
 
 <ul>
-    {% for ingredient_list in ingredients %}
-    {% for ingredient in ingredient_list %}
-    <li>{{ ingredient }}</li>
+    {% for ingredient in ingredients %}
+    <li>{{ ingredient|join(' ') }}</li>
     {% endfor %}
-    {% endfor %}
+   
 </ul>
 
     

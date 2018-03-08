@@ -18,7 +18,8 @@ from hashy import check_pw_hash
 
 from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
                         make_users_events_current, get_meals_for_the_week, get_today_string,
-                        get_week_from_string, get_nouns, getListUserRecipes, multiply_amts)
+                        get_week_from_string, get_nouns, getListUserRecipes, multiply_amts,
+                        good_display_ingredient)
 
 
 
@@ -404,9 +405,7 @@ def display_ingredients():
     
     ingreds = []
     for recipe in recipes:
-       # print("%%%%%%%%%%%%%%%%%%" + recipe.ingredients)
-       #ingreds.append(recipe.ingredients)
-        #print("$$$$$" + meal + ":" + str(ingred_counter_dict[recipe.name]))
+       
         nice_ings = clean_ingreds(recipe)
         # TODO use below to return list of ingredients without amounts or adjectives
         '''
@@ -415,6 +414,7 @@ def display_ingredients():
         '''
         ingreds.append(nice_ings) 
     for item in ingreds:
+        # we want to see how many times that list of ingredients occurs
         item_count_key = str(item)
         if not item_count_key in ingred_counter_dict:
             ingred_counter_dict[item_count_key] = 1
@@ -426,23 +426,15 @@ def display_ingredients():
         print("**" + str(ingred_counter_dict[str(item)]))
         for x in item:
             new_item = multiply_amts(x, ingred_counter_dict[str(item)])
-        #new_item = multiply_amts(item, ingred_counter_dict[str(item)])
-        #print("+++++++++++++++++++++++++++++" + str(ingred_counter_dict))
-            print("^^" + str(new_item))
+       
             counted_ingreds.append(new_item)
-        #print(ingred_counter_dict[item])
+       
     print(str(counted_ingreds))
-    # since lists not hashable must convert to tuples
-    no_dupes = set(tuple(thing) for thing in counted_ingreds)
-    counted_ingredients = list(no_dupes)
-    for item in counted_ingredients:
-        ",".join(item)
-    print("%%%%%%%%%%%%%%%%%%%" + str(counted_ingredients))
-
-    #print("#########################" + str(counted_ingredients))
     
-    
-    
+    counted_ingredients = []
+    for x in counted_ingreds:
+        if x not in counted_ingredients:
+            counted_ingredients.append(x)
 
     return render_template('ingredients.html', username=user.username, ingredients=counted_ingredients, start=get_today_string(), end=get_week_from_string())
 
