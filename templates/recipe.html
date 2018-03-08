@@ -23,32 +23,35 @@
 </form>
 
 
+<div class="container" style="background-color:beige;">
 
-<h1>{{ recipe.name }}</h1>
+    <h1>{{ recipe.name }}</h1>
 
-{% if recipe.time <= 60 %}
-    <h3>Estimated time: <em>{{ recipe.time }} minutes</em></h3>
-{% else %}
-    {% set recipe_hour = recipe.time//60 %}
-    {% set recipe_mins = recipe.time%60 %}
-    {% if not recipe_mins %}
-        <h3>Estimated time: <em>{{ recipe_hour }} hours</em></h3>
+    {% if recipe.time <= 60 %}
+        <h3>Estimated time: <em>{{ recipe.time }} minutes</em></h3>
     {% else %}
-        <h3>Estimated time: <em>{{ recipe_hour }} hours : {{ recipe_mins }} minutes</em></h3>
+        {% set recipe_hour = recipe.time//60 %}
+        {% set recipe_mins = recipe.time%60 %}
+        {% if not recipe_mins %}
+            <h3>Estimated time: <em>{{ recipe_hour }} hours</em></h3>
+        {% else %}
+            <h3>Estimated time: <em>{{ recipe_hour }} hours : {{ recipe_mins }} minutes</em></h3>
+        {% endif %}
     {% endif %}
-{% endif %}
 
 
-<h3>Ingredients:</h3>
-{% for ingredient in ingredients %}
-<ul>
+    <h3>Ingredients:</h3>
+    {% for ingredient in ingredients %}
+    <ul>
+        
+        <li>{{ ingredient }}</li>
     
-    <li>{{ ingredient }}</li>
-  
-</ul>
-{% endfor %}
-<h3>Instructions:</h3>
-<h3>{{ recipe.instructions }}</h3>
+    </ul>
+    {% endfor %}
+    <h3>Instructions:</h3>
+    <h3>{{ recipe.instructions }}</h3>
+
+</div>
 
 
 {% endblock %}

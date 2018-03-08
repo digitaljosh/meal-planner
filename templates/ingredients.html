@@ -2,15 +2,17 @@
 
 {% block content %}
 
-<h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
+<div class="container" style="background-color:beige;">
+    <h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
 
-<ul>
-    {% for ingredient_list in ingredients %}
-    {% for ingredient in ingredient_list %}
-    <li>{{ ingredient }}</li>
-    {% endfor %}
-    {% endfor %}
-</ul>
+    <ul>
+        {% for ingredient_list in ingredients %}
+        {% for ingredient in ingredient_list %}
+        <li>{{ ingredient }}</li>
+        {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
 
     
 {% endblock %}

@@ -2,13 +2,16 @@
 
 {% block content %}
 
-<h1>Here are the recipes in {{ username }}'s cookbook: </h1>
-<ul>
-    {% for recipe in recipes|sort(attribute='name') %}
-        <li><a href="{{ url_for('display_recipe', recipe_name=recipe.name) }}">{{ recipe.name }}</li>
-    {% endfor %}
 
-</ul>
+<div class="container" style="background-color:beige;">
+    <h1>Here are the recipes in {{ username }}'s cookbook: </h1>
+    <ul>
+        {% for recipe in recipes|sort(attribute='name') %}
+            <li><a href="{{ url_for('display_recipe', recipe_name=recipe.name) }}">{{ recipe.name }}</li>
+        {% endfor %}
+
+    </ul>
+</div>
 
 
 {% endblock %}
