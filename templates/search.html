@@ -1,23 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container" style="margin-top: 8%;">
+
 
 <div class="button-wrapper">
     <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back to Cal"/></a>
   </div>
 
-    <h2>Search Recipes</h2>
-    <form action="/search" method="post">
-        <table>
-            <tr>
-                <td><label for="search">Find A Recipe</label></td>
-                <td>
-                    <input name="search" type="text" value="">
-                </td>
-            </tr>
-        </table>
-        <input type="submit" value="Search">
-    </form>
+    
+    <div class="form-wrap">
+            <div class="form-inner">
+            <p id="login-title">Search Recipes</p>
+        
+            <form action="/search" method="post" class="form-horizontal" name="search">
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="search">
+                    </div>
+                </div>
+                <input type="submit" value="Search">
+                <span id="signup-link">Meal Calendar <a href="/full-calendar">here</a></span>
+            </form>
+        </div>
+    </div> 
+
 
 
     <!-- Display recipe titles and pictures -->
@@ -51,5 +58,6 @@
                 
 
     </div>
+</div>
 
 {% endblock %}

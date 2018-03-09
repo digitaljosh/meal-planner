@@ -163,9 +163,6 @@ h2 {
       padding: 5%;
   }
 
-  .form-control {
-      margin-left: 10%;
-  }
 
   .login-button {
       margin-left: 11%;
@@ -179,7 +176,8 @@ h2 {
   #login-title {
       color: #000;
       font-size: 28px;
-      margin-left: 38%;
+      text-align: center;
+      margin: 0 auto;
   }
 
   /*  dropdown button on calendar page  */
