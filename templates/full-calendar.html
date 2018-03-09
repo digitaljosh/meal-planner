@@ -75,7 +75,7 @@
 
 
 
-	<div style="max-width: 150px; display: inline-block; margin-left: 80%; margin-top: 5%; position: relative;">
+	<div id="calendar-dropdown" style="max-width: 150px; display: inline-block; margin-left: 80%; margin-top: 5%; position: relative;">
 		<div class="dropdown">
 			<button type="button" class="button5 dropdown-toggle" data-toggle="dropdown">Options
 				<span class="caret"></span></button>
@@ -86,7 +86,7 @@
 				<div class="divider"></div>
 				<li><a class="dropdown-item" href="/recipe-index">My Cookbook</a></li>
 				<div class="divider"></div>
-				<li><a class="dropdown-item" href="/ingredients">Shopping List</a></li>
+				<li><a class="dropdown-item" href="/ingredients">Weekly Shopping List</a></li>
 				<div class="divider"></div>
 				<li><a class="dropdown-item printBtn hidden-print" href="#">Print Calendar</a></li>
 				<div class="divider"></div>
@@ -95,16 +95,20 @@
 				<li><a class="dropdown-item" href="/logout">Logout</a></li>
 			</ul>
 		</div>
-
-		
+		<div class="popup-help button-wrapper about-button" onclick="myFunction()"><div id="about-text">Help</div>
+    		<span class="help-popup" id="myPopup">Click on a day to add a meal.</br>Click on a meal to see the recipe</br>Click on 'Options' for more features.</span>
+    	</div>
 	</div>
 
-	<div style="background-color:beige; max-width: 150px; margin-left: 86%; margin-top: 5%; text-align: center; display: inline-block; position: relative;">
-		How to use:
-		<p style="color:black;">Click on a day to add a meal.</p>
-		<p style="color:black;">Click on meal to see recipe.</p>
-		<p style="color:black;">Click on 'OPTIONS' for more features.</p>
-	</div>
+
+
+	<script>
+	// When the user clicks on div, open the popup
+	function myFunction() {
+		var popup = document.getElementById("myPopup");
+		popup.classList.toggle("show");
+	}
+	</script>
 	
 
 	
@@ -132,6 +136,7 @@
 			<a href="/ingredients"><input class="button5" type="button" name="button5" value="Shopping List"/></a>
 		  </div>	 
 	</div>
+-->
 
 
 	REMOVE MEAL BUTTON
@@ -146,7 +151,7 @@
 		<input type="submit" id="remove" value="REMOVE"/>
 	</form>
 
-	-->
+	
 	
 
 
@@ -185,15 +190,18 @@
 				},
 				eventClick:  function(event, jsEvent, view) {
 					recipe_name = event.title;
+					recipe_date = event.start;
+					recipe_date = recipe_date.format();
 					recipe_name = {"recipe_name":recipe_name}
-					getRecipeId(recipe_name);
+					recipe_date = {"recipe_date":recipe_date}
+					alert(recipe_date);
+					getRecipeId(recipe_name, recipe_date);
 					
 				},
 				dayClick: function(date, jsEvent, view) {
 					date = date.format()
 					addMeal(date)
 				},
-				defaultDate: '2018-03-12',
 				editable: true,
 				eventLimit: true,
 				eventStartEditable: false,
@@ -211,8 +219,9 @@
 		});
 	
 	
-		function getRecipeId(recipe_name) {
+		function getRecipeId(recipe_name, recipe_date) {
 			console.log(recipe_name)
+			console.log(recipe_date)
 			$.ajax({
 				url: '/modal-recipe',
 				data: recipe_name,

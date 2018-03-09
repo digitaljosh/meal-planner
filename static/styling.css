@@ -48,6 +48,20 @@ h2 {
     left: -30%;
 }
 
+.popup .help-popup {
+    visibility: hidden;
+    width: 275px;
+    background-color: rgba(75, 75, 75, 0.952);
+    color: #fff;
+    text-align: left;
+    border-radius: 12px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: -500%;
+    left: 30%;
+}
+
 /* Popup arrow 
 .popup .popuptext::after {
     content: "";
@@ -144,41 +158,41 @@ h2 {
   
   /*  login and sign up form  */
 
-  #form-container {
-      margin-top: 8%;
-  }
+#form-container {
+    margin-top: 8%;
+}
 
-  .form-wrap {
-    width: 40%;
+.form-wrap {
+width: 40%;
+margin: 0 auto;
+background-color: rgba(75, 75, 75, 0.788)
+
+}
+
+.control-label {
+    color: rgb(37, 37, 37);
+}
+
+.form-inner {
+    padding: 5%;
+}
+
+
+.login-button {
+    margin-left: 11%;
+}
+
+#signup-link {
+    margin-left: 20%;
+    color: #000;
+}
+
+#login-title {
+    color: #000;
+    font-size: 28px;
+    text-align: center;
     margin: 0 auto;
-    background-color: rgba(75, 75, 75, 0.788)
-
-  }
-
-  .control-label {
-      color: rgb(37, 37, 37);
-  }
-
-  .form-inner {
-      padding: 5%;
-  }
-
-
-  .login-button {
-      margin-left: 11%;
-  }
-
-  #signup-link {
-      margin-left: 20%;
-      color: #000;
-  }
-
-  #login-title {
-      color: #000;
-      font-size: 28px;
-      text-align: center;
-      margin: 0 auto;
-  }
+}
 
   /*  dropdown button on calendar page  */
 

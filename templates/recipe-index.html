@@ -2,18 +2,9 @@
 
 {% block content %}
 
-<<<<<<< HEAD
-=======
 <div class="button-wrapper">
     <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back to Cal"/></a>
   </div>
-
-<h1>Here are the recipes in {{ username }}'s cookbook: </h1>
-<ul>
-    {% for recipe in recipes|sort(attribute='name') %}
-        <li><a href="{{ url_for('display_recipe', recipe_name=recipe.name) }}">{{ recipe.name }}</li>
-    {% endfor %}
->>>>>>> 4b665b312dcb6cc1e912ae30b3498a24b1f9a3db
 
 <div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
         <h1>Here are the recipes in {{ username }}'s cookbook: </h1>
