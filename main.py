@@ -111,7 +111,6 @@ def login():
             if session['username']:
                 #recipes = Recipe.query.all()
                 name = session['username']
-                flash("You're logged in!", 'positive')
                 recipes = getListUserRecipes(name)
                 return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), recipes=recipes)#username=session['username'])
         except KeyError:
@@ -265,7 +264,6 @@ def recipe_instructions():
    
     if same_recipe:
         #already in db, just display that one
-        # flash("Already have that one on file.", 'positive')
         return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
 
     # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
