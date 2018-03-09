@@ -18,7 +18,7 @@ from hashy import check_pw_hash
 
 from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
                         make_users_events_current, get_meals_for_the_week, get_today_string,
-                        get_week_from_string, get_nouns, getListUserRecipes, multiply_amts,
+                        get_week_from_string, getListUserRecipes, multiply_amts,
                         good_display_ingredient)
 
 
@@ -325,12 +325,9 @@ def save_recipe():
     db.session.add(new_recipe)
     db.session.commit()
 
+    events = getUsersEvents(user.username)
     flash("Recipe saved!", 'positive')
-    return render_template('search.html')
-    # TODO return user to calendar instead of search
-    # user = getUserByName(session['username'])
-    # events = getUsersEvents(session['username'])
-    # return render_template('full-calendar.html', user=user, events=events, other_users=all_users, calendar_shown=user_name)
+    return render_template('full-calendar.html', user=user, events=events)
 
 
 @app.route("/remove-recipe", methods=['POST'])

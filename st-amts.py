@@ -92,7 +92,7 @@ def convert_amt_to_oz(measure, amt):
     elif measure == 'tsp':
         oz = amt * 0.16667
         return oz
-    elif measure = 'gram':
+    elif measure == 'gram':
         oz = amt * 0.035273
 
 
