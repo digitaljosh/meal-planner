@@ -68,18 +68,14 @@
 	{% endif %}
 	-->
 
-	<div class="container" style="background-color:beige; text-align:center;">How to use:
-		<p style="color:black;">Click on a day to add a meal.</p>
-		<p style="color:black;">Click on meal to see recipe.</p>
-		<p style="color:black;">Click on 'OPTIONS' for more features.</p>
-	</div>
+	
 
 	
-	<div style="display: inline-block; position: relative; margin-left: 12%;" id='calendar'></div>
+	<div style="display: inline-block; position: absolute; margin-left: 12%;" id='calendar'></div>
 
 
 
-	<div style="max-width: 150px; display: inline-block; position: relative;">
+	<div style="max-width: 150px; display: inline-block; margin-left: 80%; margin-top: 5%; position: relative;">
 		<div class="dropdown">
 			<button type="button" class="button5 dropdown-toggle" data-toggle="dropdown">Options
 				<span class="caret"></span></button>
@@ -99,7 +95,17 @@
 				<li><a class="dropdown-item" href="/logout">Logout</a></li>
 			</ul>
 		</div>
+
+		
 	</div>
+
+	<div style="background-color:beige; max-width: 150px; margin-left: 86%; margin-top: 5%; text-align: center; display: inline-block; position: relative;">
+		How to use:
+		<p style="color:black;">Click on a day to add a meal.</p>
+		<p style="color:black;">Click on meal to see recipe.</p>
+		<p style="color:black;">Click on 'OPTIONS' for more features.</p>
+	</div>
+	
 
 	
 
@@ -340,7 +346,7 @@
 									for="inputEmail3">Ingredients</label>
 							<div class="col-sm-10">
 								<textarea name="ingredients" type="text" class="form-control" 
-								id="inputEmail3" placeholder="Ingredients"></textarea>
+								id="inputEmail3" placeholder="Ingredients, one per line"></textarea>
 							</div>
 						</div>
 						<div class="form-group">
