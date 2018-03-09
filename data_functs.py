@@ -103,22 +103,7 @@ def get_week_from_string():
     week_from = "{date:%m/%d}".format(date=week_from_date)
     return week_from
 
-#TODO below need tweaking with ngrams perhaps
-'''
-may need to nltk.download('punkt') and nltk.download('averaged_perception_tagger')
-locally for each developer
-'''
 
-def get_nouns(ingredients_string):
-    ''' strips adjectives and amounts from ingredient '''
-    ingredients = nltk.sent_tokenize(ingredients_string)
-    nouns = []
-    for ingredient in ingredients:
-        for word,pos in nltk.pos_tag(nltk.word_tokenize(str(ingredient))):
-         if (pos == 'NN' or pos == 'NNP' or pos == 'NNS' or pos == 'NNPS'):
-             nouns.append(word)
-        
-    return nouns
 
 def ingredient_doubler(list_of_ingredients):
     new_ingredient_list = []
