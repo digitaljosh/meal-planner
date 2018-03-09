@@ -14,11 +14,13 @@ h2 {
 /* Begin Flash Messages */
 .negative {
     color: red;
-    font-size: 3rem;
+    font-size: 4rem;
+    text-shadow: 2px 2px 3px rgb(236, 236, 225);
 }
 .positive {
     color: green;
-    font-size: 3rem;
+    font-size: 4rem;
+    text-shadow: 2px 2px 3px rgba(51, 211, 118, 0.993);
 }
 /* End Flash Messages */
 

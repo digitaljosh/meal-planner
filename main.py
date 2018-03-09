@@ -75,7 +75,9 @@ def signup():
         if user_with_same_name > 0:
             flash("Someone is already using that name", 'negative')
             return render_template('sign-up.html')
-        
+        elif len(p_word) < 6 or len(p_word) > 20:
+            flash("Passwords must be at least 6 chars long, 20 at most.", "negative")
+            return render_template('sign-up.html', username=name)
         elif p_word != con_pword:
             flash("Passwords don't match!", 'negative')
             return render_template('sign-up.html', username=name, email=email)
@@ -293,11 +295,23 @@ def recipe_instructions():
 # save recipe route
 @app.route("/recipe-added", methods=['POST'])
 def save_recipe():
-    
+   
     name = request.form['name']
     time = request.form['time']
     ingredients = request.form['ingredients']
-    print(type(ingredients))
+    instructions = request.form['instructions']
+
+    user = getUserByName(session['username'])
+    events = getUsersEvents(user.username)
+   
+    if time == "":
+        #set default
+        time = 30
+    elif type(time) != int:
+        flash("Sorry, times must be typed as number of minutes.", 'negative')
+        #TODO not sure how to return modal
+        return render_template('full-calendar.html', user=user, events=events)
+   
     # keeps format consistent for recipes manually entered
     #TODO seems to be dropping the first entry
     if type(ingredients) == str and '[' not in ingredients :
@@ -306,26 +320,25 @@ def save_recipe():
     else:
         print("############################## API CALLED")
         
-    instructions = request.form['instructions']
 
-    user = getUserByName(session['username'])
     c_book = Cookbook.query.filter_by(owner_id=user.id).first()
-
-
-    same_recipe = Recipe.query.filter_by(name=name, instructions=instructions).first()
+    same_recipe = Recipe.query.filter_by(name=name, instructions=instructions, cookbook_id=c_book.id).first()
     if same_recipe:
-        new_recipe = Recipe(same_recipe.name, same_recipe.ingredients, same_recipe.instructions, c_book.id)
-        # makes a new Recipe with same stuff for this users cookbook    
-        db.session.add(new_recipe)
-        db.session.commit()
+        #TODO change primary key of Recipe to id 
+        # don't need to resave, already in db, but user doesn't need to know
+        # new_recipe = Recipe(same_recipe.name, same_recipe.ingredients, same_recipe.instructions, c_book.id)
+        # # makes a new Recipe with same stuff for this users cookbook    
+        # db.session.add(new_recipe)
+        # db.session.commit()
 
-        flash("Recipe saved!", 'positive')
-        return render_template('search.html')
-    new_recipe = Recipe(name, str(ingredients), instructions, time, c_book.id)
+        # flash("Recipe saved!", 'positive')
+       
+        return render_template('full-calendar.html', user=user, events=events)
+    new_recipe = Recipe(name, str(ingredients), instructions, str(time), c_book.id)
     db.session.add(new_recipe)
     db.session.commit()
 
-    events = getUsersEvents(user.username)
+   
     flash("Recipe saved!", 'positive')
     return render_template('full-calendar.html', user=user, events=events)
 

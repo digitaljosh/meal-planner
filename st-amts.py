@@ -50,8 +50,10 @@ def obtain_measure(ingredient):
                     try: 
                         uni = ord(word)
                         # use unicode conversion function here
-                        uni_fl = unicodedata.numeric(chr(uni))
-                        return uni_fl 
+                        if uni in range(8528-8543) or uni == 188 or uni == 189:
+                            uni_fl = unicodedata.numeric(chr(uni))
+                            return uni_fl 
+                        else: pass
                     except TypeError:
                         pass
 
@@ -123,5 +125,6 @@ def make_ingredient_dict(list_of_ingredients):
 
 if __name__ == "__main__":
     y = chr(189)
-    x = ['3 cups flour', '2 tbs butter', '1 egg', '1/2 cup sugar', '2.7 grams perwinkle pixie dust', str(y) + ' cups of almonds']
+    weird_char = chr(8842)
+    x = ['3 cups flour', '2 tbs butter', '1 egg', '1/2 cup sugar', '2.7 grams perwinkle pixie dust', str(y) + ' cups of almonds', weird_char + ' yogurt']
     print(make_ingredient_dict(x))
