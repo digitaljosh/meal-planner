@@ -2,6 +2,7 @@
 
 {% block content %}
 
+<<<<<<< HEAD
 <div class="container" style="background-color:beige;">
     <h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
 
@@ -13,6 +14,21 @@
         {% endfor %}
     </ul>
 </div>
+=======
+<div class="button-wrapper">
+    <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back to Cal"/></a>
+  </div>
+
+
+<h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
+
+<ul>
+    {% for ingredient in ingredients %}
+    <li>{{ ingredient|join(' ') }}</li>
+    {% endfor %}
+   
+</ul>
+>>>>>>> 4b665b312dcb6cc1e912ae30b3498a24b1f9a3db
 
     
 {% endblock %}

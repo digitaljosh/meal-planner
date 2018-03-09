@@ -115,3 +115,5 @@ mealvirt
 # ignore event specifics (?)
 # events.jason
 
+#Jupyter Notebook
+.ipynb 
