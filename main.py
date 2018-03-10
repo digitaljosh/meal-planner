@@ -309,11 +309,13 @@ def save_recipe():
     if time == "":
         #set default
         time = 30
+    #below breaks searched recipes saves!!
+    '''
     elif type(time) != int:
         flash("Sorry, times must be typed as number of minutes.", 'negative')
         #TODO not sure how to return modal
         return render_template('full-calendar.html', user=user, events=events)
-   
+   '''
     # keeps format consistent for recipes manually entered
     #TODO seems to be dropping the first entry
     if type(ingredients) == str and '[' not in ingredients :
@@ -340,15 +342,14 @@ def save_recipe():
     db.session.add(new_recipe)
     db.session.commit()
 
-   
+    recipes = getListUserRecipes(session['username'])
     flash("Recipe saved!", 'positive')
-    return render_template('full-calendar.html', user=user, events=events)
+    return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
 
 @app.route("/remove-recipe", methods=['POST'])
 def delete_recipe():
     recipe_name = request.form["name"]
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + recipe_name)
     #need to remove any event with that recipe first
     events_to_go = Event.query.filter_by(meal=recipe_name).all()
     for event in events_to_go:
@@ -360,7 +361,7 @@ def delete_recipe():
 
     recipes = getListUserRecipes(session['username'])
     return render_template('recipe-index.html', recipes=recipes, username=session['username'])
-    #return render_template("recipe_index.html")
+    
 
 # display recipe instructions in modal
 @app.route("/modal-recipe", methods=['POST'])
@@ -414,10 +415,6 @@ def display_ingredients():
     counted_ingredients = make_shopping_list(list_of_meal_ingredients)
     '''
     for event in events:
-        # if not event.meal in ingred_counter_dict:
-        #     ingred_counter_dict[event.meal] = 1
-        # else:
-        #     ingred_counter_dict[event.meal] += 1
         meals.append(event.meal)
     print("!!!!!!!!!!!!!!!!!!!!!" + str(ingred_counter_dict))
     recipes = []
