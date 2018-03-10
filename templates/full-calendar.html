@@ -56,6 +56,8 @@
 
 	
 
+	
+
 </style>
 </head>
 <body>
@@ -96,7 +98,7 @@
 			</ul>
 		</div>
 		<div class="popup-help button-wrapper about-button" onclick="myFunction()"><div id="about-text">Help</div>
-    		<span class="help-popup" id="myPopup">Click on a day to add a meal.</br>Click on a meal to see the recipe</br>Click on 'Options' for more features.</span>
+    		<span style="font-size: 18px;" class="help-popup help-text" id="myPopup">1. Click on a day to add a meal.</br>2. Click on a meal to see recipe.</span>
     	</div>
 	</div>
 
@@ -104,41 +106,17 @@
 
 	<script>
 	// When the user clicks on div, open the popup
-	function myFunction() {
-		var popup = document.getElementById("myPopup");
-		popup.classList.toggle("show");
-	}
+		function myFunction() {
+			var popup = document.getElementById("myPopup");
+			popup.classList.toggle("show");
+		}
 	</script>
 	
 
 	
 
 
-	<!--  Old buttons.....
-
-	<button class="btn" data-toggle="modal" data-target="#createRecipeModal">
-		Create Recipe
-	</button>
-
-	<div>
-		<button class="printBtn hidden-print">Print</button>
-	</div>
-
-	<div>
-		<div class="all-buttons">
-		  <div class="button-wrapper">
-			<a href="/recipe-index"><input class="button5" type="button" name="button5" value="CookBook"/></a>
-		  </div>
-		  <div class="button-wrapper">
-			<a href="/search"><input class="button5" type="button" name="button5" value="Recipe Search"/></a>
-		  </div>
-		  <div class="button-wrapper">
-			<a href="/ingredients"><input class="button5" type="button" name="button5" value="Shopping List"/></a>
-		  </div>	 
-	</div>
--->
-
-
+<!--
 	REMOVE MEAL BUTTON
 
 	<form action="/remove-meal" method="post">
@@ -150,7 +128,7 @@
 		</select>
 		<input type="submit" id="remove" value="REMOVE"/>
 	</form>
-
+-->
 	
 	
 
@@ -164,8 +142,9 @@
 
 <!-- start recipe instructions modal -->
 	<div class="modal fade" id="getCodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
+		<!--
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title" id="myModalLabel"></h4>
@@ -175,8 +154,30 @@
 				</div>
 			</div>
 		</div>
+		-->
+		<div class="modal-body" id="getCode" style="width: 60%; margin-left: 20%">
+				//ajax success content here.
+		</div>
 	</div>
+
+	<script>
+		$(document).click(function(event) {
+			//if you click on anything except the modal itself or the "open modal" link, close the modal
+			if (!$(event.target).closest(".modal,.js-open-modal").length) {
+			$("body").find(".modal").removeClass("visible");
+			}
+			});
+	</script>
+
+	<style>
+		.visible {
+			display: block;
+		}
+    </style>
+
 <!-- end recipe instructions modal -->
+
+	
 
 
 
@@ -194,7 +195,6 @@
 					recipe_date = recipe_date.format();
 					recipe_name = {"recipe_name":recipe_name}
 					recipe_date = {"recipe_date":recipe_date}
-					alert(recipe_date);
 					getRecipeId(recipe_name, recipe_date);
 					
 				},
@@ -224,7 +224,7 @@
 			console.log(recipe_date)
 			$.ajax({
 				url: '/modal-recipe',
-				data: recipe_name,
+				data: recipe_name, recipe_date,
 				// contentType: application/json,
 				type: 'POST',
 				success: function(response){

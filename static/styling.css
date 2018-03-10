@@ -22,7 +22,51 @@ h2 {
 }
 /* End Flash Messages */
 
-/* Begin Popup Style */
+
+/* Begin Help Popup Style */
+
+.popup-help {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* The actual popup */
+
+.popup-help .help-popup {
+    visibility: hidden;
+    width: 275px;
+    background-color: rgba(75, 75, 75, 0.952);
+    color: #fff;
+    text-align: left;
+    border-radius: 12px;
+    padding: 8px;
+    position: relative;
+    z-index: 1;
+    bottom: -100%;
+    left: -63%;
+}
+
+
+/* Toggle this class - hide and show the popup */
+.popup-help .show {
+    visibility: visible;
+    -webkit-animation: fadeIn .5s;
+    animation: fadeIn .5s;
+}
+
+
+
+/* End Help Popup Style */
+
+
+
+
+/* Begin About Popup Style */
 .popup {
     position: relative;
     display: inline-block;
@@ -48,31 +92,7 @@ h2 {
     left: -30%;
 }
 
-.popup .help-popup {
-    visibility: hidden;
-    width: 275px;
-    background-color: rgba(75, 75, 75, 0.952);
-    color: #fff;
-    text-align: left;
-    border-radius: 12px;
-    padding: 8px;
-    position: absolute;
-    z-index: 1;
-    bottom: -500%;
-    left: 30%;
-}
 
-/* Popup arrow 
-.popup .popuptext::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: rgba(75, 75, 75, 0.911) transparent transparent transparent;
-} */
 
 /* Toggle this class - hide and show the popup */
 .popup .show {

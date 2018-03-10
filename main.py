@@ -359,6 +359,7 @@ def display_modal_recipe():
     print("######################")
     recipe_name = request.form["recipe_name"]
     print(recipe_name)
+    #recipe_date = request.form["recipe_date"]
     # recipe_name = content["recipe_name"]
     # print(recipe_name)
     print("##################")
@@ -374,7 +375,8 @@ def display_modal_recipe():
 def display_recipe(recipe_name):
     """ diplays recipe by name with normalized data in clean format """
     recipe = Recipe.query.filter_by(name=recipe_name).first()
-    return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
+    button_flag = True;
+    return render_template('recipe.html', recipe=recipe, button_flag=button_flag, ingredients=clean_ingreds(recipe))
 
 
 @app.route("/recipe-index")
