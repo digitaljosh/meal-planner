@@ -4,26 +4,29 @@ import unicodedata
 from fractions import Fraction
 
 
+#TODO add plurals if we refactor get_measure without dropping s
+#oz not recognized as noun
+list_of_measures = ['can', 'cup', 'cups', 'pint', 'quart', 'tablespoons', 'tablespoon', 'tbs', 'tb', 't', 'ts', 'teaspoon', 'tsp', 'gr',
+                    'grams', 'gram','kilo', 'kilogram', 'dash', 'pinch', 'sprig', 'oz', 'ounce', 'ounces']
 
-list_of_measures = ['can', 'cup', 'pint', 'quart', 'tablespoon', 'tb', 't', 'ts', 'teaspoon', 'tsp', 'gr',
-                    'gram', 'kilo', 'kilogram', 'dash', 'pinch', 'sprig', 'oz', 'ounce']
-
-
+words_not_recognized_as_nouns = ['flour', 'olive', 'oz']
 '''
 may need to nltk.download('punkt') and nltk.download('averaged_perception_tagger')
 locally for each developer
 '''
 #TODO still need to look into ngrams olive oil, Jack Cheese, manicotti shells etc. 
+# nltk.regexp_tokenize(s1, r'(?u)\d+(?:\.\d+)?|\w+')
 
-
-def get_nouns(ingredients_string):
-    ''' strips adjectives and amounts from ingredient '''
+def get_nouns(ingredients_string): 
+    ''' strips adjectives and amounts from ingredient return LIST'''
     ingredients = nltk.sent_tokenize(ingredients_string)
     nouns = []
     for ingredient in ingredients:
         for word,pos in nltk.pos_tag(nltk.word_tokenize(str(ingredient))):
-         if (pos == 'NN' or pos == 'NNP' or pos == 'NNS' or pos == 'NNPS'):
-             nouns.append(word)
+            if word == 'flour' or word == 'oz' or word == 'olive':
+                nouns.append(word)
+            elif (pos == 'NN' or pos == 'NNP' or pos == 'NNS' or pos == 'NNPS'):
+                nouns.append(word)
         
     return nouns
 
@@ -61,13 +64,13 @@ def obtain_measure(ingredient):
 
 
 def get_measure(ingredient):
-    ''' parses the string for a noun that matches a unit of measure'''
+    ''' parses the list for a noun that matches a unit of measure returns string of that noun'''
     nouns = get_nouns(ingredient)
     for noun in nouns:
         noun = noun.lower()
             # remove any 's', necessary for comparison onion is the same as onions
-        if noun[-1] == 's':
-            noun = noun[:-1]
+        # if noun[-1] == 's':
+        #     noun = noun[:-1]
         
         if noun in list_of_measures: 
             return noun
@@ -105,17 +108,17 @@ def convert_amt_to_metric(measure, amt):
 
 
 
-def make_ingredient_dict(list_of_ingredients):
+def original_make_ingredient_dict(list_of_ingredients):
     ''' tatkes a list of ingredients and returns a dictionary of key=ingredient, value= number of ounces '''
     ingredient_dict = {}
     for ingredient in list_of_ingredients:
-        # flour is also a verb and ignored as noun by nltk
-        if 'flour' in ingredient.lower():
-            nouns = get_nouns(ingredient) + ['flour']
-            measure = get_measure(ingredient)
-        else:
-            nouns = get_nouns(ingredient)
-            measure = get_measure(ingredient)
+        # flour is also a verb and ignored as noun by nltk, fixed with oz in get_nouns
+        # if 'flour' in ingredient.lower():
+        #     nouns = get_nouns(ingredient) + ['flour']
+        #     measure = get_measure(ingredient)
+        # else:
+        nouns = get_nouns(ingredient)
+        measure = get_measure(ingredient)
        
         for noun in nouns:
             noun = noun.lower()
@@ -143,6 +146,26 @@ def make_ingredient_dict(list_of_ingredients):
 
     return ingredient_dict
 
+
+def make_ingredient_dict(list_of_ingredients):
+    ''' tatkes a list of ingredients and returns a dictionary of key=ingredient, value= number of ounces '''
+    ingredient_dict = {}
+    for ingredient in list_of_ingredients:
+        amt = obtain_measure(ingredient)
+        measurement = get_measure(ingredient)
+        k_list = remove_amts_measures(ingredient)
+        key_name = ' '.join(k_list)
+                # in the case of say water , but breaks adding value to dict since you can't add int and string
+              
+        if amt == None and measurement == "whole":
+            amt = ""
+            measure = ""
+
+        ingredient_dict[key_name] = [amt, measurement]
+
+    return ingredient_dict
+
+
 def make_shopping_list(*lists_of_ingredients):
     big_dict_of_ingredients = {}
     for ingreds in lists_of_ingredients:
@@ -159,6 +182,33 @@ def make_shopping_list(*lists_of_ingredients):
     return big_dict_of_ingredients
 
 
+def split_string_into_ngrams(string_x, number_for_n_ngram):
+    sub_sects = nltk.ngrams(string_x.split(), number_for_n_ngram)
+    grams = []
+    for gram in sub_sects:
+       # print(gram)
+        grams.append(gram)
+    return grams
+
+def remove_amts_measures(string_x):
+    '''should leave string with just nouns to parse for ngrams'''
+    measure_to_remove = get_measure(string_x)
+    noun_list = get_nouns(string_x)
+
+    print("!!!! measure to remove : " + measure_to_remove)
+    print("!!! nouns : " + str(noun_list))
+    
+    # BUG point can't remove because s has been dropped for comparisons
+    try:
+        noun_list.remove(measure_to_remove)
+        print("+++" + str(noun_list))
+    except ValueError:
+        # no measure to remove
+        print("--" + str(noun_list))
+            
+    return noun_list
+
+
 
 
 if __name__ == "__main__":
@@ -169,6 +219,22 @@ if __name__ == "__main__":
     recipe_y = ['1 cup flour', '3 tbs butter', '3 eggs', '3/4 cup sugar', '1.3 grams perwinkle dust', '3 pints water', '2 zebras']
     recipe_z = ['water', '2 bananas', str(z) + ' cups of almonds']
 
+
+
+    trial_list = make_shopping_list(recipe_x, recipe_y, recipe_z)
+    print("HERE's the unformatted list: " + str(trial_list))
+
+    # for item in recipe_x:
+    #     print("####")
+    #     print(item)
+    #     print(remove_amts_measures(item))
+
+    manicotti_recipe = ['7 cups whole wheat manicotti shells', '1.5 oz parmesan cheese', 'olive oil', 'salt and pepper']
+
+    manicott_list = make_shopping_list(manicotti_recipe)
+    print("SHOPPING: " + str(manicott_list))
+    
+    '''
     print(recipe_z)
     #TODO need to make a copy of dict before reassigning values for display
     clean_dict = make_shopping_list(recipe_x, recipe_y, recipe_z)
@@ -182,4 +248,17 @@ if __name__ == "__main__":
     recipe_knee = ['2 cups water', '1/4 cup water', '3.5 grams water']
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     print(make_shopping_list(recipe_knee, recipe_knee, recipe_knee))
-   
+    print("##########################################################")
+
+    grams_list = []
+    for item in recipe_x:
+       grams_list.append(split_string_into_ngrams(item, 3))
+    print("##########################################3####")
+    print(str(grams_list))
+    print("#############################")
+    for gram in grams_list:
+        if item in gram in list_of_measures or 
+        print(gram)
+        '''
+    # for item in recipe_x:
+    #     print(remove_amts_measures(item))
