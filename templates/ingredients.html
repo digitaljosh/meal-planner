@@ -2,19 +2,29 @@
 
 {% block content %}
 
-<div class="button-wrapper">
-    <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back to Cal"/></a>
-  </div>
+<div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
+    <div class="button-wrapper">
+        <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back to Cal"/></a>
+    </div>
+
+    <button class="printBtn hidden-print">Print</button>
+
+    <script type="text/javascript">
+        $('.printBtn').on('click', function (){
+            window.print();
+        });
+    </script>
 
 
-<h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
 
-<ul>
-    {% for ingredient in ingredients %}
-    <li>{{ ingredient|join(' ') }}</li>
-    {% endfor %}
-   
-</ul>
+    <h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
+
+    <ul>
+        {% for ingredient in ingredients %}
+        <li>{{ ingredient|join(' ') }}</li>
+        {% endfor %}
+    </ul>
+</div>
 
     
 {% endblock %}

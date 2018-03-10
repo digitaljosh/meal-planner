@@ -56,6 +56,8 @@
 
 	
 
+	
+
 </style>
 </head>
 <body>
@@ -75,7 +77,7 @@
 
 
 
-	<div style="max-width: 150px; display: inline-block; margin-left: 80%; margin-top: 5%; position: relative;">
+	<div id="calendar-dropdown" style="max-width: 150px; display: inline-block; margin-left: 80%; margin-top: 5%; position: relative;">
 		<div class="dropdown">
 			<button type="button" class="button5 dropdown-toggle" data-toggle="dropdown">Options
 				<span class="caret"></span></button>
@@ -86,7 +88,7 @@
 				<div class="divider"></div>
 				<li><a class="dropdown-item" href="/recipe-index">My Cookbook</a></li>
 				<div class="divider"></div>
-				<li><a class="dropdown-item" href="/ingredients">Shopping List</a></li>
+				<li><a class="dropdown-item" href="/ingredients">Weekly Shopping List</a></li>
 				<div class="divider"></div>
 				<li><a class="dropdown-item printBtn hidden-print" href="#">Print Calendar</a></li>
 				<div class="divider"></div>
@@ -95,45 +97,26 @@
 				<li><a class="dropdown-item" href="/logout">Logout</a></li>
 			</ul>
 		</div>
-
-		
+		<div class="popup-help button-wrapper about-button" onclick="myFunction()"><div id="about-text">Help</div>
+    		<span style="font-size: 18px;" class="help-popup help-text" id="myPopup">1. Click on a day to add a meal.</br>2. Click on a meal to see recipe.</span>
+    	</div>
 	</div>
 
-	<div style="background-color:beige; max-width: 150px; margin-left: 86%; margin-top: 5%; text-align: center; display: inline-block; position: relative;">
-		How to use:
-		<p style="color:black;">Click on a day to add a meal.</p>
-		<p style="color:black;">Click on meal to see recipe.</p>
-		<p style="color:black;">Click on 'OPTIONS' for more features.</p>
-	</div>
+
+
+	<script>
+	// When the user clicks on div, open the popup
+		function myFunction() {
+			var popup = document.getElementById("myPopup");
+			popup.classList.toggle("show");
+		}
+	</script>
 	
 
 	
 
 
-	<!--  Old buttons.....
-
-	<button class="btn" data-toggle="modal" data-target="#createRecipeModal">
-		Create Recipe
-	</button>
-
-	<div>
-		<button class="printBtn hidden-print">Print</button>
-	</div>
-
-	<div>
-		<div class="all-buttons">
-		  <div class="button-wrapper">
-			<a href="/recipe-index"><input class="button5" type="button" name="button5" value="CookBook"/></a>
-		  </div>
-		  <div class="button-wrapper">
-			<a href="/search"><input class="button5" type="button" name="button5" value="Recipe Search"/></a>
-		  </div>
-		  <div class="button-wrapper">
-			<a href="/ingredients"><input class="button5" type="button" name="button5" value="Shopping List"/></a>
-		  </div>	 
-	</div>
-
-
+<!--
 	REMOVE MEAL BUTTON
 
 	<form action="/remove-meal" method="post">
@@ -145,8 +128,8 @@
 		</select>
 		<input type="submit" id="remove" value="REMOVE"/>
 	</form>
-
-	-->
+-->
+	
 	
 
 
@@ -159,8 +142,9 @@
 
 <!-- start recipe instructions modal -->
 	<div class="modal fade" id="getCodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
+		<!--
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title" id="myModalLabel"></h4>
@@ -170,8 +154,30 @@
 				</div>
 			</div>
 		</div>
+		-->
+		<div class="modal-body" id="getCode" style="width: 60%; margin-left: 20%">
+				//ajax success content here.
+		</div>
 	</div>
+
+	<script>
+		$(document).click(function(event) {
+			//if you click on anything except the modal itself or the "open modal" link, close the modal
+			if (!$(event.target).closest(".modal,.js-open-modal").length) {
+			$("body").find(".modal").removeClass("visible");
+			}
+			});
+	</script>
+
+	<style>
+		.visible {
+			display: block;
+		}
+    </style>
+
 <!-- end recipe instructions modal -->
+
+	
 
 
 
@@ -185,15 +191,17 @@
 				},
 				eventClick:  function(event, jsEvent, view) {
 					recipe_name = event.title;
+					recipe_date = event.start;
+					recipe_date = recipe_date.format();
 					recipe_name = {"recipe_name":recipe_name}
-					getRecipeId(recipe_name);
+					recipe_date = {"recipe_date":recipe_date}
+					getRecipeId(recipe_name, recipe_date);
 					
 				},
 				dayClick: function(date, jsEvent, view) {
 					date = date.format()
 					addMeal(date)
 				},
-				defaultDate: '2018-03-12',
 				editable: true,
 				eventLimit: true,
 				eventStartEditable: false,
@@ -211,11 +219,12 @@
 		});
 	
 	
-		function getRecipeId(recipe_name) {
+		function getRecipeId(recipe_name, recipe_date) {
 			console.log(recipe_name)
+			console.log(recipe_date)
 			$.ajax({
 				url: '/modal-recipe',
-				data: recipe_name,
+				data: recipe_name, recipe_date,
 				// contentType: application/json,
 				type: 'POST',
 				success: function(response){

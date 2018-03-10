@@ -10,6 +10,14 @@ form {
     display: none;
   }
 
+  #calendar-dropdown {
+    display: none;
+  }
+
+  .dropdown {
+    display: none;
+  }
+
   .fc th,
   .fc td,
   .fc hr,
