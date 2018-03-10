@@ -16,6 +16,8 @@ from app import app, db
 from models import User, Event, Recipe, Cookbook
 from hashy import check_pw_hash
 
+from st_amts import make_shopping_list
+
 from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
                         make_users_events_current, get_meals_for_the_week, get_today_string,
                         get_week_from_string, getListUserRecipes, multiply_amts,
@@ -399,6 +401,18 @@ def display_ingredients():
     ingred_counter_dict = {}
     meals = []
     events = get_meals_for_the_week(user.username)
+    
+    '''
+    list_of_meal_ingredients = []
+    list_of_meals = []
+    for event in events:
+        list_of_meals.append(event.meal)
+    for meal in list_of_meals:
+        recipe = Recipe.query.filter_by(name=meal).first()
+        list_of_meal_ingredients.append(recipe.ingredients)
+
+    counted_ingredients = make_shopping_list(list_of_meal_ingredients)
+    '''
     for event in events:
         # if not event.meal in ingred_counter_dict:
         #     ingred_counter_dict[event.meal] = 1
@@ -415,11 +429,7 @@ def display_ingredients():
     for recipe in recipes:
        
         nice_ings = clean_ingreds(recipe)
-        # TODO use below to return list of ingredients without amounts or adjectives
-        '''
-        staples = get_nouns(recipe.ingredients)
-        ingreds.append(staples)
-        '''
+        
         ingreds.append(nice_ings) 
     for item in ingreds:
         # we want to see how many times that list of ingredients occurs
