@@ -22,7 +22,9 @@
     <ul>
         
         {% for k, v in ingredients_dict.items() %}
+        {% if k and v != None %}
         <li> {{ v[0] }} {{ v[1] }}  {{ k }}</li>
+        {% endif %}
         {% endfor %}
         
     </ul>

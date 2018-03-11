@@ -309,13 +309,15 @@ def save_recipe():
     if time == "":
         #set default
         time = 30
-    #below breaks searched recipes saves!!
-    '''
     elif type(time) != int:
-        flash("Sorry, times must be typed as number of minutes.", 'negative')
-        #TODO not sure how to return modal
-        return render_template('full-calendar.html', user=user, events=events)
-   '''
+        time = 30
+    #below breaks searched recipes saves!!
+    
+    # elif type(time) != int:
+    #     flash("Sorry, times must be typed as number of minutes.", 'negative')
+    #     #TODO not sure how to return modal
+    #     return render_template('full-calendar.html', user=user, events=events)
+   
     # keeps format consistent for recipes manually entered
     #TODO seems to be dropping the first entry
     if type(ingredients) == str and '[' not in ingredients :
