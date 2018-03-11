@@ -16,7 +16,7 @@ from app import app, db
 from models import User, Event, Recipe, Cookbook
 from hashy import check_pw_hash
 
-from st_amts import make_shopping_list
+from st_amts import make_shopping_list, make_ingredient_dict
 
 from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
                         make_users_events_current, get_meals_for_the_week, get_today_string,
@@ -386,7 +386,7 @@ def display_modal_recipe():
 def display_recipe(recipe_name):
     """ diplays recipe by name with normalized data in clean format """
     recipe = Recipe.query.filter_by(name=recipe_name).first()
-    button_flag = True;
+    button_flag = True
     return render_template('recipe.html', recipe=recipe, button_flag=button_flag, ingredients=clean_ingreds(recipe))
 
 
@@ -401,62 +401,25 @@ def display_ingredients():
     '''diplays a list of ingredients for recipes of all events'''
     #TODO need to clean up display AND place constraints eg(only next two weeks, none from past events) 
     user = User.query.filter_by(username=session['username']).first()
-    ingred_counter_dict = {}
-    meals = []
     events = get_meals_for_the_week(user.username)
-    
-    '''
-    list_of_meal_ingredients = []
-    list_of_meals = []
-    for event in events:
-        list_of_meals.append(event.meal)
-    for meal in list_of_meals:
-        recipe = Recipe.query.filter_by(name=meal).first()
-        list_of_meal_ingredients.append(recipe.ingredients)
 
-    counted_ingredients = make_shopping_list(list_of_meal_ingredients)
-    '''
+    ingredient_lists = []
+    meals = []
     for event in events:
         meals.append(event.meal)
-    print("!!!!!!!!!!!!!!!!!!!!!" + str(ingred_counter_dict))
-    recipes = []
     for meal in meals:
-        #print("$$$$$" + meal + ":" + str(ingred_counter_dict[meal]))
-        recipes.append(Recipe.query.filter_by(name=meal).first())
-    
-    ingreds = []
-    for recipe in recipes:
-       
-        nice_ings = clean_ingreds(recipe)
+        ready_for_dict = []
+        recipe = Recipe.query.filter_by(name=meal).first()
+        recipe_l = recipe.ingredients.split(',')
+        ready_for_dict = []
+        for ingred in recipe_l:
+            ingred = ingred.replace(",", "").replace("[", "").replace("'", "").replace("]", "").strip()
+            ready_for_dict.append(ingred)
+        ingredient_lists.append(ready_for_dict)
         
-        ingreds.append(nice_ings) 
-    for item in ingreds:
-        # we want to see how many times that list of ingredients occurs
-        item_count_key = str(item)
-        if not item_count_key in ingred_counter_dict:
-            ingred_counter_dict[item_count_key] = 1
-        else:
-            ingred_counter_dict[item_count_key] += 1
+    counted_ingredients = make_shopping_list(ingredient_lists)
 
-    counted_ingreds = []
-    for item in ingreds:
-        print("**" + str(ingred_counter_dict[str(item)]))
-        for x in item:
-            new_item = multiply_amts(x, ingred_counter_dict[str(item)])
-       
-            counted_ingreds.append(new_item)
-       
-    print(str(counted_ingreds))
-    
-    counted_ingredients = []
-    for x in counted_ingreds:
-        if x not in counted_ingredients:
-            counted_ingredients.append(x)
-    
-
-
-
-    return render_template('ingredients.html', username=user.username, ingredients=counted_ingredients, start=get_today_string(), end=get_week_from_string())
+    return render_template('ingredients.html', username=user.username, ingredients_dict=counted_ingredients, start=get_today_string(), end=get_week_from_string())
 
 
 @app.route('/remove-meal', methods=['POST'])

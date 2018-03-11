@@ -7,7 +7,8 @@ from fractions import Fraction
 #TODO add plurals if we refactor get_measure without dropping s
 #oz not recognized as noun
 list_of_measures = ['can', 'cup', 'cups', 'pint', 'quart', 'tablespoons', 'tablespoon', 'tbs', 'tb', 't', 'ts', 'teaspoon', 'tsp', 'gr',
-                    'grams', 'gram','kilo', 'kilogram', 'dash', 'pinch', 'sprig', 'oz', 'ounce', 'ounces']
+                    'grams', 'gram','kilo', 'kilogram', 'dash', 'pinch', 'sprig', 'oz', 'ounce', 'ounces',
+                    'lb', 'pound']
 
 words_not_recognized_as_nouns = ['flour', 'olive', 'oz']
 '''
@@ -59,8 +60,16 @@ def obtain_measure(ingredient):
                             return uni_fl 
                         else: pass
                     except TypeError:
-                        pass
-
+                        #TODO a hack if 7-8 minnows simply returns 7
+                        try:
+                            if '-' in word:
+                                for char in word:
+                                    if char.isdigit():
+                                        return char
+                            
+                        except TypeError:
+                            pass
+                            
 
 
 def get_measure(ingredient):
@@ -75,7 +84,7 @@ def get_measure(ingredient):
         if noun in list_of_measures: 
             return noun
         else:
-            return "whole"
+            return ""
 
 
 def convert_amt_to_oz(measure, amt):
@@ -108,56 +117,17 @@ def convert_amt_to_metric(measure, amt):
 
 
 
-def original_make_ingredient_dict(list_of_ingredients):
-    ''' tatkes a list of ingredients and returns a dictionary of key=ingredient, value= number of ounces '''
-    ingredient_dict = {}
-    for ingredient in list_of_ingredients:
-        # flour is also a verb and ignored as noun by nltk, fixed with oz in get_nouns
-        # if 'flour' in ingredient.lower():
-        #     nouns = get_nouns(ingredient) + ['flour']
-        #     measure = get_measure(ingredient)
-        # else:
-        nouns = get_nouns(ingredient)
-        measure = get_measure(ingredient)
-       
-        for noun in nouns:
-            noun = noun.lower()
-            # remove any 's', necessary for comparison onion is the same as onions
-            if noun[-1] == 's':
-                noun = noun[:-1]
-        
-            if noun not in list_of_measures:
-                amt = obtain_measure(ingredient)
-                '''
-                print("++" + str(measure))
-                print("--" + str(amt))
-                print("==" + str(convert_amt_to_oz(measure, amt)))
-                '''
-                #below if simply using all
-                #ingredient_dict[noun] = convert_amt_to_oz(measure, amt)
-
-                # in the case of say water , but breaks adding value to dict since you can't add int and string
-              
-                if amt == None and measure == "whole":
-                    amt = ""
-                    measure = ""
-                
-                ingredient_dict[noun] = [amt, measure]
-
-    return ingredient_dict
-
-
 def make_ingredient_dict(list_of_ingredients):
-    ''' tatkes a list of ingredients and returns a dictionary of key=ingredient, value= number of ounces '''
+    ''' takes a list of ingredients and returns a dictionary of key=ingredient, value= number of ounces '''
     ingredient_dict = {}
     for ingredient in list_of_ingredients:
         amt = obtain_measure(ingredient)
         measurement = get_measure(ingredient)
         k_list = remove_amts_measures(ingredient)
-        key_name = ' '.join(k_list)
-                # in the case of say water , but breaks adding value to dict since you can't add int and string
-              
-        if amt == None and measurement == "whole":
+        k_name = ' '.join(k_list)
+        key_name= k_name.title() # thus parmesan == Parmesan == PARMESAN
+        # in the case of say water , but breaks adding value to dict since you can't add int and string
+        if amt == None:# and measurement == "whole":
             amt = ""
             measure = ""
 
@@ -166,10 +136,10 @@ def make_ingredient_dict(list_of_ingredients):
     return ingredient_dict
 
 
-def make_shopping_list(*lists_of_ingredients):
+def make_shopping_list(list_of_lists_of_ingredients):
     big_dict_of_ingredients = {}
-    for ingreds in lists_of_ingredients:
-        ingred_dict = make_ingredient_dict(ingreds)
+    for ingred_list in list_of_lists_of_ingredients:
+        ingred_dict = make_ingredient_dict(ingred_list)
         for item in ingred_dict:
             if item in big_dict_of_ingredients:
                 try:
@@ -194,18 +164,14 @@ def remove_amts_measures(string_x):
     '''should leave string with just nouns to parse for ngrams'''
     measure_to_remove = get_measure(string_x)
     noun_list = get_nouns(string_x)
-
-    print("!!!! measure to remove : " + measure_to_remove)
-    print("!!! nouns : " + str(noun_list))
     
     # BUG point can't remove because s has been dropped for comparisons
     try:
         noun_list.remove(measure_to_remove)
-        print("+++" + str(noun_list))
     except ValueError:
         # no measure to remove
-        print("--" + str(noun_list))
-            
+        pass
+
     return noun_list
 
 
@@ -224,16 +190,16 @@ if __name__ == "__main__":
     trial_list = make_shopping_list(recipe_x, recipe_y, recipe_z)
     print("HERE's the unformatted list: " + str(trial_list))
 
-    # for item in recipe_x:
-    #     print("####")
-    #     print(item)
-    #     print(remove_amts_measures(item))
-
     manicotti_recipe = ['7 cups whole wheat manicotti shells', '1.5 oz parmesan cheese', 'olive oil', 'salt and pepper']
 
     manicott_list = make_shopping_list(manicotti_recipe)
     print("SHOPPING: " + str(manicott_list))
     
+    spaghetti_recipe = ['1 lb spahgetti', '3 oz Parmesan Cheese', 'marinara sauce']
+
+    shp_list = make_shopping_list(manicotti_recipe, spaghetti_recipe)
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("SHOPPING LIST2: " + str(shp_list))
     '''
     print(recipe_z)
     #TODO need to make a copy of dict before reassigning values for display
