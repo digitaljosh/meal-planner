@@ -195,12 +195,13 @@
 					recipe_date = recipe_date.format();
 					recipe_name = {"recipe_name":recipe_name}
 					recipe_date = {"recipe_date":recipe_date}
-					getRecipeId(recipe_name, recipe_date);
+					getRecipeId(recipe_name);
 					
 				},
 				dayClick: function(date, jsEvent, view) {
 					date = date.format()
-					addMeal(date)
+					id = jsEvent.id
+					addMeal(date, id)
 				},
 				editable: true,
 				eventLimit: true,
@@ -219,12 +220,11 @@
 		});
 	
 	
-		function getRecipeId(recipe_name, recipe_date) {
+		function getRecipeId(recipe_name) {
 			console.log(recipe_name)
-			console.log(recipe_date)
 			$.ajax({
 				url: '/modal-recipe',
-				data: recipe_name, recipe_date,
+				data: recipe_name,
 				// contentType: application/json,
 				type: 'POST',
 				success: function(response){

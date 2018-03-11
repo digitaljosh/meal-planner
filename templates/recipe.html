@@ -42,6 +42,14 @@
         </div>
     {% endif %}
 
+    {% if recipe_name %}
+        <!-- remove meal button -->
+        <form action="/remove-meal" method="post">
+            <input type="hidden" name="dinner_to_remove" value="{{ recipe_name }}">
+            <input style="color:black;" type="submit" id="remove" value="REMOVE"/>
+        </form>
+    {% endif %}
+
     <div>
         <h1>{{ recipe.name }}</h1>
 

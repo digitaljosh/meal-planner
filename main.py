@@ -355,11 +355,9 @@ def delete_recipe():
 # display recipe instructions in modal
 @app.route("/modal-recipe", methods=['POST'])
 def display_modal_recipe():
-
     print("######################")
     recipe_name = request.form["recipe_name"]
     print(recipe_name)
-    #recipe_date = request.form["recipe_date"]
     # recipe_name = content["recipe_name"]
     # print(recipe_name)
     print("##################")
@@ -368,7 +366,7 @@ def display_modal_recipe():
     """ diplays recipe by id with normalized data in clean format """
     recipe = Recipe.query.filter_by(name=recipe_name).first()
     print(recipe)
-    return render_template('recipe.html', recipe=recipe, ingredients=clean_ingreds(recipe))
+    return render_template('recipe.html', recipe=recipe, recipe_name=recipe_name, ingredients=clean_ingreds(recipe))
 
 
 @app.route("/recipe/<recipe_name>")
@@ -446,16 +444,15 @@ def display_ingredients():
 
 @app.route('/remove-meal', methods=['POST'])
 def delete_meal_event():
+    # need to use meal name to remove instead of meal id
     '''for now just removes event using dropdown form'''
-    event_id = request.form['dinner_to_remove']
-    # returns id as string from form
-    ev_id = int(event_id)
-    ev_to_get_id_from = Event.query.filter_by(id=ev_id).first()
+    event_name = request.form['dinner_to_remove']
+    ev_to_get_userid_from = Event.query.filter_by(meal=event_name).first()
     #use the event to get user  session['username'] not working here
-    user_id = ev_to_get_id_from.user_id
+    user_id = ev_to_get_userid_from.user_id
     user = User.query.filter_by(id=user_id).first()
     # now that we've got the user identity we can delete event 
-    Event.query.filter_by(id=event_id).delete()
+    Event.query.filter_by(meal=event_name).delete()
     db.session.commit()
     
     events = getUsersEvents(user.username)
