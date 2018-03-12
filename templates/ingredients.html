@@ -20,8 +20,8 @@
     <h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
 
     <ul>
-        
-        {% for k, v in ingredients_dict.items() %}
+        <!-- sorted alphabetically for now -->
+        {% for k, v in ingredients_dict.items()| sort %}
         {% if k and v != None %}
         <li> {{ v[0] }} {{ v[1] }}  {{ k }}</li>
         {% endif %}

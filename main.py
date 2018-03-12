@@ -4,20 +4,17 @@ import requests
 import json
 import pprint 
 import datetime
-#from datetime import date, timedelta, datetime
-import calendar
+#import calendar
 import re 
 import sqlalchemy
-#from sqlalchemy import IntegrityError
-from collections import Counter
+
+#from collections import Counter
 
 import recipe_search_list, recipe_info
 from app import app, db
 from models import User, Event, Recipe, Cookbook
 from hashy import check_pw_hash
-
-from st_amts import make_shopping_list, make_ingredient_dict
-
+from st_amts import make_shopping_list
 from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
                         make_users_events_current, get_meals_for_the_week, get_today_string,
                         get_week_from_string, getListUserRecipes, multiply_amts,
@@ -92,7 +89,6 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             # now create a cookbook for that user
-            print("$$$$$$$$$$$$$$$$$$$$$$$$$$" + str(new_user.id))
             new_cookbook = Cookbook(owner_id=new_user.id)
             db.session.add(new_cookbook)
             db.session.commit()
@@ -113,7 +109,6 @@ def login():
     if request.method == 'GET':
         try:
             if session['username']:
-                #recipes = Recipe.query.all()
                 name = session['username']
                 recipes = getListUserRecipes(name)
                 return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), recipes=recipes)#username=session['username'])
@@ -153,12 +148,10 @@ def cal_display():
         # strips events of those that have passed
         current_events = make_users_events_current(user.username)
         write_events(current_events)
-        #recipes = Recipe.query.all()
         recipes = getListUserRecipes(user.username)
         return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
     else: # 'POST'
         # displays calendar with updated changes
-        #recipes = Recipe.query.all()
         recipes = getListUserRecipes(user.username)
         date = request.form['date']
         recipe_id = request.form['meal']
@@ -280,7 +273,6 @@ def recipe_instructions():
         #number = session['cookbook-id']
         user = User.query.filter_by(username=session['username']).first()
         cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
-        print("####################" + str(cookbook.id))
         
         new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
         new = True
@@ -288,7 +280,7 @@ def recipe_instructions():
         #db.session.commit()        
    
         return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
-    #return render_template('search.html', recipe_instr=json_data) 
+
 """
     recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
     return render_template('search.html', recipe_instructions=recipe_instructions )
@@ -319,7 +311,7 @@ def save_recipe():
     #     return render_template('full-calendar.html', user=user, events=events)
    
     # keeps format consistent for recipes manually entered
-    #TODO seems to be dropping the first entry
+    
     if type(ingredients) == str and '[' not in ingredients :
         print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Manual" + ingredients)
         ingredients = ingredients.splitlines()
@@ -372,7 +364,6 @@ def display_modal_recipe():
     recipe_id = request.form["recipe_id"]
     print(recipe_id)
     # recipe_name = content["recipe_name"]
-    # print(recipe_name)
     print("##################")
     print("ok I got the recipe", recipe_id)
     print("######################")
