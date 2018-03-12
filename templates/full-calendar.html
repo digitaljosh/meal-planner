@@ -192,10 +192,13 @@
 				eventClick:  function(event, jsEvent, view) {
 					recipe_name = event.title;
 					recipe_date = event.start;
+					recipe_id = event.id;
+					alert(recipe_id)
 					recipe_date = recipe_date.format();
 					recipe_name = {"recipe_name":recipe_name}
 					recipe_date = {"recipe_date":recipe_date}
-					getRecipeId(recipe_name);
+					recipe_id = {"recipe_id":recipe_id}
+					getRecipeId(recipe_id);
 					
 				},
 				dayClick: function(date, jsEvent, view) {
@@ -220,11 +223,11 @@
 		});
 	
 	
-		function getRecipeId(recipe_name) {
-			console.log(recipe_name)
+		function getRecipeId(recipe_id) {
+			console.log(recipe_id)
 			$.ajax({
 				url: '/modal-recipe',
-				data: recipe_name,
+				data: recipe_id,
 				// contentType: application/json,
 				type: 'POST',
 				success: function(response){
@@ -277,7 +280,7 @@
 						<div class="col-sm-10">
 							<select name="meal">
 								{% for recipe in recipes %}
-									<option value="{{ recipe.name }}">{{ recipe.name }}</option>
+									<option value="{{ recipe.id }}">{{ recipe.name }} : recipe {{ recipe.id }}</option>
 								{% endfor %}
 							</select>
 						</div>

@@ -42,10 +42,10 @@
         </div>
     {% endif %}
 
-    {% if recipe_name %}
+    {% if recipe_id %}
         <!-- remove meal button -->
         <form action="/remove-meal" method="post">
-            <input type="hidden" name="dinner_to_remove" value="{{ recipe_name }}">
+            <input type="hidden" name="dinner_to_remove" value="{{ recipe_id }}">
             <input style="color:black;" type="submit" id="remove" value="REMOVE"/>
         </form>
     {% endif %}

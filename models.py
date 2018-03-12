@@ -18,20 +18,22 @@ class User(db.Model):
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    meal = db.Column(db.String(100), db.ForeignKey('recipe.name'))
+    meal = db.Column(db.Integer, db.ForeignKey('recipe.id')) # used to be 'recipe name', now 'recipe id'
     #meal = db.Column(db.Recipe)
     date = db.Column(db.String(10))
     #recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    meal_name = db.Column(db.String(100))
 
-    def __init__(self, date, user_id, meal=None):
+    def __init__(self, date, user_id, meal, meal_name):
         self.meal = meal
         self.date = date
         self.user_id = user_id
+        self.meal_name = meal_name
 
 class Recipe(db.Model):
-    #id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), primary_key=True)# unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))# unique=True, nullable=False)
     ingredients = db.Column(db.Text)# maybe pickle to use a list ?
     instructions = db.Column(db.Text)# may also need to use pickled object, might be okay though
     time = db.Column(db.Integer) # time in minutes
