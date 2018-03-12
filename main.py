@@ -408,8 +408,10 @@ def display_ingredients():
     for event in events:
         meals.append(event.meal)
     for meal in meals:
+        print("!!" + str(meal))
         ready_for_dict = []
-        recipe = Recipe.query.filter_by(name=meal).first()
+        #recipe = Recipe.query.filter_by(name=meal).first()
+        recipe = Recipe.query.filter_by(id=meal).first()
         recipe_l = recipe.ingredients.split(',')
         ready_for_dict = []
         for ingred in recipe_l:
