@@ -8,7 +8,7 @@
   </div>
 
 <div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
-        <h1>Here are the recipes in {{ username }}'s cookbook: </h1>
+        <h1>{{ username }}, here are the recipes currently in your cookbook: </h1>
     <ul>
         {% for recipe in recipes|sort(attribute='id') %}
             <li><a href="{{ url_for('display_recipe', recipe_id=recipe.id) }}">{{ recipe.name }} : recipe {{ recipe.id }}</li>
