@@ -256,15 +256,16 @@ def recipe_instructions():
 
     recipe_time =  int(json_data['readyInMinutes'])
    
+    '''Duplicates won't be allowed by db anyway so let them push a save button if they wish
     # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
     same_recipe = Recipe.query.filter_by(name=recipe_name, instructions=recipe_instructs).first()
    
     if same_recipe:
         #already in db, just display that one
         return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
-
+    '''
     # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
-    elif recipe_ingredients == None or recipe_instructions == None:
+    if recipe_ingredients == None or recipe_instructions == None:
         flash("That isn't a complete recipe, pick another.", 'negative')
         return redirect('search.html')
 
