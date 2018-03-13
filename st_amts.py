@@ -1,5 +1,7 @@
 import nltk
 import unicodedata
+import re
+
 from fractions import Fraction
 
 
@@ -28,10 +30,10 @@ def get_nouns(ingredients_string):
         
     return nouns
 
-def obtain_measure(ingredient):
+def obtain_measure(ingredient_string):
     ''' given an ingredient as a string extract the amount converts to float'''
     
-    split_list_of_ingredient = ingredient.split()
+    split_list_of_ingredient = ingredient_string.split()
     for word in split_list_of_ingredient:
         try:
             num = int(word)
@@ -57,12 +59,21 @@ def obtain_measure(ingredient):
                             return uni_fl 
                         else: pass
                     except TypeError:
-                        #TODO a hack if 7-8 minnows simply returns 7
                         try:
-                            if '-' in word:
-                                for char in word:
-                                    if char.isdigit():
-                                        return char
+                            pattern = re.compile("\d+-\d+")
+                            digits = []
+                            if pattern.match(word):
+                                value_range = pattern.match(word)
+                                print(str(value_range.span()))
+                                index_range = value_range.span()
+                                value_string = word[index_range[0]:index_range[1]]
+                                for item in value_string.split("-"):
+                                    digits.append(item)
+                                dig_sum = 0
+                                for item in digits:
+                                    dig_sum += int(item)
+                                    
+                                return dig_sum//2
                             
                         except TypeError:
                             pass
@@ -189,3 +200,7 @@ if __name__ == "__main__":
     dict_head = make_shopping_list(lis_o_recipes)
     print(dict_head)
     print(dict_head['Flour']) #note keys are title case
+
+    recipe_with_ranges = ['2-3 cups flour', '12-20 tbs butter', '1-5 kumquats']
+
+    print(obtain_measure(str(recipe_with_ranges)))
