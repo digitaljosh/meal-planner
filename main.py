@@ -343,14 +343,14 @@ def save_recipe():
 
 @app.route("/remove-recipe", methods=['POST'])
 def delete_recipe():
-    recipe_name = request.form["name"]
+    recipe_id = request.form["id"]
     #need to remove any event with that recipe first
-    events_to_go = Event.query.filter_by(meal=recipe_name).all()
+    events_to_go = Event.query.filter_by(meal=recipe_id).all()
     for event in events_to_go:
         Event.query.filter_by(id=event.id).delete()
     
 
-    Recipe.query.filter_by(name=recipe_name).delete()
+    Recipe.query.filter_by(id=recipe_id).delete()
     db.session.commit()
 
     recipes = getListUserRecipes(session['username'])
@@ -361,16 +361,22 @@ def delete_recipe():
 @app.route("/modal-recipe", methods=['POST'])
 def display_modal_recipe():
     print("######################")
-    recipe_id = request.form["recipe_id"]
-    print(recipe_id)
-    # recipe_name = content["recipe_name"]
+    #recipe_id = request.form["recipe_id"]
+    #print(recipe_id)
+    recipe_date = request.form["recipe_date"]
+    print(recipe_date)
     print("##################")
-    print("ok I got the recipe", recipe_id)
+    #print("ok I got the recipe", recipe_id)
     print("######################")
     """ diplays recipe by id with normalized data in clean format """
-    recipe = Recipe.query.filter_by(id=recipe_id).first()
-    print(recipe)
-    return render_template('recipe.html', recipe=recipe, recipe_id=recipe_id, ingredients=clean_ingreds(recipe))
+    event = Event.query.filter_by(date=recipe_date).first()
+    event_meal_id = event.meal
+    recipe = Recipe.query.filter_by(id=event_meal_id).first()
+    print(event_meal_id)
+
+    #recipe = Recipe.query.filter_by(id=recipe_id).first()
+    #print(recipe)
+    return render_template('recipe.html', recipe=recipe, recipe_date=recipe_date, ingredients=clean_ingreds(recipe))
 
 
 @app.route("/recipe/<recipe_id>")
@@ -400,7 +406,7 @@ def display_ingredients():
         meals.append(event.meal)
     for meal in meals:
         ready_for_dict = []
-        recipe = Recipe.query.filter_by(name=meal).first()
+        recipe = Recipe.query.filter_by(id=meal).first()
         recipe_l = recipe.ingredients.split(',')
         ready_for_dict = []
         for ingred in recipe_l:
@@ -415,15 +421,13 @@ def display_ingredients():
 
 @app.route('/remove-meal', methods=['POST'])
 def delete_meal_event():
-    # need to use meal name to remove instead of meal id
-    '''for now just removes event using dropdown form'''
-    event_name = request.form['dinner_to_remove']
-    ev_to_get_userid_from = Event.query.filter_by(meal=event_name).first()
+    event_date = request.form['dinner_to_remove']
+    ev_to_get_userid_from = Event.query.filter_by(date=event_date).first()
     #use the event to get user  session['username'] not working here
     user_id = ev_to_get_userid_from.user_id
     user = User.query.filter_by(id=user_id).first()
     # now that we've got the user identity we can delete event 
-    Event.query.filter_by(meal=event_name).delete()
+    Event.query.filter_by(date=event_date).delete()
     db.session.commit()
     
     events = getUsersEvents(user.username)

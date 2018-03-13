@@ -42,10 +42,10 @@
         </div>
     {% endif %}
 
-    {% if recipe_id %}
-        <!-- remove meal button -->
+    {% if recipe_date %}
+        <!-- remove meal from calendar -->
         <form action="/remove-meal" method="post">
-            <input type="hidden" name="dinner_to_remove" value="{{ recipe_id }}">
+            <input type="hidden" name="dinner_to_remove" value="{{ recipe_date }}">
             <input style="color:black;" type="submit" id="remove" value="REMOVE"/>
         </form>
     {% endif %}
@@ -54,8 +54,9 @@
         <h1>{{ recipe.name }}</h1>
 
             {% if button_flag %}
+            <!-- remove meal from cookbook -->
                 <form style="margin-left: 75%; margin-top: -5%; color:black;" action="{{ url_for('delete_recipe') }}" method="post">
-                    <input type="hidden" name="name" value="{{ recipe.name }}"/>
+                    <input type="hidden" name="id" value="{{ recipe_date }}"/>
                     <input type="submit" class="btn" value="Remove from Cookbook"/>
                 </form>
             {% endif %}
