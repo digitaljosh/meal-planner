@@ -93,7 +93,7 @@
 			<ul class="dropdown-menu" style="text-align: center;">
 				<li><a class="dropdown-item" data-toggle="modal" data-target="#createRecipeModal" href="#">Create Recipe</a></li>
 				<div class="divider"></div>
-				<li><a class="dropdown-item" href="/search">Recipe Search</a></li>
+				<li><a class="dropdown-item" href="/search">Search Recipe</a></li>
 				<div class="divider"></div>
 				<li><a class="dropdown-item" href="/recipe-index">My Cookbook</a></li>
 				<div class="divider"></div>
@@ -207,7 +207,8 @@
 					recipe_name = {"recipe_name":recipe_name}
 					recipe_date = {"recipe_date":recipe_date}
 					recipe_id = {"recipe_id":recipe_id}
-					getRecipeId(recipe_id);
+					getRecipeId(recipe_date);
+					//todo need recipe_date to remove meal from calendar
 					
 				},
 				dayClick: function(date, jsEvent, view) {
@@ -232,11 +233,12 @@
 		});
 	
 	
-		function getRecipeId(recipe_id) {
+		function getRecipeId(recipe_date) {
 			console.log(recipe_id)
+			console.log(recipe_date)
 			$.ajax({
 				url: '/modal-recipe',
-				data: recipe_id,
+				data: recipe_date,
 				// contentType: application/json,
 				type: 'POST',
 				success: function(response){
