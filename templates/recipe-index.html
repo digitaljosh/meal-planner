@@ -11,7 +11,9 @@
         <h1>{{ username }}, here are the recipes currently in your cookbook: </h1>
     <ul>
         {% for recipe in recipes|sort(attribute='id') %}
-            <li><a href="{{ url_for('display_recipe', recipe_id=recipe.id) }}">{{ recipe.name }} : recipe {{ recipe.id }}</li>
+            <!-- <li><a href="{{ url_for('display_recipe', recipe_id=recipe.id) }}">{{ recipe.name }} : recipe {{ recipe.id }}</li> -->
+            <li><a href="{{ url_for('display_recipe', recipe_id=recipe.id) }}">{{ recipe.name }}</li>
+                    
         {% endfor %}
 
     </ul>
