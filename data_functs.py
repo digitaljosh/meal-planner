@@ -58,7 +58,7 @@ def write_events(events):
             #events.write('[')
             event_dicts = []
             for event in events:
-                event_dicts.append({"title":event.meal, "start":event.date})
+                event_dicts.append({"title":event.meal_name, "start":event.date, "id":event.meal})
             event_list.write(json.dumps(event_dicts))
             #events.write(']') 
 
