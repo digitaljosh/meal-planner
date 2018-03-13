@@ -407,10 +407,6 @@ def display_ingredients():
     for meal in meals:
         print("!!" + str(meal))
         ready_for_dict = []
-<<<<<<< HEAD
-        #recipe = Recipe.query.filter_by(name=meal).first()
-=======
->>>>>>> 8ac67f4acba533e0492f8339a8cae67d7784ff2c
         recipe = Recipe.query.filter_by(id=meal).first()
         recipe_l = recipe.ingredients.split(',')
         ready_for_dict = []
