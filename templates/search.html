@@ -30,15 +30,17 @@
          Since I've set API to return -->
     <div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
         <ul>
-            {% for result in recipe_list['results'] %}
-                <h3 style="text-align: center;">{{ result['title'] }}</h3>
-                <h4 style="text-align: center;"><a href="/instructions?id={{ result['id'] }}">Recipe Instructions</a></h4>
-                <img style="max-width: 65%; width: 65%; display: block; margin-left: auto; margin-right: auto;" src="https://spoonacular.com/recipeImages/{{ result['imageUrls'][0] }}"/>
-                </br>                
-                </br>
-                </br>
-                </br>
-            {% endfor %}
+            {% if recipe_list %}
+                {% for result in recipe_list['results'] %}
+                    <h3 style="text-align: center;">{{ result['title'] }}</h3>
+                    <h4 style="text-align: center;"><a href="/instructions?id={{ result['id'] }}">Recipe Instructions</a></h4>
+                    <img style="max-width: 65%; width: 65%; display: block; margin-left: auto; margin-right: auto;" src="https://spoonacular.com/recipeImages/{{ result['imageUrls'][0] }}"/>
+                    </br>                
+                    </br>
+                    </br>
+                    </br>
+                {% endfor %}
+            {% endif %}
         </ul>
     </div>
 

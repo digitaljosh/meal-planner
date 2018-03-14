@@ -49,18 +49,12 @@
 		margin: 40px auto;
 		padding: 0 10px;
 	}
-	/* h1 {
-		text-align: center;
-		color: #9acd32;
-
-	} */
+	
 	h1 {
     text-align: center;
-	color: rgba(5, 83, 185, 0.993);
-    /* color: green; */
+	color: rgba(187, 187, 187, 0.993);
 	font-size: 4rem;
-	text-shadow: 2px 2px 3px rgb(236, 236, 225);
-
+	/*text-shadow: 2px 2px 3px rgb(236, 236, 225);*/
 }
 
 	
@@ -82,6 +76,7 @@
 	
 
 	<h1>{{ user.username }}'s calendar</h1>	
+
 	<div style="display: inline-block; position: absolute; margin-left: 12%;" id='calendar'></div>
 
 
@@ -198,6 +193,7 @@
 					id = jsEvent.id
 					addMeal(date, id)
 				},
+				
 				editable: true,
 				eventLimit: true,
 				eventStartEditable: false,
@@ -210,9 +206,11 @@
 				},
 				loading: function(bool) {
 					$('#loading').toggle(bool);
-				}
+				},
 			});
 		});
+
+		
 	
 	
 		function getRecipeId(recipe_date) {

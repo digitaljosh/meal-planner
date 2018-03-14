@@ -196,17 +196,14 @@ background-color:rgba(10, 10, 10, 0.678);
 }
 
 .form-inner {
+    margin: 5%;
     padding: 5%;
 }
 
 
-.login-button {
-    margin-left: 11%;
-}
 
 #signup-link {
-    margin-left: 20%;
-    color: #fff;
+    color: rgb(64, 179, 255);
 }
 
 #login-title {
