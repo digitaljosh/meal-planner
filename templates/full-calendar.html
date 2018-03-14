@@ -270,8 +270,9 @@
 						</label>
 						<div class="col-sm-10">
 							<select name="meal">
-								{% for recipe in recipes %}
-									<option value="{{ recipe.id }}">{{ recipe.name }} : recipe {{ recipe.id }}</option>
+								{% for recipe in recipes|sort(attribute="name") %}
+									<!-- <option value="{{ recipe.id }}">{{ recipe.name }} : recipe {{ recipe.id }}</option> -->
+									<option value="{{ recipe.id }}">{{ recipe.name }}</option>
 								{% endfor %}
 							</select>
 						</div>
