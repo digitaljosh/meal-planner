@@ -349,6 +349,7 @@ def save_recipe():
 @app.route("/remove-recipe", methods=['POST'])
 def delete_recipe():
     recipe_id = request.form["id"]
+    print(recipe_id)
     #need to remove any event with that recipe first
     events_to_go = Event.query.filter_by(meal=recipe_id).all()
     for event in events_to_go:
