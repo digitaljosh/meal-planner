@@ -2,13 +2,18 @@
 
 {% block content %}
 
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
 <div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
-    <div class="button-wrapper">
-        <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back to Cal"/></a>
+    <div style="float: right;" class="button-wrapper">
+        <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Calendar"/></a>
+        <a href="#"><button class="printBtn hidden-print button5">Print</button></a>
     </div>
 
-    <button class="printBtn hidden-print">Print</button>
-
+    
     <script type="text/javascript">
         $('.printBtn').on('click', function (){
             window.print();
@@ -17,7 +22,7 @@
 
 
 
-    <h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
+    <h1>{{username }}, here's your ingredient list for {{ start }} to {{ end }}:</h1>
 
     <ul>
         <!-- sorted alphabetically for now -->
