@@ -4,11 +4,9 @@ import requests
 import json
 import pprint 
 import datetime
-#import calendar
 import re 
 import sqlalchemy
 
-#from collections import Counter
 
 import recipe_search_list, recipe_info
 from app import app, db
@@ -406,7 +404,6 @@ def display_ingredients():
     for event in events:
         meals.append(event.meal)
     for meal in meals:
-        print("!!" + str(meal))
         ready_for_dict = []
         recipe = Recipe.query.filter_by(id=meal).first()
         recipe_l = recipe.ingredients.split(',')

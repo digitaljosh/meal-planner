@@ -136,7 +136,7 @@ def make_ingredient_dict(list_of_ingredients):
         key_name= k_name.title() # thus parmesan == Parmesan == PARMESAN
         # in the case of say water or salt and pepper
         if amt == None:# and measurement == "whole":
-            amt = ""
+            amt = 1
             measure = ""
 
         ingredient_dict[key_name] = [amt, measurement]
