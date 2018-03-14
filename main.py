@@ -190,7 +190,7 @@ def recipe_search():
     '''   
         search_query = request.form['search']
         search_query = search_query.replace(" ","+")
-        api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&query="
+        api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&number=20&query="
         url = api + search_query
         headers={
             "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
@@ -204,6 +204,12 @@ def recipe_search():
             flash("No recipe listed, maybe check spelling and try again.", 'negative')
             return render_template('search.html')
         else:
+            print("$$$$$$$$$$$$$")
+            print(json_data)
+            print("$$$$$$$$$$$$$")
+            print("##############" + str(len(json_data)))
+            for i in range(20):
+                print(json_data['results'][i]['title'])
             return render_template('search.html', recipe_list=json_data)
         
         

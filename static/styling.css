@@ -187,7 +187,7 @@ h2 {
 .form-wrap {
 width: 40%;
 margin: 0 auto;
-background-color: rgba(75, 75, 75, 0.788)
+background-color:rgba(10, 10, 10, 0.678);
 
 }
 
@@ -206,14 +206,14 @@ background-color: rgba(75, 75, 75, 0.788)
 
 #signup-link {
     margin-left: 20%;
-    color: #000;
+    color: #fff;
 }
 
 #login-title {
-    color: #000;
+    color: #fff;
     font-size: 28px;
-    text-align: center;
-    margin: 0 auto;
+    /*text-align: center;
+    margin: 0 auto;*/
 }
 
   /*  dropdown button on calendar page  */
