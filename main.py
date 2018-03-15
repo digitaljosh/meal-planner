@@ -146,17 +146,21 @@ def cal_display():
         current_events = make_users_events_current(user.username)
         write_events(current_events)
         recipes = getListUserRecipes(user.username)
+        
         return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
     else: # 'POST'
         # displays calendar with updated changes
         recipes = getListUserRecipes(user.username)
         date = request.form['date']
         recipe_id = request.form['meal']
+
+        cookBook = Cookbook.query.filter_by(owner_id=user.id).first()
+       
         print("#"*10 + "DATE & DINNER" + "#"*10)
         print(date)
         print(recipe_id)
         print("#"*10)
-        recipe = Recipe.query.filter_by(id=recipe_id).first()
+        recipe = Recipe.query.filter_by(id=recipe_id).filter_by(cookbook_id=cookBook.id).first()
         
         #TODO can't add event until Recipe created
         try:
@@ -174,9 +178,6 @@ def cal_display():
         make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
         write_events(event_list)
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + session['username'])
-        print(type(session))
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
 
@@ -204,12 +205,7 @@ def recipe_search():
             flash("No recipe listed, maybe check spelling and try again.", 'negative')
             return render_template('search.html')
         else:
-            print("$$$$$$$$$$$$$")
-            print(json_data)
-            print("$$$$$$$$$$$$$")
-            print("##############" + str(len(json_data)))
-            for i in range(20):
-                print(json_data['results'][i]['title'])
+           
             return render_template('search.html', recipe_list=json_data)
         
         
@@ -377,13 +373,13 @@ def display_modal_recipe():
     #print("ok I got the recipe", recipe_id)
     print("######################")
     """ diplays recipe by id with normalized data in clean format """
-    event = Event.query.filter_by(date=recipe_date).first()
+
+    username = session['username']
+    user = getUserByName(username)
+    event = Event.query.filter_by(date=recipe_date).filter_by(user_id=user.id).first()
     event_meal_id = event.meal
     recipe = Recipe.query.filter_by(id=event_meal_id).first()
-    print(event_meal_id)
 
-    #recipe = Recipe.query.filter_by(id=recipe_id).first()
-    #print(recipe)
     return render_template('recipe.html', recipe=recipe, recipe_date=recipe_date, ingredients=clean_ingreds(recipe))
 
 
@@ -430,17 +426,25 @@ def display_ingredients():
 @app.route('/remove-meal', methods=['POST'])
 def delete_meal_event():
     event_date = request.form['dinner_to_remove']
-    ev_to_get_userid_from = Event.query.filter_by(date=event_date).first()
+    username = session['username']
+    user = getUserByName(username)
+    
+    Event.query.filter_by(date=event_date).filter_by(user_id=user.id).delete()
+    '''
+    #ev_to_get_userid_from = Event.query.filter_by(date=event_date).first()
     #use the event to get user  session['username'] not working here
     user_id = ev_to_get_userid_from.user_id
     user = User.query.filter_by(id=user_id).first()
     # now that we've got the user identity we can delete event 
     Event.query.filter_by(date=event_date).delete()
+    '''
     db.session.commit()
     
     events = getUsersEvents(user.username)
     write_events(events)
-    recipes = Recipe.query.all()
+   
+    recipes = getListUserRecipes(username)
+
     return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
 # @app.route('/other-calendars', methods=['POST'])
