@@ -46,7 +46,7 @@
 	}
 	#calendar {
 		max-width: 900px;
-		margin: 40px auto;
+		/*margin: 40px auto;*/
 		padding: 0 10px;
 	}
 	
@@ -75,13 +75,13 @@
 
 	
 
-	<h1>{{ user.username }}'s calendar</h1>	
+		
 
 	<div style="display: inline-block; position: absolute; margin-left: 12%;" id='calendar'></div>
 
+	<em><h4 style="display: inline-block; position: relative; margin-left: 85.5%; color: white;">{{ user.username }}'s calendar</h4></em>
 
-
-	<div id="calendar-dropdown" style="max-width: 150px; display: inline-block; margin-left: 80%; margin-top: 5%; position: relative;">
+	<div id="calendar-dropdown" style="max-width: 150px; display: inline-block; margin-left: 80%; margin-top: 2%; position: relative;">
 		<div class="dropdown">
 			<button type="button" class="button5 dropdown-toggle" data-toggle="dropdown">Options
 				<span class="caret"></span></button>
