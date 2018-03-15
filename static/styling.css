@@ -188,11 +188,10 @@ h2 {
 width: 40%;
 margin: 0 auto;
 background-color:rgba(10, 10, 10, 0.678);
-
 }
 
 .control-label {
-    color: rgb(37, 37, 37);
+    color: #fff;
 }
 
 .form-inner {
