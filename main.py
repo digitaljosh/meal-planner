@@ -15,8 +15,7 @@ from hashy import check_pw_hash
 from st_amts import make_shopping_list
 from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
                         make_users_events_current, get_meals_for_the_week, get_today_string,
-                        get_week_from_string, getListUserRecipes, multiply_amts,
-                        good_display_ingredient)
+                        get_week_from_string, getListUserRecipes, good_display_ingredient)
 
 
 
@@ -175,6 +174,9 @@ def cal_display():
         make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
         write_events(event_list)
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + session['username'])
+        print(type(session))
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
 

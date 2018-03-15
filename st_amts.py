@@ -7,9 +7,9 @@ from fractions import Fraction
 
 #TODO add plurals if we refactor get_measure without dropping s
 
-list_of_measures = ['can', 'cup', 'cups', 'pint', 'quart', 'tablespoons', 'tablespoon', 'tbs', 'tb', 't', 'ts', 'teaspoon', 'tsp', 'gr',
-                    'grams', 'gram','kilo', 'kilogram', 'dash', 'pinch', 'sprig', 'oz', 'ounce', 'ounces',
-                    'lb', 'pound']
+list_of_measures = ['can', 'cup', 'cups', 'pint', 'quart', 'tablespoons', 'tablespoon', 'tbs', 'tb', 't', 'ts', 'teaspoon', 'tsps', 'gr',
+                    'grams', 'gram','kilo', 'kilogram', 'dash', 'pinch', 'sprig', 'oz', 'ounce', 'ounces', 'cloves',
+                    'lb', 'pound', 'pd']
 
 words_not_recognized_as_nouns = ['flour', 'olive', 'oz']
 '''
@@ -176,11 +176,11 @@ def remove_amts_measures(string_x):
     
     # BUG point can't remove because s has been dropped for comparisons
     try:
+        #list(string_x).remove(measure_to_remove)
         noun_list.remove(measure_to_remove)
     except ValueError:
         # no measure to remove
         pass
-
     return noun_list
 
 
