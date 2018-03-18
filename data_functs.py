@@ -41,14 +41,7 @@ def getUsersEvents(username):
 def getListUserRecipes(username):
     user = getUserByName(username)
     user_cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
-    #print("$$$$$$$$$$$$$$$$$$$$$$$$$$" + user_cookbook.recipes)
-    recipes_list = user_cookbook.recipes
-    for recipe in recipes_list:
-         print("$$$$$$$$$$$$$$$$$$$$$$$$$$$" + recipe.name)
-    # recipes = []
-    # for  recipe_id in recipes_ids:
-    #     recipes.append(Recipe.query.filter_by(id=recipe_id).first())
-    #return recipe_list
+   
     return user_cookbook.recipes
 
 
@@ -91,6 +84,9 @@ def get_meals_for_the_week(username):
         date = datetime.datetime.strptime(event.date, "%Y-%m-%d").date()
         if date >= today and date <= week_from_date:
             week_events.append(event)
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print(week_events)
+    print("%$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     return week_events
 
 def get_today_string():

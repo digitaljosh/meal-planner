@@ -7,39 +7,40 @@
 <div class="container" id="form-container">
   <div class="form-wrap">
     <div class="form-inner">
-      <p id="login-title">Sign Up!</p>
+      <p style="text-align:center;" id="login-title">Sign Up!</p>
         
-      <form action="/sign-up" method="post" class="form-horizontal" name="signup">
+      <form action="/sign-up" method="post" name="signup">
         <div class="form-group">
-          <div class="col-sm-10">
+          <div>
               <input type="text" class="form-control" id="email" placeholder="Enter username" name="username">
           </div>
         </div>
         <div class="form-group">
-          <div class="col-sm-10">
+          <div>
               <input type="text" class="form-control" id="email" placeholder="Enter email" name="email">
           </div>
         </div>
         <div class="form-group">
-          <div class="col-sm-10">          
+          <div>          
             <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="passw">
           </div>
         </div>
         <div class="form-group">
-          <div class="col-sm-10">          
+          <div>          
             <input type="password" class="form-control" id="pwd" placeholder="Confirm password" name="conf_pass">
           </div>
+        </div>       
+        <div>
+            <button type="submit" class="btn">Submit</button>
+            <a id="signup-link" style="float:right; margin-top: 1.5%;" href="/login">Login here!</a>
         </div>
-        <div class="form-group">        
-          <div class="login-button">
-              <button type="submit" class="btn btn-default">Submit</button>
-              <span id="signup-link">Login <a href="/login">here</a></span>
-          </div>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+
 
  
 {% endblock %}

@@ -18,6 +18,18 @@ form {
     display: none;
   }
 
+  .button5 {
+    display: none;
+  }
+
+  #about-text {
+    display: none;
+  }
+
+  #about {
+    display: none;
+  }
+
   .fc th,
   .fc td,
   .fc hr,

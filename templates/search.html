@@ -1,44 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="margin-top: 8%;">
+<div class="container">
 
-    <div class="button-wrapper">
-        <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back to Cal"/></a>
-    </div>
+    
     <div class="form-wrap">
-            <div class="form-inner">
-            <p id="login-title">Search Recipes</p>
+        <div class="form-inner">
+            <p style="text-align: center;" id="login-title">Search Recipes</p>
         
             <form action="/search" method="post" class="form-horizontal" name="search">
-                <div class="form-group">
-                    <div class="col-sm-10">
+                <div class="form-group col-sm-10">
+                    <div style="margin-left: auto; margin-right: auto;" >
                         <input type="text" class="form-control" name="search">
                     </div>
                 </div>
-                <input type="submit" value="Search">
-                <span id="signup-link">Meal Calendar <a href="/full-calendar">here</a></span>
+                <input style="margin-left: 5%; margin-right: auto; margin-top: 1%;" type="submit" value="Search">
             </form>
+        </div>
+        <div>
+            <a href="/full-calendar"><input  style="margin-left: 33%; margin-bottom: 5%;" class="button5" type="button" name="button5" value="Calendar"/></a>
         </div>
     </div> 
 
 
     <!-- Display recipe titles and pictures -->
-    <div>
-        <ul>
-            {% for i in range((recipe_list|length)-1) %}
-                <h3>{{ recipe_list['results'][i]['title'] }}</h3>
-                <img src="https://spoonacular.com/recipeImages/{{ recipe_list['results'][i]['imageUrls'][0] }}"/>
-                <h4><a href="/instructions?id={{ recipe_list['results'][i]['id'] }}">Recipe Instructions</a></h4>
-                </br>
-            {% endfor %}
-        </ul>
-    </div>
+    {% if recipe_list %}
+        <div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
+            <ul>
+                {% for result in recipe_list['results'] %}
+                    <h3 style="text-align: center;">{{ result['title'] }}</h3>
+                    <h4 style="text-align: center;"><a href="/instructions?id={{ result['id'] }}">Recipe Instructions</a></h4>
+                    <img style="max-width: 65%; width: 65%; display: block; margin-left: auto; margin-right: auto;" src="https://spoonacular.com/recipeImages/{{ result['imageUrls'][0] }}"/>
+                    </br>                
+                    </br>
+                    </br>
+                    </br>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
     <div>
-         
+        
         {% if recipe_instructions %}
-       
             <h3>{{ recipe_instructions.get('title') }}</h3>
             <img src="{{ recipe_instructions.get('image') }}"/>
             </br>

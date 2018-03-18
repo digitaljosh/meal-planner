@@ -3,20 +3,19 @@
 {% block content %}
 
 
-<div class="button-wrapper">
-    <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back to Cal"/></a>
-  </div>
 
-<div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
-        <h1>{{ username }}, here are the recipes currently in your cookbook: </h1>
-    <ul>
-        {% for recipe in recipes|sort(attribute='name') %}
-            <!-- <li><a href="{{ url_for('display_recipe', recipe_id=recipe.id) }}">{{ recipe.name }} : recipe {{ recipe.id }}</li> -->
-            <li><a href="{{ url_for('display_recipe', recipe_id=recipe.id) }}">{{ recipe.name }}</li>
-                    
-        {% endfor %}
 
-    </ul>
+<div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 50%;">
+    <div>
+        <h1>{{ username }}'s recipes: </h1>
+        <a style="float:right; margin-top: -7%; margin-right:2%;" href="/full-calendar"><input  class="button5" type="button" name="button5" value="Calendar"/></a>
+        <ul>
+            {% for recipe in recipes|sort(attribute='name') %}
+                <!-- <li><a href="{{ url_for('display_recipe', recipe_id=recipe.id) }}">{{ recipe.name }} : recipe {{ recipe.id }}</li> -->
+                <li><a href="{{ url_for('display_recipe', recipe_id=recipe.id) }}">{{ recipe.name }}</li>   
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 
 

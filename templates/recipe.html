@@ -4,37 +4,41 @@
 {% block content %}
 
 
-
-{% if button_flag %}
-    <div class="button-wrapper">
-        <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back 2 Cal"/></a>
-    </div>
-{% endif %}
-
-
-
-
 <div id="background"></div>
 
-<!-- Display if not in db -->
-{% if new %}
-    <form action="{{ url_for('save_recipe') }}" method="post">
-        <input type="hidden" name="name" value="{{ recipe.name }}"/>
-        <input type="hidden" name="time" value="{{ recipe.time }}"/>
-        <input type="hidden" name="ingredients" value="{{ recipe.ingredients }}"/>
-        <input type="hidden" name="instructions" value="{{ recipe.instructions }}"/>
-        <input type="submit" class="btn" value="Save Recipe"/>
-    </form>
-{% endif %}
 
 
 
 
 <div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
     
-    {% if not button_flag %}
+
+    <!-- Display 'SAVE RECIPE' button if not in db -->
+    {% if new %}
+        <div style="display: inline-block; position: absolute; margin-left: 45%; margin-top: 2%;">
+            <div style="display: inline-block; position: relative;">
+                <form action="{{ url_for('save_recipe') }}" method="post">
+                    <input type="hidden" name="name" value="{{ recipe.name }}"/>
+                    <input type="hidden" name="time" value="{{ recipe.time }}"/>
+                    <input type="hidden" name="ingredients" value="{{ recipe.ingredients }}"/>
+                    <input type="hidden" name="instructions" value="{{ recipe.instructions }}"/>
+                    <input type="submit" class="button5" value="Save Recipe"/>
+                </form>
+            </div>
+            
+            <div style="display: inline-block; position: relative;">
+                <form>
+                    <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Calendar"/></a>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+
+    <!--  close modal button  -->
+    {% if not button_flag and not new %}
         <div>
-            <button style="float: right;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button style="color: #fff; float: right;" type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">
                     &times;
                 </span>
@@ -42,28 +46,41 @@
         </div>
     {% endif %}
 
+
+    <!-- remove meal from calendar -->
     {% if recipe_date %}
-        <!-- remove meal from calendar -->
         <form action="/remove-meal" method="post">
             <input type="hidden" name="dinner_to_remove" value="{{ recipe_date }}">
-            <input style="color:black;" type="submit" id="remove" value="REMOVE"/>
+            <input style="color:black; margin-top: 2%;" type="submit" id="remove" value="REMOVE"/>
         </form>
     {% endif %}
 
-    <div>
-        <h1>{{ recipe.name }}</h1>
+    
+    <h1>{{ recipe.name }}</h1>
 
-            {% if button_flag %}
-            <!-- remove meal from cookbook -->
-                <form style="margin-left: 75%; margin-top: -5%; color:black;" action="{{ url_for('delete_recipe') }}" method="post">
-                    <input type="hidden" name="id" value="{{ recipe.id }}"/>
-                    <input type="submit" class="btn" value="Remove from Cookbook"/>
+    
+    <!--  LINK to calendar and DELETE RECIPE button  -->
+    {% if button_flag %}
+        <div style="display: inline-block; position: absolute; margin-left: 45%; margin-top: -3%;">
+            <!-- link to calendar page -->
+            <div style="display: inline-block; position: relative;">
+                <form style="color:black;">
+                    <a href="/recipe-index"><input class="button5" type="button" name="button5" value="Cookbook"/></a>
                 </form>
-            {% endif %}
+            </div>
+    
+            <!-- DELETE RECIPE from cookbook -->
+            <div style="display: inline-block; position: relative;">
+                <form style="color:black;" action="{{ url_for('delete_recipe') }}" method="post">
+                    <input type="hidden" name="id" value="{{ recipe.id }}"/>
+                    <input  style="display: inline-block; position: relative;" type="submit" class="button5" value="Delete Recipe"/>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+        
 
-    </div>
-
-
+    <!--   recipe information    -->
     {% if recipe.time <= 60 %}
         <h3>Estimated time: <em>{{ recipe.time }} minutes</em></h3>
     {% else %}
