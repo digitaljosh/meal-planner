@@ -113,5 +113,7 @@ hashy.py
 mealvirt
 
 # ignore event specifics (?)
-# events.jason
+events.jason
 
+#Jupyter Notebook
+.ipynb 

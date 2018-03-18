@@ -17,6 +17,7 @@
 <script src="{{ url_for('static', filename='lib/moment.min.js') }}"></script>
 
 <script src="{{ url_for('static', filename='fullcalendar.min.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="/static/styling.css">
 
 
 <style>
@@ -48,23 +49,98 @@
 		margin: 40px auto;
 		padding: 0 10px;
 	}
-	h1 {
+	/* h1 {
 		text-align: center;
-		color: yellowgreen;
-	}
+		color: #9acd32;
+
+	} */
+	h1 {
+    text-align: center;
+	color: rgba(5, 83, 185, 0.993);
+    /* color: green; */
+	font-size: 4rem;
+	text-shadow: 2px 2px 3px rgb(236, 236, 225);
+
+}
+
+	
+
+	
+
 </style>
 </head>
 <body>
 
+	<!--
 	{% if calendar_shown %}
-		<h1>{{ calendar_shown }}'s calendar.</h1>
+		<h1>{{ calendar_shown }}'s calendar</h1>
 	{% else %}
-		<h1>{{ user.username }}'s calendar.</h1>
+		<h1>{{ user.username }}'s calendar</h1>
 	{% endif %}
+	-->
 
-	<div id='calendar'></div>
+	
 
-	<button class="printBtn hidden-print">Print</button>
+	<h1>{{ user.username }}'s calendar</h1>	
+	<div style="display: inline-block; position: absolute; margin-left: 12%;" id='calendar'></div>
+
+
+
+	<div id="calendar-dropdown" style="max-width: 150px; display: inline-block; margin-left: 80%; margin-top: 5%; position: relative;">
+		<div class="dropdown">
+			<button type="button" class="button5 dropdown-toggle" data-toggle="dropdown">Options
+				<span class="caret"></span></button>
+			<ul class="dropdown-menu" style="text-align: center;">
+				<li><a class="dropdown-item" data-toggle="modal" data-target="#createRecipeModal" href="#">Create Recipe</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item" href="/search">Search Recipe</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item" href="/recipe-index">My Cookbook</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item" href="/ingredients">Weekly Shopping List</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item printBtn hidden-print" href="#">Print Calendar</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item" href="/">Home</a></li>
+				<div class="divider"></div>
+				<li><a class="dropdown-item" href="/logout">Logout</a></li>
+			</ul>
+		</div>
+		<div class="popup-help button-wrapper about-button" onclick="myFunction()"><div id="about-text">Help</div>
+    		<span style="font-size: 18px;" class="help-popup help-text" id="myPopup">1. Click on a day to add a meal.</br>2. Click on a meal to see recipe.</span>
+    	</div>
+	</div>
+
+
+
+	<script>
+	// When the user clicks on div, open the popup
+		function myFunction() {
+			var popup = document.getElementById("myPopup");
+			popup.classList.toggle("show");
+		}
+	</script>
+	
+
+	
+
+
+<!--
+	REMOVE MEAL BUTTON
+
+	<form action="/remove-meal" method="post">
+		<p>Would you like to cancel your plans?</p>
+		<select name="dinner_to_remove">
+			{% for event in events %}
+			<option value="{{ event.id }}">{{ event.date }}</option>
+			{% endfor %}
+		</select>
+		<input type="submit" id="remove" value="REMOVE"/>
+	</form>
+-->
+	
+	
+
 
 	<script type="text/javascript">
 		$('.printBtn').on('click', function (){
@@ -72,10 +148,12 @@
 		});
 	</script>
 
+
 <!-- start recipe instructions modal -->
 	<div class="modal fade" id="getCodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
+		<!--
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title" id="myModalLabel"></h4>
@@ -85,29 +163,59 @@
 				</div>
 			</div>
 		</div>
+		-->
+		<div class="modal-body" id="getCode" style="width: 60%; margin-left: 20%">
+				//ajax success content here.
+		</div>
 	</div>
+
+	<script>
+		$(document).click(function(event) {
+			//if you click on anything except the modal itself or the "open modal" link, close the modal
+			if (!$(event.target).closest(".modal,.js-open-modal").length) {
+			$("body").find(".modal").removeClass("visible");
+			}
+			});
+	</script>
+
+	<style>
+		.visible {
+			display: block;
+		}
+    </style>
+
 <!-- end recipe instructions modal -->
+
+	
+
 
 
 	<script>
 		$(document).ready(function() {
 			$('#calendar').fullCalendar({
 				header: {
-					left: 'prev,next today',
+					left: 'prev,next',
 					center: 'title',
-					right: 'month,agendaWeek,agendaDay'
+					right: 'month,agendaWeek'
 				},
 				eventClick:  function(event, jsEvent, view) {
 					recipe_name = event.title;
+					recipe_date = event.start;
+					recipe_id = event.id;
+					// alert(recipe_id)
+					recipe_date = recipe_date.format();
 					recipe_name = {"recipe_name":recipe_name}
-					getRecipeId(recipe_name);
+					recipe_date = {"recipe_date":recipe_date}
+					recipe_id = {"recipe_id":recipe_id}
+					getRecipeId(recipe_date);
+					//todo need recipe_date to remove meal from calendar
 					
 				},
 				dayClick: function(date, jsEvent, view) {
 					date = date.format()
-					addMeal(date)
+					id = jsEvent.id
+					addMeal(date, id)
 				},
-				defaultDate: '2018-03-12',
 				editable: true,
 				eventLimit: true,
 				eventStartEditable: false,
@@ -125,11 +233,12 @@
 		});
 	
 	
-		function getRecipeId(recipe_name) {
-			console.log(recipe_name)
+		function getRecipeId(recipe_date) {
+			console.log(recipe_id)
+			console.log(recipe_date)
 			$.ajax({
 				url: '/modal-recipe',
-				data: recipe_name,
+				data: recipe_date,
 				// contentType: application/json,
 				type: 'POST',
 				success: function(response){
@@ -181,8 +290,9 @@
 						</label>
 						<div class="col-sm-10">
 							<select name="meal">
-								{% for recipe in recipes %}
-									<option value="{{ recipe.name }}">{{ recipe.name }}</option>
+								{% for recipe in recipes|sort(attribute="name") %}
+									<!-- <option value="{{ recipe.id }}">{{ recipe.name }} : recipe {{ recipe.id }}</option> -->
+									<option value="{{ recipe.id }}">{{ recipe.name }}</option>
 								{% endfor %}
 							</select>
 						</div>
@@ -208,20 +318,15 @@
 
 
 
-	<h1>Hey {{ user.username }}</h1>
 	<div id='script-warning'>
 		Error getting data from <code>/data</code> endpoint.
 	</div>
 	
-	<div id='loading'>loading...</div>
 
 
 
 <!-- start CREATE RECIPE modal -->
-	<button class="btn" data-toggle="modal" data-target="#createRecipeModal">
-		Create Recipe
-	</button>
-
+	
 	<!-- Modal -->
 	<div class="modal fade" id="createRecipeModal" tabindex="-1" role="dialog" 
 		aria-labelledby="myModalLabel" aria-hidden="true">
@@ -257,7 +362,7 @@
 							for="inputPassword3" >Time</label>
 						<div class="col-sm-10">
 							<input name="time" type="text" class="form-control"
-								id="inputPassword3" placeholder="Minutes"/>
+								id="inputPassword3" placeholder="Number in Minutes (default 30)"/>
 						</div>
 					</div>
 					<div class="form-group">
@@ -265,7 +370,7 @@
 									for="inputEmail3">Ingredients</label>
 							<div class="col-sm-10">
 								<textarea name="ingredients" type="text" class="form-control" 
-								id="inputEmail3" placeholder="Ingredients"></textarea>
+								id="inputEmail3" placeholder="Ingredients, one per line"></textarea>
 							</div>
 						</div>
 						<div class="form-group">
@@ -288,36 +393,8 @@
 		</div>
 	</div>
 
-	<div>
-		<div class="all-buttons">
-		  <div class="button-wrapper">
-			<a href="/recipe-index"><input class="button5" type="button" name="button5" value="CookBook"/></a>
-		  </div>
-		  <div class="button-wrapper">
-			<a href="/search"><input class="button5" type="button" name="button5" value="Recipe Search"/></a>
-		  </div>
-		  <div class="button-wrapper">
-			<a href="/ingredients"><input class="button5" type="button" name="button5" value="Shopping List"/></a>
-		  </div>
-		 
-		</div>
 	
-	
-<!-- start REMOVE MEAL form -->
-	<form action="/remove-meal" method="post">
-		<p>Would you like to cancel your plans?</p>
-		<select name="dinner_to_remove">
-			{% for event in events %}
-			<option value="{{ event.id }}">{{ event.date }}</option>
-			{% endfor %}
-		</select>
-		<input type="submit" id="remove" value="REMOVE"/>
-	</form>
-<!-- end REMOVE MEAL form -->
-
-
-
-	</body>
+</body>
 	
 
 {% endblock %}

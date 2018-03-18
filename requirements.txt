@@ -6,7 +6,8 @@ Jinja2==2.10
 MarkupSafe==1.0
 PyMySQL==0.8.0
 SQLAlchemy==1.2.2
-
+nltk==3.2.5
 gunicorn==19.7.1
 Werkzeug==0.14.1
+
 

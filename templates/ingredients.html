@@ -2,15 +2,33 @@
 
 {% block content %}
 
-<h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
+<div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
+    <div class="button-wrapper">
+        <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Back to Cal"/></a>
+    </div>
 
-<ul>
-    {% for ingredient_list in ingredients %}
-    {% for ingredient in ingredient_list %}
-    <li>{{ ingredient }}</li>
-    {% endfor %}
-    {% endfor %}
-</ul>
+    <button class="printBtn hidden-print">Print</button>
+
+    <script type="text/javascript">
+        $('.printBtn').on('click', function (){
+            window.print();
+        });
+    </script>
+
+
+
+    <h1>{{username }}, here's your list for the week {{ start }} to {{ end }}:</h1>
+
+    <ul>
+        <!-- sorted alphabetically for now -->
+        {% for k, v in ingredients_dict.items()| sort %}
+        {% if k and v != None %}
+        <li> {{ v[0] }} {{ v[1] }}  {{ k }}</li>
+        {% endif %}
+        {% endfor %}
+        
+    </ul>
+</div>
 
     
 {% endblock %}
