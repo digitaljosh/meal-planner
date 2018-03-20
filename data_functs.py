@@ -13,8 +13,6 @@ def clean_ingreds(recipe):
         no_coma_ingreds = re.sub(',', '', recipe.ingredients)
         # splits from string of ingredients to list at first ' 
         ingreds = no_coma_ingreds.split(' \'')
-        # remove brackets
-        #ingreds = ings[1:-1]
         # below is to crop off last '
         fresh_ingredients = []
         for ingred in ingreds:
@@ -23,10 +21,10 @@ def clean_ingreds(recipe):
             fresh_ingredients.append(ingred)
         return fresh_ingredients
 
-def good_display_ingredient(ingredient):
+# def good_display_ingredient(ingredient):
     
-    ingredient.replace(",", "").replace("[", "").replace("'", "").replace("]", "")
-    return ingredient 
+#     ingredient.replace(",", "").replace("[", "").replace("'", "").replace("]", "")
+#     return ingredient 
 
 
 def getUserByName(username):
@@ -48,12 +46,11 @@ def getListUserRecipes(username):
 def write_events(events):
     """ overwrites event.json with current event list for current (session) user """
     with open('events.json', 'w') as event_list:
-            #events.write('[')
             event_dicts = []
             for event in events:
                 event_dicts.append({"title":event.meal_name, "start":event.date, "id":event.meal})
             event_list.write(json.dumps(event_dicts))
-            #events.write(']') 
+            
 
 
 def make_users_events_current(username):
@@ -66,7 +63,6 @@ def make_users_events_current(username):
         date = datetime.datetime.strptime(event.date, "%Y-%m-%d").date()
         print(date)
         if date >= today:
-        #if event.date > today:
             up_to_dates.append(event)
         else:
             Event.query.filter_by(id=event.id).delete()
@@ -84,9 +80,6 @@ def get_meals_for_the_week(username):
         date = datetime.datetime.strptime(event.date, "%Y-%m-%d").date()
         if date >= today and date <= week_from_date:
             week_events.append(event)
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    print(week_events)
-    print("%$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     return week_events
 
 def get_today_string():
@@ -98,86 +91,4 @@ def get_week_from_string():
     week_from_date = today + datetime.timedelta(days=7)
     week_from = "{date:%m/%d}".format(date=week_from_date)
     return week_from
-
-
-
-def ingredient_doubler(list_of_ingredients):
-    new_ingredient_list = []
-    for ingredient in list_of_ingredients:
-        if ingredient not in new_ingredient_list:
-            new_ingredient_list.append(ingredient)
-        else:
-            # ingredient already listed want to double the amount
-            try:
-                #returns first index number of match .start
-                first_number_match_found = re.search("\d", ingredient)
-                index = first_number_match_found.start()
-                double = int(ingredient[index]) * 2
-                ingredient[index] = str(double)
-                new_ingredient = ingredient
-            except AttributeError:
-                # no digits found    
-                new_ingredient = "2X" + ingredient
-            # doubled = ingredient.replace(ingredient[x], ingredient[x*2])
-            new_ingredient_list.replace(ingredient, new_ingredient)
-            # new_ingredient_list[ingredient] = doubled
-    return new_ingredient_list
-
-    
-
-def ingredients_doubler2(list_of_ingredients):
-    new_ingredient_list = []
-    for ingredient in list_of_ingredients:
-        print("$$$$" + ingredient)
-        if ingredient not in new_ingredient_list:
-            print("+")
-            new_ingredient_list.append(ingredient)
-        else:
-            print("-")
-            # ingredient already listed want to double the amount
-            try:
-                #returns first index number of match .start
-                first_number_match_found = re.search("\d", ingredient)
-                index = first_number_match_found.start()
-                double = int(ingredient[index]) * 2
-                print('!!!' +ingredient[index])# = str(double)
-                print("##############" + ingredient[index])
-                new_ingredient = ingredient
-            except AttributeError:
-                # no digits found    
-                new_ingredient = "2X" + ingredient
-            # doubled = ingredient.replace(ingredient[x], ingredient[x*2])
-            new_ingredient_list.replace(ingredient, new_ingredient)
-            # new_ingredient_list[ingredient] = doubled
-    #print(new_ingredient_list)
-    return new_ingredient_list
-
-    
-
-def multiply_amts(list_of_ingredients, how_many_times_in_list):
-    ''' if the ingredient is in the list it multiplies the amounts by how many times it occurs and returns updated string'''
-    split_list_of_ingredients = list_of_ingredients.split()
-    for word in split_list_of_ingredients:
-        try:
-            num = int(word)
-            num *= how_many_times_in_list
-            loc = split_list_of_ingredients.index(word)
-            split_list_of_ingredients[loc] = str(num) 
-        except ValueError:
-            try:
-                fl = float(word)
-                fl *= how_many_times_in_list
-                loc = split_list_of_ingredients.index(word)
-                split_list_of_ingredients[loc] = str(fl)
-            except ValueError:
-                try:
-                    fr = Fraction(word)
-                    fr *=how_many_times_in_list 
-                    loc = split_list_of_ingredients.index(word)
-                    split_list_of_ingredients[loc] = str(fr)
-                except ValueError:
-                    pass
-        
-
-    return split_list_of_ingredients
 
