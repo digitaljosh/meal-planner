@@ -6,6 +6,7 @@ import pprint
 import datetime
 import re 
 import sqlalchemy
+from datetime import date
 
 
 import recipe_search_list, recipe_info
@@ -18,6 +19,12 @@ from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_eve
                         get_week_from_string, getListUserRecipes, good_display_ingredient)
 
 
+# api request counter. limited to 50/day, 1500 over 30 days
+# resets on the 7th of every month
+api_requests = 0
+
+today_date = date.today()
+day = today_date.day
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
 #all_user = User.query.all()
@@ -181,108 +188,149 @@ def cal_display():
         return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
 
-#GET Search Recipes - spoonacular
+
+# TODO assign an admin user that can override api limits
+# if session[username]=admin => override api limits
+
+# GET Search Recipes - spoonacular
+# costs 1 request per search
+# costs 20 results per search (or however many recipes are returned)
 @app.route('/search', methods=['POST', 'GET'])
 def recipe_search():
 
     if request.method == 'POST':
         '''
-        -The following code block calls spoonacular api, using temp data during development-
-    '''   
-        search_query = request.form['search']
-        search_query = search_query.replace(" ","+")
-        api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&number=20&query="
-        url = api + search_query
-        headers={
-            "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-            "Accept": "application/json"
-            }
+        The following code block calls spoonacular api
+        '''
+        # api results counter. 15,000 limit that resets on the 7th of every month.
+        api_results = 0
+        today = date.today()
+        
+        # TODO this will reset all day on the 7th, need to make it hourly specific
+        if today.day == 7:
+            api_results = 0
+            api_requests = 0
+        
+        # TODO api_requests referenced before assignment, how to make it a true global variable?
+        # checks if api request and result have reached limit
+        if api_requests <= 1500 and api_results <= 15000: 
+            search_query = request.form['search']
+            search_query = search_query.replace(" ","+")
+            api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&number=20&query="
+            url = api + search_query
+            headers={
+                "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
+                "Accept": "application/json"
+                }
 
-        json_data = requests.get(url, headers=headers).json()
+            json_data = requests.get(url, headers=headers).json()
 
-        # make sure Jinja doesn't break if no recipe 
-        if json_data['totalResults'] == 0:
-            flash("No recipe listed, maybe check spelling and try again.", 'negative')
-            return render_template('search.html')
+            # make sure Jinja doesn't break if no recipe 
+            if json_data['totalResults'] == 0:
+                flash("No recipe listed, maybe check spelling and try again.", 'negative')
+                return render_template('search.html')
+            else:
+                api_requests += 1
+                api_results += 20
+                return render_template('search.html', recipe_list=json_data)
+
         else:
-           
-            return render_template('search.html', recipe_list=json_data)
+            if session['username'] == 'admin':
+                # api call
+                print("just here to satisfy indent")
+            else:
+                flash("API limit reached.", 'negative')
+                return render_template('search.html')
         
         
-        return render_template('search.html', recipe_list=json_data)
-        """
-        recipe_list = recipe_search_list.recipe_search_list #call r_s_l variable within r_s_l module
-        return render_template('search.html', recipe_list=recipe_list )
-        """
+        
     else: # method = GET
         return render_template('search.html')
 
 
 # Get Recipe Information - spoonacular API 
+# costs 1 request
 @app.route('/instructions', methods=['POST', 'GET'])
 def recipe_instructions():
 
     '''
-    -The following code block calls spoonacular api, using temp data during development-
+    The following code block calls spoonacular api
     '''
-    recipe_id = request.args.get('id')
-    api_part1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
-    api_part2 = "/information?includeNutrition=false"
-    url = api_part1 + recipe_id + api_part2
-    headers={
-    "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-    "Accept": "application/json"
-    }
+    
+    today = date.today()
 
-    json_data = requests.get(url, headers=headers).json()
+    # TODO this will reset all day on the 7th, need to make it hourly specific    
+    if today.day == 7:
+        api_requests = 0
 
-    try:
-        stop_index = json_data['title'].index('-')
-        print("INDEX" + str(stop_index))
-        dish_name = json_data['title'][:stop_index]
-        print(dish_name)
-    except ValueError:
-        dish_name = json_data['title']
-        print(dish_name + "- not the char used in json_data")
+    if api_requests <= 1500:
+        recipe_id = request.args.get('id')
+        api_part1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
+        api_part2 = "/information?includeNutrition=false"
+        url = api_part1 + recipe_id + api_part2
+        headers={
+        "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
+        "Accept": "application/json"
+        }
 
-    ingreds = json_data['extendedIngredients']
-   
-    recipe_name = dish_name
-    recipe_ingredients = []
-    for i in range(0, len(ingreds)):
-        recipe_ingredients.append(ingreds[i]['originalString'])
-        print(ingreds[i]['originalString'])
+        json_data = requests.get(url, headers=headers).json()
+
+        try:
+            stop_index = json_data['title'].index('-')
+            print("INDEX" + str(stop_index))
+            dish_name = json_data['title'][:stop_index]
+            print(dish_name)
+        except ValueError:
+            dish_name = json_data['title']
+            print(dish_name + "- not the char used in json_data")
+
+        ingreds = json_data['extendedIngredients']
+    
+        recipe_name = dish_name
+        recipe_ingredients = []
+        for i in range(0, len(ingreds)):
+            recipe_ingredients.append(ingreds[i]['originalString'])
+            print(ingreds[i]['originalString'])
 
 
-    recipe_instructs = json_data['instructions']
+        recipe_instructs = json_data['instructions']
 
-    recipe_time =  int(json_data['readyInMinutes'])
-   
-    '''Duplicates won't be allowed by db anyway so let them push a save button if they wish
-    # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
-    same_recipe = Recipe.query.filter_by(name=recipe_name, instructions=recipe_instructs).first()
-   
-    if same_recipe:
-        #already in db, just display that one
-        return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
-    '''
-    # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
-    if recipe_ingredients == None or recipe_instructions == None:
-        flash("That isn't a complete recipe, pick another.", 'negative')
-        return redirect('search.html')
+        recipe_time =  int(json_data['readyInMinutes'])
+    
+        '''Duplicates won't be allowed by db anyway so let them push a save button if they wish
+        # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
+        same_recipe = Recipe.query.filter_by(name=recipe_name, instructions=recipe_instructs).first()
+    
+        if same_recipe:
+            #already in db, just display that one
+            return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
+        '''
+        # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
+        if recipe_ingredients == None or recipe_instructions == None:
+            flash("That isn't a complete recipe, pick another.", 'negative')
+            return redirect('search.html')
 
+        else:
+            # add to db if not there
+            #number = session['cookbook-id']
+            user = User.query.filter_by(username=session['username']).first()
+            cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
+            
+            new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
+            new = True
+            #db.session.add(new_recipe)
+            #db.session.commit()        
+            api_requests+=1
+
+            return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
+    
     else:
-        # add to db if not there
-        #number = session['cookbook-id']
-        user = User.query.filter_by(username=session['username']).first()
-        cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
-        
-        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
-        new = True
-        #db.session.add(new_recipe)
-        #db.session.commit()        
-   
-        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
+        if session['username'] == 'admin':
+            # call api
+            print("just here to satisfy indent")
+        else:
+            flash("API recipe instructions limit reached.", 'negative')
+            return render_template('search.html')
 
 """
     recipe_instructions = recipe_info.recipe_info # call recipe_info variable within recipe_info module
