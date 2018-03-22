@@ -189,6 +189,38 @@ def cal_display():
 
 
 
+# Global api variables
+# The variables are getting updated, the issue is that everytime the app gets re-initialized (restarted) 
+# the api variables get reset, so we need to store the api vars in the db somehow
+api_results = 0
+print("api_results: " + str(api_results))
+api_requests = 0
+print("api_requests: " + str(api_requests))
+
+today = date.today() #(2018-03-22)
+print("today: " + str(today))
+last_api_call = date.today() #(2018-03-22)
+print("last_api_call: " + str(last_api_call))
+reset_flag = False
+print("reset flag initial:" + str(reset_flag))
+
+# reset_flag checks to see if vars have already been reset for that day
+if today != last_api_call:
+    reset_flag = True
+    print("reset flag after conditional:" + str(reset_flag))
+
+print(reset_flag)
+# check today's date against last api call, if not same day, reset vars
+if today != last_api_call:
+    if reset_flag == True:
+        api_results = 0
+        api_requests = 0
+        reset_flag = False
+
+print(reset_flag)
+
+
+
 # TODO assign an admin user that can override api limits
 # if session[username]=admin => override api limits
 
@@ -198,22 +230,20 @@ def cal_display():
 @app.route('/search', methods=['POST', 'GET'])
 def recipe_search():
 
+    # TODO may want to separate out the api call to a separate function
+
+    
+    
     if request.method == 'POST':
         '''
         The following code block calls spoonacular api
         '''
-        # api results counter. 15,000 limit that resets on the 7th of every month.
-        api_results = 0
-        today = date.today()
-        
-        # TODO this will reset all day on the 7th, need to make it hourly specific
-        if today.day == 7:
-            api_results = 0
-            api_requests = 0
-        
-        # TODO api_requests referenced before assignment, how to make it a true global variable?
-        # checks if api request and result have reached limit
-        if api_requests <= 1500 and api_results <= 15000: 
+        # declare the api vars as global type to use in this function
+        global api_results
+        global api_requests
+
+        # when api is called set date of last_api_call within the conditional
+        if api_requests <= 50 and api_results <= 500: 
             search_query = request.form['search']
             search_query = search_query.replace(" ","+")
             api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&number=20&query="
@@ -230,8 +260,13 @@ def recipe_search():
                 flash("No recipe listed, maybe check spelling and try again.", 'negative')
                 return render_template('search.html')
             else:
+                print("hitting else statement")
                 api_requests += 1
                 api_results += 20
+                global last_api_call
+                last_api_call = date.today()
+                print(api_requests)
+                print(api_results)
                 return render_template('search.html', recipe_list=json_data)
 
         else:
