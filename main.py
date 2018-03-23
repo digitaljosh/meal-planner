@@ -105,6 +105,15 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
+    
+    # seed api table if empty
+    api_object = Api.query.filter_by(id=1).first()
+    if api_object == None:
+        api_seed = Api(0, 0, "2018-03-23")
+        db.session.add(api_seed)
+        db.session.commit()
+
     if request.method == 'GET':
         try:
             if session['username']:
@@ -135,6 +144,8 @@ def login():
         else:
             flash("Either you mistyped your username or you don't have an account.", 'negative')
             return render_template('login.html')
+
+
 
 @app.route('/full-calendar', methods=['POST', 'GET'])
 def cal_display():
@@ -182,39 +193,16 @@ def cal_display():
         write_events(event_list)
         return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
-'''
-def api_calls_check():
-# Global api variables
-# The variables are getting updated, the issue is that everytime the app gets re-initialized (restarted) 
-# the api variables get reset, so we need to store the api vars in the db somehow
-
-    results = Api.query.filter_by()
-
-
-reset_flag = False
-print("reset flag initial:" + str(reset_flag))
-
-# reset_flag checks to see if vars have already been reset for that day
-if today != last_api_call:
-    reset_flag = True
-    print("reset flag after conditional:" + str(reset_flag))
-
-print(reset_flag)
-# check today's date against last api call, if not same day, reset vars
-if today != last_api_call:
-    if reset_flag == True:
-        api_results = 0
-        api_requests = 0
-        reset_flag = False
-
-print(reset_flag)
-'''
 
 
 
 # TODO assign an admin user that can bypass api limits (if session[username]=admin => override api limits)
 # TODO reset results and requests in db every 24 hours
 # TODO consider lowering search results (currently @ 20) to extend daily search limits. Currently limited to 25 searches/day
+# TODO may want to separate out the api call to a separate function
+
+
+
 
 # GET Search Recipes - spoonacular
 # costs 1 request per search
@@ -222,25 +210,27 @@ print(reset_flag)
 @app.route('/search', methods=['POST', 'GET'])
 def recipe_search():
 
-    # TODO may want to separate out the api call to a separate function
-
+    # check today's date against last api call, if not same day, reset results & requests in db
+    today = date.today()
+    api_obj = Api.query.filter_by(id=1).first()
+    if str(today) != str(api_obj.last_api_call):
+        # check to see if db has already been reset for the day
+        if api_obj.results != 0:
+            api_obj.results = 0
+            api_obj.requests = 0
+            db.session.commit()
     
     
     if request.method == 'POST':
         '''
-        The following code block calls spoonacular api
+        The following calls spoonacular api
         '''
 
         # get api object from db
         api_obj = Api.query.filter_by(id=1).first()
         
         # check if we have reached api call limits
-        if api_obj.requests < api_obj.requests_limit and api_obj.results < api_obj.results_limit: 
-            print("####### if conditionals #######")
-            print("requests: " + str(api_obj.requests))
-            print("requests limits: " + str(api_obj.requests_limit))
-            print("results: " + str(api_obj.results))
-            print("results limits: " + str(api_obj.results_limit))
+        if api_obj.requests < 50 and api_obj.results < 500: 
             # if no limits reached, proceed with api call
             search_query = request.form['search']
             search_query = search_query.replace(" ","+")
@@ -259,11 +249,11 @@ def recipe_search():
                 return render_template('search.html')
             else:
                 # creates variables for current results, current requests, and last-api-call to update data in db 
-                current_results = api_obj.results + api_obj.results_per_call
-                current_requests = api_obj.requests + api_obj.requests_per_call
+                current_results = api_obj.results + 20
+                current_requests = api_obj.requests + 1
                 last_api_call = date.today()                                
 
-                # update api columns in api table then return search results
+                # update api table then return search results
                 api_obj.results = current_results
                 api_obj.requests = current_requests
                 api_obj.last_api_call = last_api_call
@@ -271,10 +261,28 @@ def recipe_search():
                 return render_template('search.html', recipe_list=json_data)
             
         else:
+            # api call limit bypass for admin
             if session['username'] == 'admin':
-                # api call
-                print("just here to satisfy indent")
+                print("$#$#$#$#$ !!!!!!!! ADMIN FOR THE WIN  $#$#$#$ !!!!!!!")
+                search_query = request.form['search']
+                search_query = search_query.replace(" ","+")
+                api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&number=20&query="
+                url = api + search_query
+                headers={
+                    "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
+                    "Accept": "application/json"
+                    }
+
+                json_data = requests.get(url, headers=headers).json()
+
+                # make sure Jinja doesn't break if no recipe 
+                if json_data['totalResults'] == 0:
+                    flash("No recipe listed, maybe check spelling and try again.", 'negative')
+                    return render_template('search.html')
+                else:
+                    return render_template('search.html', recipe_list=json_data)
             else:
+                # api call limit reached, deny api call and flash message
                 flash("API limit reached. Login as admin to bypass.", 'negative')
                 return render_template('search.html')
             
@@ -297,7 +305,7 @@ def recipe_instructions():
     api_obj = Api.query.filter_by(id=1).first()
         
     # check if we have reached api call limits
-    if api_obj.requests < api_obj.requests_limit:
+    if api_obj.requests < 50:
 
         # if no limits reached, proceed with api call
         recipe_id = request.args.get('id')
@@ -358,7 +366,7 @@ def recipe_instructions():
             #db.session.commit()        
             
             # creates variables for current requests and last-api-call to update data in db 
-            current_requests = api_obj.requests + api_obj.requests_per_call
+            current_requests = api_obj.requests + 1
             last_api_call = date.today()                                
 
             # update api columns in api table then return search results
