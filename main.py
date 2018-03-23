@@ -3,11 +3,10 @@ from flask import render_template, redirect, request,json, session, jsonify, fla
 import requests
 import json
 import pprint 
-import datetime
+
 import re 
 import sqlalchemy
 from datetime import date
-
 
 import recipe_search_list, recipe_info
 from app import app, db
@@ -110,7 +109,9 @@ def login():
     # seed api table if empty
     api_object = Api.query.filter_by(id=1).first()
     if api_object == None:
-        api_seed = Api(0, 0, "2018-03-23")
+        #today_string = "{date:%Y-%m-%d}".format(date=datetime.now())
+        today_string = date.today()
+        api_seed = Api(0, 0, today_string)
         db.session.add(api_seed)
         db.session.commit()
 
@@ -379,7 +380,8 @@ def recipe_instructions():
     else:
         if session['username'] == 'admin':
             # call api
-            print("just here to satisfy indent")
+            pass
+            #print("just here to satisfy indent")
         else:
             flash("API recipe instructions limit reached.Login as admin to bypass.", 'negative')
             return render_template('search.html')
@@ -416,7 +418,7 @@ def save_recipe():
     # keeps format consistent for recipes manually entered
     
     if type(ingredients) == str and '[' not in ingredients :
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Manual" + ingredients)
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Manual: " + ingredients)
         ingredients = ingredients.splitlines()
     else:
         print("############################## API CALLED")
