@@ -234,8 +234,12 @@ def recipe_search():
         api_obj = Api.query.filter_by(id=1).first()
         
         # check if we have reached api call limits
-        if api_obj.requests <= api_obj.requests_limit and api_obj.results <= api_obj.results_limit: 
-            
+        if api_obj.requests < api_obj.requests_limit and api_obj.results < api_obj.results_limit: 
+            print("####### if conditionals #######")
+            print("requests: " + str(api_obj.requests))
+            print("requests limits: " + str(api_obj.requests_limit))
+            print("results: " + str(api_obj.results))
+            print("results limits: " + str(api_obj.results_limit))
             # if no limits reached, proceed with api call
             search_query = request.form['search']
             search_query = search_query.replace(" ","+")
@@ -270,7 +274,7 @@ def recipe_search():
                 # api call
                 print("just here to satisfy indent")
             else:
-                flash("API limit reached.", 'negative')
+                flash("API limit reached. Login as admin to bypass.", 'negative')
                 return render_template('search.html')
             
         
@@ -288,13 +292,13 @@ def recipe_instructions():
     The following code block calls spoonacular api
     '''
     
-    today = date.today()
+    # get api object from db
+    api_obj = Api.query.filter_by(id=1).first()
+        
+    # check if we have reached api call limits
+    if api_obj.requests < api_obj.requests_limit:
 
-    # TODO this will reset all day on the 7th, need to make it hourly specific    
-    if today.day == 7:
-        api_requests = 0
-
-    if api_requests <= 1500:
+        # if no limits reached, proceed with api call
         recipe_id = request.args.get('id')
         api_part1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
         api_part2 = "/information?includeNutrition=false"
@@ -351,7 +355,15 @@ def recipe_instructions():
             new = True
             #db.session.add(new_recipe)
             #db.session.commit()        
-            api_requests+=1
+            
+            # creates variables for current requests and last-api-call to update data in db 
+            current_requests = api_obj.requests + api_obj.requests_per_call
+            last_api_call = date.today()                                
+
+            # update api columns in api table then return search results
+            api_obj.requests = current_requests
+            api_obj.last_api_call = last_api_call
+            db.session.commit()
 
             return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
     
@@ -360,7 +372,7 @@ def recipe_instructions():
             # call api
             print("just here to satisfy indent")
         else:
-            flash("API recipe instructions limit reached.", 'negative')
+            flash("API recipe instructions limit reached.Login as admin to bypass.", 'negative')
             return render_template('search.html')
 
 """
