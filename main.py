@@ -11,7 +11,7 @@ from datetime import date
 
 import recipe_search_list, recipe_info
 from app import app, db
-from models import User, Event, Recipe, Cookbook
+from models import User, Event, Recipe, Cookbook, Api
 from hashy import check_pw_hash
 from st_amts import make_shopping_list
 from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
@@ -19,12 +19,7 @@ from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_eve
                         get_week_from_string, getListUserRecipes, good_display_ingredient)
 
 
-# api request counter. limited to 50/day, 1500 over 30 days
-# resets on the 7th of every month
-api_requests = 0
 
-today_date = date.today()
-day = today_date.day
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
 #all_user = User.query.all()
@@ -187,20 +182,15 @@ def cal_display():
         write_events(event_list)
         return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
-
-
+'''
+def api_calls_check():
 # Global api variables
 # The variables are getting updated, the issue is that everytime the app gets re-initialized (restarted) 
 # the api variables get reset, so we need to store the api vars in the db somehow
-api_results = 0
-print("api_results: " + str(api_results))
-api_requests = 0
-print("api_requests: " + str(api_requests))
 
-today = date.today() #(2018-03-22)
-print("today: " + str(today))
-last_api_call = date.today() #(2018-03-22)
-print("last_api_call: " + str(last_api_call))
+    results = Api.query.filter_by()
+
+
 reset_flag = False
 print("reset flag initial:" + str(reset_flag))
 
@@ -218,6 +208,7 @@ if today != last_api_call:
         reset_flag = False
 
 print(reset_flag)
+'''
 
 
 
@@ -238,12 +229,14 @@ def recipe_search():
         '''
         The following code block calls spoonacular api
         '''
-        # declare the api vars as global type to use in this function
-        global api_results
-        global api_requests
 
-        # when api is called set date of last_api_call within the conditional
-        if api_requests <= 50 and api_results <= 500: 
+        # get api object from db
+        api_obj = Api.query.filter_by(id=1).first()
+        
+        # check if we have reached api call limits
+        if api_obj.requests <= api_obj.requests_limit and api_obj.results <= api_obj.results_limit: 
+            
+            # if no limits reached, proceed with api call
             search_query = request.form['search']
             search_query = search_query.replace(" ","+")
             api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&number=20&query="
@@ -260,15 +253,18 @@ def recipe_search():
                 flash("No recipe listed, maybe check spelling and try again.", 'negative')
                 return render_template('search.html')
             else:
-                print("hitting else statement")
-                api_requests += 1
-                api_results += 20
-                global last_api_call
-                last_api_call = date.today()
-                print(api_requests)
-                print(api_results)
-                return render_template('search.html', recipe_list=json_data)
+                # creates variables for current results, current requests, and last-api-call to update data in db 
+                current_results = api_obj.results + api_obj.results_per_call
+                current_requests = api_obj.requests + api_obj.requests_per_call
+                last_api_call = date.today()                                
 
+                # update api columns in api table then return search results
+                api_obj.results = current_results
+                api_obj.requests = current_requests
+                api_obj.last_api_call = last_api_call
+                db.session.commit()
+                return render_template('search.html', recipe_list=json_data)
+            
         else:
             if session['username'] == 'admin':
                 # api call
@@ -276,7 +272,7 @@ def recipe_search():
             else:
                 flash("API limit reached.", 'negative')
                 return render_template('search.html')
-        
+            
         
         
     else: # method = GET

@@ -2,6 +2,29 @@
 from app import db 
 from hashy import make_pw_hash 
 
+class Api(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    results = db.Column(db.Integer)
+    requests = db.Column(db.Integer)
+    last_api_call = db.Column(db.String(10))
+    results_limit = db.Column(db.Integer)
+    results_per_call = db.Column(db.Integer)
+    requests_limit = db.Column(db.Integer)
+    requests_per_call = db.Column(db.Integer)
+
+
+
+    def __init__(self, results, requests, last_api_call, results_limit, results_per_call, requests_limit, requests_per_call):
+        self.results = results
+        self.requests = requests
+        self.last_api_call = last_api_call
+        self.results_limit = results_limit
+        self.results_per_call = results_per_call
+        self.requests_limit = requests_limit
+        self.requests_per_call = requests_per_call
+
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50))
