@@ -212,8 +212,9 @@ print(reset_flag)
 
 
 
-# TODO assign an admin user that can override api limits
-# if session[username]=admin => override api limits
+# TODO assign an admin user that can bypass api limits (if session[username]=admin => override api limits)
+# TODO reset results and requests in db every 24 hours
+# TODO consider lowering search results (currently @ 20) to extend daily search limits. Currently limited to 25 searches/day
 
 # GET Search Recipes - spoonacular
 # costs 1 request per search
