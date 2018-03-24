@@ -1,8 +1,6 @@
-import re
 import json
 import datetime
-import nltk
-from fractions import Fraction
+import re
 
 from models import User, Event, Cookbook, Recipe
 from app import db
@@ -16,15 +14,9 @@ def clean_ingreds(recipe):
         # below is to crop off last '
         fresh_ingredients = []
         for ingred in ingreds:
-            #ingred = ingred[:-1]
             ingred = ingred.replace(",", "").replace("[", "").replace("'", "").replace("]", "")
             fresh_ingredients.append(ingred)
         return fresh_ingredients
-
-# def good_display_ingredient(ingredient):
-    
-#     ingredient.replace(",", "").replace("[", "").replace("'", "").replace("]", "")
-#     return ingredient 
 
 
 def getUserByName(username):
@@ -58,10 +50,8 @@ def make_users_events_current(username):
     all_events = getUsersEvents(username)
     up_to_dates = []
     today = datetime.date.today()
-    print(today)
     for event in all_events:
         date = datetime.datetime.strptime(event.date, "%Y-%m-%d").date()
-        print(date)
         if date >= today:
             up_to_dates.append(event)
         else:

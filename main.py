@@ -30,13 +30,11 @@ def login_required():
 
 @app.route('/data')
 def return_data():
-    ''' Just displays the json events scheduled on calendar dev purposes only'''
+    ''' Just displays the json events scheduled on calendar, plain text dev purposes only'''
     with open("events.json", "r") as input_data:
-        # you should use something else here than just plaintext
         # check out jsonfiy method or the built in json module
         # http://flask.pocoo.org/docs/0.10/api/#module-flask.json
         return input_data.read()
-
 
 @app.route("/")
 def index():
@@ -44,7 +42,7 @@ def index():
 
 @app.route('/sign-up', methods=['GET', 'POST'])
 def signup():
-    # loops home for now, doesn't break 
+    ''' basic sign up page '''
     if request.method == 'GET':
         return render_template('/sign-up.html')
     elif request.method == 'POST':
@@ -86,14 +84,10 @@ def signup():
             # set current session
             session['username'] = new_user.username
             session['cookbook-id'] = new_cookbook.id
-            #since new user no events yet
-            #TODO this is where we may add a dinner buddy's events by name or id
+            # since new user no events yet
             events = []
             write_events(events)
-            return render_template('full-calendar.html', user= getUserByName(session['username']), events=events)
-
-
-        
+            return render_template('full-calendar.html', user= getUserByName(session['username']), events=events)      
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -118,9 +112,10 @@ def login():
             if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = user.username
                 evs = getUsersEvents(tried_name)
-                #new function see data_functs rewrites events.json
+                # writes to events.json
                 write_events(evs)
-                return redirect('/full-calendar')#, user=getUserByName(session['username']), events=getUsersEvents(session['username']))
+                print("HAAAAHHAHAHAHAHAHAHAHAHA")
+                return redirect('/full-calendar')
             else:
                 flash("Nice try!", 'negative')
                 return redirect('/login')
@@ -216,24 +211,15 @@ def recipe_instructions():
 
     json_data = requests.get(url, headers=headers).json()
 
-    try:
-        stop_index = json_data['title'].index('-')
-        print("INDEX" + str(stop_index))
-        dish_name = json_data['title'][:stop_index]
-        print(dish_name)
-    except ValueError:
-        dish_name = json_data['title']
-        print(dish_name + "- not the char used in json_data")
-
+    dish_name = json_data['title']
+    
     ingreds = json_data['extendedIngredients']
    
     recipe_name = dish_name
     recipe_ingredients = []
     for i in range(0, len(ingreds)):
         recipe_ingredients.append(ingreds[i]['originalString'])
-        print(ingreds[i]['originalString'])
-
-
+       
     recipe_instructs = json_data['instructions']
 
     recipe_time =  int(json_data['readyInMinutes'])
@@ -252,22 +238,17 @@ def recipe_instructions():
         return redirect('search.html')
 
     else:
-        # add to db if not there
+        # displays recipe for user to decide if they'd like to save
         user = User.query.filter_by(username=session['username']).first()
         cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
-        
         new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
-        new = True
-        #db.session.add(new_recipe)
-        #db.session.commit()        
+        new = True       
    
         return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
-
 
 # save recipe route
 @app.route("/recipe-added", methods=['POST'])
 def save_recipe():
-   
     name = request.form['name']
     time = request.form['time']
     ingredients = request.form['ingredients']
@@ -309,7 +290,6 @@ def save_recipe():
 @app.route("/remove-recipe", methods=['POST'])
 def delete_recipe():
     recipe_id = request.form["id"]
-    print(recipe_id)
     #need to remove any event with that recipe first
     events_to_go = Event.query.filter_by(meal=recipe_id).all()
     for event in events_to_go:
@@ -352,9 +332,9 @@ def display_index():
 
 @app.route("/ingredients")
 def display_ingredients():
-    '''diplays a list of ingredients for recipes of all events'''
-    #TODO need to clean up display AND place constraints eg(only next two weeks, none from past events) 
+    '''diplays a list of ingredients for recipes of all events for that week'''
     user = User.query.filter_by(username=session['username']).first()
+    # gets events for week, could change or make a user input
     events = get_meals_for_the_week(user.username)
 
     ingredient_lists = []
@@ -391,17 +371,6 @@ def delete_meal_event():
     recipes = getListUserRecipes(username)
 
     return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
-
-# @app.route('/other-calendars', methods=['POST'])
-# def view_other_calendars():
-#     ''' populates events.json with someones elses events by name'''
-    
-#     user = User.query.filter_by(username=session['username']).first()
-#     user_name = request.form['other_cal_view']
-#     other_events = getUsersEvents(user_name)
-#     write_events(other_events)
-#     return render_template('full-calendar.html', user=user, events=other_events, other_users=all_users, calendar_shown=user_name, no_remove=True)
-
 
 @app.route('/logout')
 def logout():
