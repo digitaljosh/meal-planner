@@ -1,6 +1,21 @@
 from app import db 
 from hashy import make_pw_hash 
 
+class Api(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    results = db.Column(db.Integer)
+    requests = db.Column(db.Integer)
+    last_api_call = db.Column(db.String(10))
+
+
+    def __init__(self, results, requests, last_api_call):
+        self.results = results
+        self.requests = requests
+        self.last_api_call = last_api_call
+        
+
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50))
