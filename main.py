@@ -151,6 +151,10 @@ def cal_display():
     else: # 'POST'
         # displays calendar with updated changes
         recipes = getListUserRecipes(user.username)
+        if recipes == []:
+            flash("Add some recipes to your cookbook.", 'negative')
+            return render_template('full-calendar.html', user=user, recipes=recipes)
+
         date = request.form['date']
         recipe_id = request.form['meal']
 
