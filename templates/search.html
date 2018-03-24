@@ -22,10 +22,36 @@
         </div>
     </div> 
 
+<!-- Displays the recipes from db that match that search first -->
+{% if saved_recipes %}
+<div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
+        <ul>
+            {% for recipe in recipe_list %}
+                <h2 style="text-align: center;">{{ recipe.name }}</h2>
+                </br>
+                <h3 style="text-align: center;">Ingredients</h3>
+                <h4 style="text-align: center;">{{ recipe.ingredients }}</h4>
+                
+                </br>
+                <h3 style="text-align: center;">Instructions</h3>
+                <h4 style="text-align: center;">{{ recipe.instructions }}"</h4>
+                <!-- <img TODO heres where we may pull the origin url for image?> -->              
+                </br>
+                </br>
+                </br>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
 
+
+    
     <!-- Display recipe titles and pictures -->
+
+    
     {% if recipe_list %}
         <div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
+            <!-- TODO more and save to cookbook buttons -->
             <ul>
                 {% for result in recipe_list['results'] %}
                     <h3 style="text-align: center;">{{ result['title'] }}</h3>

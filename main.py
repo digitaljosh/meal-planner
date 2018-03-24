@@ -93,12 +93,10 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
-    
+    ''' basic login page '''
     # seed api table if empty
     api_object = Api.query.filter_by(id=1).first()
     if api_object == None:
-        #today_string = "{date:%Y-%m-%d}".format(date=datetime.now())
         today_string = date.today()
         api_seed = Api(0, 0, today_string)
         db.session.add(api_seed)
@@ -127,7 +125,6 @@ def login():
                 evs = getUsersEvents(tried_name)
                 # writes to events.json
                 write_events(evs)
-                print("HAAAAHHAHAHAHAHAHAHAHAHA")
                 return redirect('/full-calendar')
             else:
                 flash("Nice try!", 'negative')
@@ -204,6 +201,13 @@ def recipe_search():
     
     
     if request.method == 'POST':
+        search_query = request.form['search']
+        #check to see if recipes in db and returns a list of all by that name BEFORE hitting api with More button
+        db_results = Recipe.query.filter_by(name=search_query).all()
+        recipe_list = []
+        if db_results != []:
+            return render_template('search.html', recipe_list=db_results, saved_recipes=True)
+    
         '''
         The following calls spoonacular api
         '''
