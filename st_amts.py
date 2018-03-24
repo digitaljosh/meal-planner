@@ -32,7 +32,7 @@ def get_nouns(ingredients_string):
 
 def obtain_measure(ingredient_string):
     ''' given an ingredient as a string extract the amount converts to float'''
-    
+    #TODO, enum class ?
     split_list_of_ingredient = ingredient_string.split()
     for word in split_list_of_ingredient:
         try:
@@ -165,7 +165,6 @@ def split_string_into_ngrams(string_x, number_for_n_ngram):
     sub_sects = nltk.ngrams(string_x.split(), number_for_n_ngram)
     grams = []
     for gram in sub_sects:
-       # print(gram)
         grams.append(gram)
     return grams
 

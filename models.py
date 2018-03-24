@@ -1,4 +1,3 @@
-
 from app import db 
 from hashy import make_pw_hash 
 
@@ -22,8 +21,6 @@ class User(db.Model):
     username = db.Column(db.String(50))
     pw_hash = db.Column(db.String(100))
     email = db.Column(db.String(100))
-    #calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
-
 
     def __init__(self, username, password, email=None):
         self.username = username
@@ -33,10 +30,8 @@ class User(db.Model):
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    meal = db.Column(db.Integer, db.ForeignKey('recipe.id')) # used to be 'recipe name', now 'recipe id'
-    #meal = db.Column(db.Recipe)
+    meal = db.Column(db.Integer, db.ForeignKey('recipe.id')) 
     date = db.Column(db.String(10))
-    #recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     meal_name = db.Column(db.String(100))
 
@@ -48,7 +43,7 @@ class Event(db.Model):
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))# unique=True, nullable=False)
+    name = db.Column(db.String(100))
     ingredients = db.Column(db.Text)# maybe pickle to use a list ?
     instructions = db.Column(db.Text)# may also need to use pickled object, might be okay though
     time = db.Column(db.Integer) # time in minutes
