@@ -220,7 +220,7 @@ def recipe_search():
             url = api + search_query
             headers={
                 "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-                "Accept": "applicationlication/json"
+                "Accept": "application/json"
                 }
 
             json_data = requests.get(url, headers=headers).json()
@@ -298,18 +298,20 @@ def recipe_instructions():
         url = api_part1 + recipe_id + api_part2
         headers={
         "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-        "Accept": "applicationlication/json"
+        "Accept": "application/json"
         }
 
         json_data = requests.get(url, headers=headers).json()
 
+        print("%%%%%%%%%%%%%%%%%%%%%%%%%")
+        print(json_data)
+        print(json_data['title'])
         recipe_name = json_data['title']
-
         ingreds = json_data['extendedIngredients']
 
         recipe_ingredients = []
         for i in range(0, len(ingreds)):
-            recipe_ingredients.applicationend(ingreds[i]['originalString'])
+            recipe_ingredients.append(ingreds[i]['originalString'])
 
         recipe_instructs = json_data['instructions']
 
@@ -461,7 +463,7 @@ def display_ingredients():
     ingredient_lists = []
     meals = []
     for event in events:
-        meals.applicationend(event.meal)
+        meals.append(event.meal)
     for meal in meals:
         ready_for_dict = []
         recipe = Recipe.query.filter_by(id=meal).first()
@@ -469,8 +471,8 @@ def display_ingredients():
         ready_for_dict = []
         for ingred in recipe_l:
             ingred = ingred.replace(",", "").replace("[", "").replace("'", "").replace("]", "").strip()
-            ready_for_dict.applicationend(ingred)
-        ingredient_lists.applicationend(ready_for_dict)
+            ready_for_dict.append(ingred)
+        ingredient_lists.append(ready_for_dict)
         
     counted_ingredients = make_shopping_list(ingredient_lists)
 
