@@ -1,4 +1,4 @@
-from app import db 
+from application import db 
 from hashy import make_pw_hash 
 
 class Api(db.Model):

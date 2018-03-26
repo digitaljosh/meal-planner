@@ -3,7 +3,7 @@ import datetime
 import re
 
 from models import User, Event, Cookbook, Recipe
-from app import db
+from application import db
 
 
 def clean_ingreds(recipe):
