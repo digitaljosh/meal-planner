@@ -43,12 +43,11 @@
 		position: absolute;
 		top: 10px;
 		right: 10px;
-	}
+	}/*
 	#calendar {
 		max-width: 900px;
-		/*margin: 40px auto;*/
 		padding: 0 10px;
-	}
+	}*/
 	
 	h1 {
     text-align: center;
@@ -76,32 +75,36 @@
 	
 
 		
+	<div class="container-fluid">
+		<div class="row">
+			<div id='calendar' class="col-lg-10"></div>
 
-	<div style="display: inline-block; position: absolute; margin-left: 12%;" id='calendar'></div>
+			<div id="calendar-dropdown" class="col-lg-2">
+				<em><h4 style="color: white; text-align:center;">{{ user.username }}'s calendar</h4></em>
 
-	<em><h4 style="display: inline-block; position: relative; margin-left: 85.5%; color: white;">{{ user.username }}'s calendar</h4></em>
-
-	<div id="calendar-dropdown" style="max-width: 150px; display: inline-block; margin-left: 80%; margin-top: 2%; position: relative;">
-		<div class="dropdown">
-			<button type="button" class="button5 dropdown-toggle" data-toggle="dropdown">Options
-				<span class="caret"></span></button>
-			<ul class="dropdown-menu" style="text-align: center;">
-				<li><a class="dropdown-item" data-toggle="modal" data-target="#createRecipeModal" href="#">Create Recipe</a></li>
-				<div class="divider"></div>
-				<li><a class="dropdown-item" href="/search">Search Recipe</a></li>
-				<div class="divider"></div>
-				<li><a class="dropdown-item" href="/recipe-index">My Cookbook</a></li>
-				<div class="divider"></div>
-				<li><a class="dropdown-item" href="/ingredients">Weekly Shopping List</a></li>
-				<div class="divider"></div>
-				<li><a class="dropdown-item printBtn hidden-print" href="#">Print Calendar</a></li>
-				<div class="divider"></div>
-				<li><a class="dropdown-item" href="/logout">Logout</a></li>
-			</ul>
+				<div class="dropdown">
+					<button type="button" class="button5 dropdown-toggle" data-toggle="dropdown">Options
+						<span class="caret"></span></button>
+					<ul class="dropdown-menu" style="text-align: center;">
+						<li><a class="dropdown-item" data-toggle="modal" data-target="#createRecipeModal" href="#">Create Recipe</a></li>
+						<div class="divider"></div>
+						<li><a class="dropdown-item" href="/search">Search Recipe</a></li>
+						<div class="divider"></div>
+						<li><a class="dropdown-item" href="/recipe-index">My Cookbook</a></li>
+						<div class="divider"></div>
+						<li><a class="dropdown-item" href="/ingredients">Weekly Shopping List</a></li>
+						<div class="divider"></div>
+						<li><a class="dropdown-item printBtn hidden-print" href="#">Print Calendar</a></li>
+						<div class="divider"></div>
+						<li><a class="dropdown-item" href="/logout">Logout</a></li>
+					</ul>
+				</div>
+				
+				<div class="popup-help help-button-wrapper about-button" id="about" onclick="myFunction()"><div id="about-text">Help</div>
+					<span style="font-size: 18px;" class="help-popup help-text" id="myPopup">1. Click on a day to add a meal.</br>2. Click on a meal to see recipe.</span>
+				</div>
+			</div>
 		</div>
-		<div class="popup-help button-wrapper about-button" id="about" onclick="myFunction()"><div id="about-text">Help</div>
-    		<span style="font-size: 18px;" class="help-popup help-text" id="myPopup">1. Click on a day to add a meal.</br>2. Click on a meal to see recipe.</span>
-    	</div>
 	</div>
 
 

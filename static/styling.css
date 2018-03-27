@@ -118,8 +118,8 @@ h2 {
 
 /* Begin About Button Style */
 .about-button {
-  height: 36px;
-  width: 146px;
+  height: 40px;
+  width: 150px;
   border: 0;
   outline: 0;
   text-align: center;
@@ -208,20 +208,30 @@ background-color:rgba(10, 10, 10, 0.678);
 #login-title {
     color: #fff;
     font-size: 28px;
-    /*text-align: center;
-    margin: 0 auto;*/
 }
+
+@media screen and (max-width: 740px) {
+    .form-wrap {
+        width: 60%;
+    }
+}
+
+
 
   /*  dropdown button on calendar page  */
 
-.dropdown {
-    margin-left: 50%;
-}
+.help-button-wrapper {
+    margin-top: 2%;
+  }
 
 .dropdown-menu > li > a:hover {
     background-color: rgb(175, 175, 175);
 } 
 
+.container-fluid {
+    margin: 1%;
+}
+ 
 
 
 
