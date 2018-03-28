@@ -297,7 +297,7 @@ def recipe_instructions():
         url = api_part1 + recipe_id + api_part2
         headers={
         "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-        "Accept": "app/json"
+        "Accept": "application/json"
         }
 
         json_data = requests.get(url, headers=headers).json()
