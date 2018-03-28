@@ -11,7 +11,8 @@ h2 {
 }
 
 
-/* Begin Flash Messages */
+/*--------FLASH MESSAGES--------*/
+
 .negative {
     color: red;
     font-size: 4rem;
@@ -22,10 +23,10 @@ h2 {
     font-size: 4rem;
     text-shadow: 2px 2px 3px rgba(51, 211, 118, 0.993);
 }
-/* End Flash Messages */
 
 
-/* Begin Help Popup Style */
+
+/*--------HELP POPUP--------*/
 
 .popup-help {
     position: relative;
@@ -63,12 +64,8 @@ h2 {
 
 
 
-/* End Help Popup Style */
 
-
-
-
-/* Begin About Popup Style */
+/*--------ABOUT POPUP--------*/
 .popup {
     position: relative;
     display: inline-block;
@@ -114,9 +111,11 @@ h2 {
     to {opacity: 1;}
 }
 
-/* End Popup Style */
 
-/* Begin About Button Style */
+
+
+/*--------ABOUT BUTTON--------*/
+
 .about-button {
   height: 40px;
   width: 150px;
@@ -138,9 +137,10 @@ h2 {
 }
 
 
-/* End About Button Style */
 
-/* Begin Splash Buttons - except 'About' */
+
+
+/*--------SPLASH BUTTONS-------- */
 
 .all-buttons {
     width: 300px;
@@ -175,10 +175,10 @@ h2 {
     opacity: 1;
     }
   
-  /* End Splash Button */
+
 
   
-  /*  login and sign up form  */
+  /*--------LOGIN & SIGN UP--------*/
 
 #form-container {
     margin-top: 8%;
@@ -200,7 +200,6 @@ background-color:rgba(10, 10, 10, 0.678);
 }
 
 
-
 #signup-link {
     color: rgb(64, 179, 255);
 }
@@ -210,20 +209,54 @@ background-color:rgba(10, 10, 10, 0.678);
     font-size: 28px;
 }
 
+
+/*--------OPTIONS DROPDOWN MENU--------*/
+
+.help-button-wrapper {
+    margin-top: 2%;
+  }
+
+.dropdown-menu > li > a:hover {
+    background-color: rgb(175, 175, 175);
+} 
+
+.container-fluid {
+    margin: 1%;
+}
+
+.dropdown-menu {
+    max-width: 150px;
+}
+
+
+/*--------SEARCH TEMPLATE--------*/
+
 #search-title {
     color: #fff;
     font-size: 28px;
 }
 
-
-
-
+.search-button {
+    margin-left: 5%;
+    margin-right: auto;
+    margin-top: 1%;
+}
 
 .search-form-wrap {
     width: 50%;
     margin: 0 auto;
     background-color:rgba(10, 10, 10, 0.678);
 }
+
+#recipe-img {
+    width: 60%;
+}
+
+
+
+
+
+/*--------MEDIA QUERIES--------*/
 
 @media screen and (max-width: 991px) {
     .search-form-wrap {
@@ -239,9 +272,8 @@ background-color:rgba(10, 10, 10, 0.678);
     }
 }
 
-#recipe-img {
-    width: 60%;
-}
+
+
 
 @media screen and (max-width: 540px) {
     #recipe-img {
@@ -259,11 +291,7 @@ background-color:rgba(10, 10, 10, 0.678);
 
 
 
-.search-button {
-    margin-left: 5%;
-    margin-right: auto;
-    margin-top: 1%;
-}
+
 
 @media screen and (max-width: 991px) {
     .search-button {
@@ -275,9 +303,7 @@ background-color:rgba(10, 10, 10, 0.678);
 
 
 
-.dropdown-menu {
-    max-width: 150px;
-}
+
 
 @media screen and (max-width: 1600px) {
     .dropdown-menu {
@@ -352,26 +378,8 @@ background-color:rgba(10, 10, 10, 0.678);
     #search-title {
         font-size: 24px;
     }
-    
-    
 }
 
-
-
-  /*  dropdown button on calendar page  */
-
-.help-button-wrapper {
-    margin-top: 2%;
-  }
-
-.dropdown-menu > li > a:hover {
-    background-color: rgb(175, 175, 175);
-} 
-
-.container-fluid {
-    margin: 1%;
-}
- 
 
 
 
