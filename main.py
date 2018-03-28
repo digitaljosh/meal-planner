@@ -219,7 +219,7 @@ def recipe_search():
             url = api + search_query
             headers={
                 "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-                "Accept": "app/json"
+                "Accept": "application/json"
                 }
 
             json_data = requests.get(url, headers=headers).json()
