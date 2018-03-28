@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = heroku_db_connect
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] - False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'Shhhhh,dont_tell_anyone1979'
 
 app.config['SQLALCHEMY_ECHO'] = True
