@@ -1,2 +1,2 @@
-web: gunicorn main:application
+web: gunicorn main:app
 init: python create_db.py 

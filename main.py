@@ -8,7 +8,7 @@ import sqlalchemy
 from datetime import date
 
 
-from application import application, db
+from app import app, db
 from models import User, Event, Recipe, Cookbook, Api
 from hashy import check_pw_hash
 from st_amts import make_shopping_list
@@ -22,7 +22,7 @@ from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_eve
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
 
 
-@application.before_request
+@app.before_request
 def login_required():
     ''' makes sure user logged in to display calendar, not currently needed '''
     not_allowed_routes = ['cal_display',]
@@ -30,7 +30,7 @@ def login_required():
         flash("You need to be logged in to see your calendar!", 'negative')
         return redirect('/')
 
-@application.route('/data')
+@app.route('/data')
 def return_data():
     ''' Just displays the json events scheduled on calendar, plain text dev purposes only'''
     with open("events.json", "r") as input_data:
@@ -38,11 +38,11 @@ def return_data():
         # http://flask.pocoo.org/docs/0.10/api/#module-flask.json
         return input_data.read()
 
-@application.route("/")
+@app.route("/")
 def index():
     return render_template('splash.html')
 
-@application.route('/sign-up', methods=['GET', 'POST'])
+@app.route('/sign-up', methods=['GET', 'POST'])
 def signup():
     ''' basic sign up page '''
     if request.method == 'GET':
@@ -91,7 +91,7 @@ def signup():
             write_events(events)
             return render_template('full-calendar.html', user= getUserByName(session['username']), events=events)      
 
-@application.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
 
     
@@ -127,7 +127,6 @@ def login():
                 evs = getUsersEvents(tried_name)
                 # writes to events.json
                 write_events(evs)
-                print("HAAAAHHAHAHAHAHAHAHAHAHA")
                 return redirect('/full-calendar')
             else:
                 flash("Nice try!", 'negative')
@@ -138,7 +137,7 @@ def login():
 
 
 
-@application.route('/full-calendar', methods=['POST', 'GET'])
+@app.route('/full-calendar', methods=['POST', 'GET'])
 def cal_display():
     ''' Displays calendar as populated by user's events'''
     user = getUserByName(session['username'])
@@ -189,7 +188,7 @@ def cal_display():
 # GET Search Recipes - spoonacular
 # costs 1 request per search
 # costs 20 results per search (or however many recipes are returned)
-@application.route('/search', methods=['POST', 'GET'])
+@app.route('/search', methods=['POST', 'GET'])
 def recipe_search():
 
     # check today's date against last api call, if not same day, reset results & requests in db
@@ -220,7 +219,7 @@ def recipe_search():
             url = api + search_query
             headers={
                 "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-                "Accept": "application/json"
+                "Accept": "app/json"
                 }
 
             json_data = requests.get(url, headers=headers).json()
@@ -253,7 +252,7 @@ def recipe_search():
                 url = api + search_query
                 headers={
                     "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-                    "Accept": "applicationlication/json"
+                    "Accept": "application/json"
                     }
 
                 json_data = requests.get(url, headers=headers).json()
@@ -278,7 +277,7 @@ def recipe_search():
 
 # Get Recipe Information - spoonacular API 
 # costs 1 request
-@application.route('/instructions', methods=['POST', 'GET'])
+@app.route('/instructions', methods=['POST', 'GET'])
 def recipe_instructions():
 
     '''
@@ -298,7 +297,7 @@ def recipe_instructions():
         url = api_part1 + recipe_id + api_part2
         headers={
         "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
-        "Accept": "application/json"
+        "Accept": "app/json"
         }
 
         json_data = requests.get(url, headers=headers).json()
@@ -370,7 +369,7 @@ def recipe_instructions():
         return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
 
 # save recipe route
-@application.route("/recipe-added", methods=['POST'])
+@app.route("/recipe-added", methods=['POST'])
 def save_recipe():
     name = request.form['name']
     time = request.form['time']
@@ -410,7 +409,7 @@ def save_recipe():
     return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
 
-@application.route("/remove-recipe", methods=['POST'])
+@app.route("/remove-recipe", methods=['POST'])
 def delete_recipe():
     recipe_id = request.form["id"]
     #need to remove any event with that recipe first
@@ -426,7 +425,7 @@ def delete_recipe():
     
 
 # display recipe instructions in modal
-@application.route("/modal-recipe", methods=['POST'])
+@app.route("/modal-recipe", methods=['POST'])
 def display_modal_recipe():
     ''' displays the recipe '''
     recipe_date = request.form["recipe_date"]
@@ -439,7 +438,7 @@ def display_modal_recipe():
 
     return render_template('recipe.html', recipe=recipe, recipe_date=recipe_date, ingredients=clean_ingreds(recipe))
 
-@application.route("/recipe/<recipe_id>")
+@app.route("/recipe/<recipe_id>")
 def display_recipe(recipe_id):
     """ diplays recipe by name with normalized data in clean format """
     recipe = Recipe.query.filter_by(id=recipe_id).first()
@@ -447,13 +446,13 @@ def display_recipe(recipe_id):
     return render_template('recipe.html', recipe=recipe, button_flag=button_flag, ingredients=clean_ingreds(recipe))
 
 
-@application.route("/recipe-index")
+@app.route("/recipe-index")
 def display_index():
     ''' displays list of all the recipes for that user '''
     recipes = getListUserRecipes(session['username'])
     return render_template('recipe-index.html', recipes=recipes, username=session['username'])
 
-@application.route("/ingredients")
+@app.route("/ingredients")
 def display_ingredients():
     '''diplays a list of ingredients for recipes of all events for that week'''
     user = User.query.filter_by(username=session['username']).first()
@@ -479,7 +478,7 @@ def display_ingredients():
     return render_template('ingredients.html', username=user.username, ingredients_dict=counted_ingredients, start=get_today_string(), end=get_week_from_string())
 
 
-@application.route('/remove-meal', methods=['POST'])
+@app.route('/remove-meal', methods=['POST'])
 def delete_meal_event():
     event_date = request.form['dinner_to_remove']
     username = session['username']
@@ -495,7 +494,7 @@ def delete_meal_event():
 
     return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
-@application.route('/logout')
+@app.route('/logout')
 def logout():
     try:
         if session['username']:
@@ -509,4 +508,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    application.run()
+    app.run()

@@ -1,4 +1,4 @@
-from application import db
+from app import db
 from models import User, Event, Cookbook, Recipe, Api
 
 
