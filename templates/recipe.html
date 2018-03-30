@@ -10,26 +10,27 @@
 
 
 
-<div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
-    
+<div class="container" style="background-color:rgba(10, 10, 10, 0.778); margin-top: 5px; color: white; max-width: 82%;">
 
     <!-- Display 'SAVE RECIPE' button if not in db -->
     {% if new %}
-        <div style="display: inline-block; position: absolute; margin-left: 45%; margin-top: 2%;">
-            <div style="display: inline-block; position: relative;">
-                <form action="{{ url_for('save_recipe') }}" method="post">
-                    <input type="hidden" name="name" value="{{ recipe.name }}"/>
-                    <input type="hidden" name="time" value="{{ recipe.time }}"/>
-                    <input type="hidden" name="ingredients" value="{{ recipe.ingredients }}"/>
-                    <input type="hidden" name="instructions" value="{{ recipe.instructions }}"/>
-                    <input type="submit" class="button5" value="Save Recipe"/>
-                </form>
-            </div>
-            
-            <div style="display: inline-block; position: relative;">
-                <form>
-                    <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Calendar"/></a>
-                </form>
+        <div class="row">
+            <div style="text-align: center;">
+                <div style="margin: 5px; display: inline-block;">
+                    <form action="{{ url_for('save_recipe') }}" method="post">
+                        <input type="hidden" name="name" value="{{ recipe.name }}"/>
+                        <input type="hidden" name="time" value="{{ recipe.time }}"/>
+                        <input type="hidden" name="ingredients" value="{{ recipe.ingredients }}"/>
+                        <input type="hidden" name="instructions" value="{{ recipe.instructions }}"/>
+                        <input type="submit" class="button5" value="Save Recipe"/>
+                    </form>
+                </div>
+                
+                <div style="margin: 5px; display: inline-block;">
+                    <form>
+                        <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Calendar"/></a>
+                    </form>
+                </div>
             </div>
         </div>
     {% endif %}
@@ -49,14 +50,14 @@
 
     <!-- remove meal from calendar -->
     {% if recipe_date %}
-        <form action="/remove-meal" method="post">
+        <form style="text-align: center;" action="/remove-meal" method="post">
             <input type="hidden" name="dinner_to_remove" value="{{ recipe_date }}">
             <input style="color:black; margin-top: 2%;" type="submit" id="remove" value="REMOVE"/>
         </form>
     {% endif %}
 
     
-    <h1>{{ recipe.name }}</h1>
+    <h1 class="recipe-text-responsive" style="text-align: center;">{{ recipe.name }}</h1>
 
     
     <!--  LINK to calendar and DELETE RECIPE button  -->
@@ -81,20 +82,21 @@
         
 
     <!--   recipe information    -->
+    
     {% if recipe.time <= 60 %}
-        <h3>Estimated time: <em>{{ recipe.time }} minutes</em></h3>
+        <h3 class="recipe-text-responsive" style="text-align: center;">Estimated time: <em>{{ recipe.time }} minutes</em></h3>
     {% else %}
         {% set recipe_hour = recipe.time//60 %}
         {% set recipe_mins = recipe.time%60 %}
         {% if not recipe_mins %}
-            <h3>Estimated time: <em>{{ recipe_hour }} hours</em></h3>
+            <h3 class="recipe-text-responsive">Estimated time: <em>{{ recipe_hour }} hours</em></h3>
         {% else %}
-            <h3>Estimated time: <em>{{ recipe_hour }} hours : {{ recipe_mins }} minutes</em></h3>
+            <h3 class="recipe-text-responsive">Estimated time: <em>{{ recipe_hour }} hours : {{ recipe_mins }} minutes</em></h3>
         {% endif %}
     {% endif %}
 
 
-    <h3>Ingredients:</h3>
+    <h3 class="recipe-text-responsive">Ingredients:</h3>
     {% for ingredient in ingredients %}
     <ul>
         
@@ -102,9 +104,9 @@
     
     </ul>
     {% endfor %}
-    <h3>Instructions:</h3>
-    <h3>{{ recipe.instructions }}</h3>
-
+    <h3 class="recipe-text-responsive">Instructions:</h3>
+    <h3 id="recipe-instructions-responsive">{{ recipe.instructions }}</h3>
+    
 </div>
 
 

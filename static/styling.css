@@ -258,6 +258,16 @@ background-color:rgba(10, 10, 10, 0.678);
 
 /*--------MEDIA QUERIES--------*/
 
+@media screen and (max-width: 600px) {
+    .recipe-text-responsive {
+        font-size: 18px;
+    }
+    #recipe-instructions-responsive {
+        font-size: 14px;
+    }
+}
+
+
 @media screen and (max-width: 991px) {
     .search-form-wrap {
         width: 75%;
