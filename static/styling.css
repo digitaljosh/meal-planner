@@ -259,16 +259,23 @@ background-color:rgba(10, 10, 10, 0.678);
 }
 
 
-
+.fc-day-grid-event .fc-content {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.1;
+}
 
 
 /*--------MEDIA QUERIES--------*/
-
 
 @media screen and (max-width: 1380px) {
     .dropdown-menu {
         margin-left: 8px;
     }
+    .fc-event {
+        font-size: 1em;
+    }
+
 }
 
 @media screen and (max-width: 1152px) {
@@ -328,6 +335,9 @@ background-color:rgba(10, 10, 10, 0.678);
     #index-container {
         max-width: 85%;
     }
+    .fc-event {
+        font-size: .95em;
+    }
 }
 
 @media screen and (max-width: 645px) {
@@ -345,6 +355,9 @@ background-color:rgba(10, 10, 10, 0.678);
     }
     #recipe-instructions-responsive {
         font-size: 14px;
+    }
+    .fc-day-number {
+        font-size: 12px;
     }
 }
 
@@ -388,6 +401,12 @@ background-color:rgba(10, 10, 10, 0.678);
     }
     #ingred-list {
         margin-left: 1%;
+    }
+    .fc-day-number {
+        font-size: 10px;
+    }
+    .fc-event {
+        font-size: .8em;
     }
 }
 
