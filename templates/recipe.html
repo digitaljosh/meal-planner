@@ -57,29 +57,32 @@
     {% endif %}
 
     
-    <h1 class="recipe-text-responsive" style="text-align: center;">{{ recipe.name }}</h1>
+    
 
     
-    <!--  LINK to calendar and DELETE RECIPE button  -->
+    <!--  LINK to COOKBOOK and DELETE RECIPE button  -->
     {% if button_flag %}
-        <div style="display: inline-block; position: absolute; margin-left: 45%; margin-top: -3%;">
-            <!-- link to calendar page -->
-            <div style="display: inline-block; position: relative;">
-                <form style="color:black;">
-                    <a href="/recipe-index"><input class="button5" type="button" name="button5" value="Cookbook"/></a>
-                </form>
-            </div>
-    
-            <!-- DELETE RECIPE from cookbook -->
-            <div style="display: inline-block; position: relative;">
-                <form style="color:black;" action="{{ url_for('delete_recipe') }}" method="post">
-                    <input type="hidden" name="id" value="{{ recipe.id }}"/>
-                    <input  style="display: inline-block; position: relative;" type="submit" class="button5" value="Delete Recipe"/>
-                </form>
+        <div class="row">
+            <div style="text-align: center;">
+                <!-- link to recipe index page -->
+                <div style="margin: 5px; display: inline-block;">
+                    <form style="color:black;">
+                        <a href="/recipe-index"><input class="button5" type="button" name="button5" value="Cookbook"/></a>
+                    </form>
+                </div>
+        
+                <!-- DELETE RECIPE from cookbook -->
+                <div style="margin: 5px; display: inline-block;">
+                    <form style="color:black;" action="{{ url_for('delete_recipe') }}" method="post">
+                        <input type="hidden" name="id" value="{{ recipe.id }}"/>
+                        <input  style="display: inline-block; position: relative;" type="submit" class="button5" value="Delete Recipe"/>
+                    </form>
+                </div>
             </div>
         </div>
     {% endif %}
-        
+    
+    <h1 class="recipe-text-responsive" style="text-align: center;">{{ recipe.name }}</h1>
 
     <!--   recipe information    -->
     
