@@ -4,37 +4,35 @@
 <div class="container">
 
     
-    <div class="form-wrap">
+    <div class="search-form-wrap">
         <div class="form-inner">
-            <p style="text-align: center;" id="login-title">Search Recipes</p>
-        
-            <form action="/search" method="post" class="form-horizontal" name="search">
-                <div class="form-group col-sm-10">
-                    <div style="margin-left: auto; margin-right: auto;" >
-                        <input type="text" class="form-control" name="search">
+            <p style="text-align: center;" id="search-title">Search Recipes</p>
+            <div class="row">
+                <form action="/search" method="post" class="form-horizontal" name="search">
+                    <div class="form-group col-md-9">
+                        <div>
+                            <input type="text" class="form-control" name="search">
+                        </div>
                     </div>
-                </div>
-                <input style="margin-left: 5%; margin-right: auto; margin-top: 1%;" type="submit" value="Search">
-            </form>
+                    <input class="col-md-3 search-button" type="submit" value="Search">
+                </form>
+            </div>
         </div>
-        <div>
-            <a href="/full-calendar"><input  style="margin-left: 33%; margin-bottom: 5%;" class="button5" type="button" name="button5" value="Calendar"/></a>
+        <div style="text-align: center;">
+            <a href="/full-calendar"><input  style="margin-bottom: 5%;" class="button5" type="button" name="button5" value="Calendar"/></a>
         </div>
     </div> 
 
 
     <!-- Display recipe titles and pictures -->
     {% if recipe_list %}
-        <div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
-            <ul>
+        <div style="padding-top: 5px; background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white;">
+            <ul style="margin-left: -40px;">
                 {% for result in recipe_list['results'] %}
                     <h3 style="text-align: center;">{{ result['title'] }}</h3>
                     <h4 style="text-align: center;"><a href="/instructions?id={{ result['id'] }}">Recipe Instructions</a></h4>
-                    <img style="max-width: 65%; width: 65%; display: block; margin-left: auto; margin-right: auto;" src="https://spoonacular.com/recipeImages/{{ result['imageUrls'][0] }}"/>
-                    </br>                
-                    </br>
-                    </br>
-                    </br>
+                    <img id="recipe-img" style="display: block; margin-left: auto; margin-right: auto;" src="https://spoonacular.com/recipeImages/{{ result['imageUrls'][0] }}"/>
+                    <br />
                 {% endfor %}
             </ul>
         </div>

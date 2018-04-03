@@ -9,6 +9,7 @@ from datetime import date
 
 
 from app import app, db
+from hidden import mash_key
 from models import User, Event, Recipe, Cookbook, Api
 from hashy import check_pw_hash
 from st_amts import make_shopping_list
@@ -98,7 +99,6 @@ def login():
     # seed api table if empty
     api_object = Api.query.filter_by(id=1).first()
     if api_object == None:
-        #today_string = "{date:%Y-%m-%d}".format(date=datetime.now())
         today_string = date.today()
         api_seed = Api(0, 0, today_string)
         db.session.add(api_seed)
@@ -127,7 +127,6 @@ def login():
                 evs = getUsersEvents(tried_name)
                 # writes to events.json
                 write_events(evs)
-                print("HAAAAHHAHAHAHAHAHAHAHAHA")
                 return redirect('/full-calendar')
             else:
                 flash("Nice try!", 'negative')
@@ -219,7 +218,7 @@ def recipe_search():
             api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&number=20&query="
             url = api + search_query
             headers={
-                "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
+                "X-Mashape-Key": mash_key,
                 "Accept": "application/json"
                 }
 
@@ -252,7 +251,7 @@ def recipe_search():
                 api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&number=20&query="
                 url = api + search_query
                 headers={
-                    "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
+                    "X-Mashape-Key": mash_key,
                     "Accept": "application/json"
                     }
 
@@ -297,7 +296,7 @@ def recipe_instructions():
         api_part2 = "/information?includeNutrition=false"
         url = api_part1 + recipe_id + api_part2
         headers={
-        "X-Mashape-Key": "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB",
+        "X-Mashape-Key": mash_key,
         "Accept": "application/json"
         }
 
