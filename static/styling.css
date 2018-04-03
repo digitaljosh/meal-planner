@@ -265,6 +265,11 @@ background-color:rgba(10, 10, 10, 0.678);
     line-height: 1.1;
 }
 
+#recipe-add {
+    width: 300px; 
+    margin-top: 5px;
+}
+
 
 /*--------MEDIA QUERIES--------*/
 
@@ -416,6 +421,12 @@ background-color:rgba(10, 10, 10, 0.678);
     }
     #search-title {
         font-size: 24px;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    #recipe-add {
+        width: 245px;
     }
 }
 
