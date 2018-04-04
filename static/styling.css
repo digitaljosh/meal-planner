@@ -42,8 +42,8 @@ h2 {
 
 .popup-help .help-popup {
     visibility: hidden;
-    width: 275px;
-    background-color: rgba(75, 75, 75, 0.952);
+    width: 310px;
+    background-color: rgba(10, 10, 10, 0.778);
     color: #fff;
     text-align: left;
     border-radius: 12px;
@@ -51,7 +51,7 @@ h2 {
     position: relative;
     z-index: 1;
     bottom: -100%;
-    left: -63%;
+    left: -120%;
 }
 
 
@@ -271,6 +271,12 @@ background-color:rgba(10, 10, 10, 0.678);
 }
 
 
+/*--------HELP POPUP--------*/
+#myPopup {
+    font-size: 16px;
+}
+
+
 /*--------MEDIA QUERIES--------*/
 
 @media screen and (max-width: 1380px) {
@@ -311,6 +317,10 @@ background-color:rgba(10, 10, 10, 0.678);
     }
     #ingred-list {
         margin-left: 25%;
+    }
+    #myPopup {
+        left: -50%;
+        bottom: -50%;
     }
 }
 
@@ -413,6 +423,11 @@ background-color:rgba(10, 10, 10, 0.678);
     .fc-event {
         font-size: .8em;
     }
+    #myPopup {
+        font-size: 14px;
+        width: 275px;
+        left: -40%;
+    }
 }
 
 @media screen and (max-width: 370px) {
@@ -433,6 +448,9 @@ background-color:rgba(10, 10, 10, 0.678);
 @media screen and (max-width: 340px) {
     #username-recipe-index {
         font-size: 30px;
+    }
+    #myPopup {
+        left: -45%;
     }
 }
     
