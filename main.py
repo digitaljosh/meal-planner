@@ -8,8 +8,8 @@ import sqlalchemy
 from datetime import date
 
 
-from app import app, db
-from hidden import mash_key
+from app import app, db, mash_key
+#from hidden import mash_key
 from models import User, Event, Recipe, Cookbook, Api
 from hashy import check_pw_hash
 from st_amts import make_shopping_list
