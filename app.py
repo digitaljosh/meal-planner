@@ -1,7 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from hidden import heroku_db_connect
+from hidden import heroku_db_connect, shhh
+
 
 app = Flask(__name__)
 
@@ -10,7 +11,8 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = heroku_db_connect
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'Shhhhh,dont_tell_anyone1979'
+
+app.secret_key = shhh
 
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['DEBUG'] = True

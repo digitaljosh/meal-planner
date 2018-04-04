@@ -8,32 +8,32 @@
   crossorigin="anonymous"></script>
 
 <div class="container" style="background-color:rgba(10, 10, 10, 0.678); margin-top: 5%; color: white; max-width: 70%;">
-    <div style="float: right;" class="button-wrapper">
-        <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Calendar"/></a>
-        <a href="#"><button class="printBtn hidden-print button5">Print</button></a>
+    <div class="row">
+
+        <h3 style="text-align: center;" class="col-md-6">Ingredients for {{ start }} to {{ end }}:</h3>
+
+        <div style="margin-top: 15px; text-align: center;" class="col-md-6">
+            <a href="/full-calendar"><input class="button5" type="button" name="button5" value="Calendar"/></a>
+            <a style="margin-top: 5px;" href="#"><button style="margin-top: 5px;" class="printBtn hidden-print button5">Print</button></a>
+        </div>
+
     </div>
-
-    
-    <script type="text/javascript">
-        $('.printBtn').on('click', function (){
-            window.print();
-        });
-    </script>
-
-
-
-    <h3>{{username}}'s list of ingredients for {{ start }} to {{ end }}:</h3>
-
-    <ul>
+    <ul id="ingred-list" style="margin-top: 20px;">
         <!-- sorted alphabetically for now -->
         {% for k, v in ingredients_dict.items()| sort %}
         {% if k and v != None %}
         <li> {{ v[0] }} {{ v[1] }}  {{ k }}</li>
         {% endif %}
         {% endfor %}
-        
     </ul>
 </div>
+
+
+<script type="text/javascript">
+    $('.printBtn').on('click', function (){
+        window.print();
+    });
+</script>
 
     
 {% endblock %}

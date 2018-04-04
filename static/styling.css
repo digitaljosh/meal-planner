@@ -11,7 +11,8 @@ h2 {
 }
 
 
-/* Begin Flash Messages */
+/*--------FLASH MESSAGES--------*/
+
 .negative {
     color: red;
     font-size: 4rem;
@@ -22,10 +23,10 @@ h2 {
     font-size: 4rem;
     text-shadow: 2px 2px 3px rgba(51, 211, 118, 0.993);
 }
-/* End Flash Messages */
 
 
-/* Begin Help Popup Style */
+
+/*--------HELP POPUP--------*/
 
 .popup-help {
     position: relative;
@@ -63,12 +64,8 @@ h2 {
 
 
 
-/* End Help Popup Style */
 
-
-
-
-/* Begin About Popup Style */
+/*--------ABOUT POPUP--------*/
 .popup {
     position: relative;
     display: inline-block;
@@ -114,12 +111,14 @@ h2 {
     to {opacity: 1;}
 }
 
-/* End Popup Style */
 
-/* Begin About Button Style */
+
+
+/*--------ABOUT BUTTON--------*/
+
 .about-button {
-  height: 36px;
-  width: 146px;
+  height: 40px;
+  width: 150px;
   border: 0;
   outline: 0;
   text-align: center;
@@ -138,9 +137,10 @@ h2 {
 }
 
 
-/* End About Button Style */
 
-/* Begin Splash Buttons - except 'About' */
+
+
+/*--------SPLASH BUTTONS-------- */
 
 .all-buttons {
     width: 300px;
@@ -175,10 +175,10 @@ h2 {
     opacity: 1;
     }
   
-  /* End Splash Button */
+
 
   
-  /*  login and sign up form  */
+  /*--------LOGIN & SIGN UP--------*/
 
 #form-container {
     margin-top: 8%;
@@ -200,7 +200,6 @@ background-color:rgba(10, 10, 10, 0.678);
 }
 
 
-
 #signup-link {
     color: rgb(64, 179, 255);
 }
@@ -208,24 +207,242 @@ background-color:rgba(10, 10, 10, 0.678);
 #login-title {
     color: #fff;
     font-size: 28px;
-    /*text-align: center;
-    margin: 0 auto;*/
 }
 
-  /*  dropdown button on calendar page  */
 
-.dropdown {
-    margin-left: 50%;
-}
+/*--------OPTIONS DROPDOWN MENU--------*/
+
+.help-button-wrapper {
+    margin-top: 2%;
+  }
 
 .dropdown-menu > li > a:hover {
     background-color: rgb(175, 175, 175);
 } 
 
+.container-fluid {
+    margin: 1%;
+}
+
+.dropdown-menu {
+    max-width: 150px;
+}
+
+
+/*--------SEARCH TEMPLATE--------*/
+
+#search-title {
+    color: #fff;
+    font-size: 28px;
+}
+
+.search-button {
+    margin-left: 5%;
+    margin-right: auto;
+    margin-top: 1%;
+}
+
+.search-form-wrap {
+    width: 50%;
+    margin: 0 auto;
+    background-color:rgba(10, 10, 10, 0.678);
+}
+
+#recipe-img {
+    width: 60%;
+}
+
+/*--------Recipe Index Page--------*/
+
+#index-container {
+    max-width: 50%;
+}
+
+
+.fc-day-grid-event .fc-content {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.1;
+}
+
+#recipe-add {
+    width: 300px; 
+    margin-top: 5px;
+}
+
+
+/*--------MEDIA QUERIES--------*/
+
+@media screen and (max-width: 1380px) {
+    .dropdown-menu {
+        margin-left: 8px;
+    }
+    .fc-event {
+        font-size: 1em;
+    }
+
+}
+
+@media screen and (max-width: 1152px) {
+    .dropdown-menu {
+        margin-left: -8px;
+    }
+}
+
+@media screen and (max-width: 1048px) {
+    .dropdown-menu {
+        margin-left: -8px;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .dropdown-menu {
+        margin-left: 40%;
+    }
+    .search-button {
+        margin-left: 0;
+    }
+    .search-form-wrap {
+        width: 75%;
+        background-color:rgba(10, 10, 10, 0.678);
+    }
+    #recipe-index {
+        text-align: center;
+    }
+    #ingred-list {
+        margin-left: 25%;
+    }
+}
+
+@media screen and (max-width: 880px) {
+    .dropdown-menu {
+        margin-left: 38%;
+    }
+}
+
+
+@media screen and (max-width: 745px) {
+    .dropdown-menu {
+        margin-left: 36%;
+    }
+    #ingred-list {
+        margin-left: 18%;
+    }
+}
+
+@media screen and (max-width: 740px) {
+    .form-wrap {
+        width: 60%;
+    }
+}
+
+@media screen and (max-width: 666px) {
+    #index-container {
+        max-width: 85%;
+    }
+    .fc-event {
+        font-size: .95em;
+    }
+}
+
+@media screen and (max-width: 645px) {
+    .dropdown-menu {
+        margin-left: 34%;
+    }
+    #ingred-list {
+        margin-left: 10%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .recipe-text-responsive {
+        font-size: 18px;
+    }
+    #recipe-instructions-responsive {
+        font-size: 14px;
+    }
+    .fc-day-number {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 580px) {
+    .dropdown-menu {
+        margin-left: 32%;
+    }
+}
+
+@media screen and (max-width: 560px) {
+    .search-form-wrap {
+        width:100%;
+        background-color:rgba(10, 10, 10, 0.678);
+    }
+}
+
+@media screen and (max-width: 540px) {
+    #recipe-img {
+        width: 75%;
+    }
+    #ingred-list {
+        margin-left: 5%;
+    }
+}
+
+@media screen and (max-width: 515px) {
+    .dropdown-menu {
+        margin-left: 29%;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .dropdown-menu {
+        margin-left: 26%;
+    }
+}
+
+@media screen and (max-width: 397px) {
+    .dropdown-menu {
+        margin-left: 23%;
+    }
+    #ingred-list {
+        margin-left: 1%;
+    }
+    .fc-day-number {
+        font-size: 10px;
+    }
+    .fc-event {
+        font-size: .8em;
+    }
+}
+
+@media screen and (max-width: 370px) {
+    .dropdown-menu {
+        margin-left: 20%;
+    }
+    #search-title {
+        font-size: 24px;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    #recipe-add {
+        width: 245px;
+    }
+}
+
+@media screen and (max-width: 340px) {
+    #username-recipe-index {
+        font-size: 30px;
+    }
+}
+    
 
 
 
-  
+
+
+
+
 
 
 
