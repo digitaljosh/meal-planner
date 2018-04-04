@@ -81,7 +81,7 @@ celerybeat-schedule
 
 # dotenv
 .env
-eat.env
+dinners.env
 
 # virtualenv
 .venv
