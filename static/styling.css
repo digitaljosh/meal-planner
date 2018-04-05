@@ -80,7 +80,7 @@ h2 {
 .popup .popuptext {
     visibility: hidden;
     width: 240px;
-    background-color: rgba(75, 75, 75, 0.952);
+    background-color: rgba(10, 10, 10, 0.778);
     color: #fff;
     text-align: center;
     border-radius: 12px;
@@ -195,7 +195,7 @@ background-color:rgba(10, 10, 10, 0.678);
 }
 
 .form-inner {
-    margin: 5%;
+    /*margin: 5%;*/
     padding: 5%;
 }
 
