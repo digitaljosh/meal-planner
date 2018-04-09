@@ -42,7 +42,7 @@ h2 {
 
 .popup-help .help-popup {
     visibility: hidden;
-    width: 310px;
+    width: 350px;
     background-color: rgba(10, 10, 10, 0.778);
     color: #fff;
     text-align: left;
@@ -274,6 +274,7 @@ background-color:rgba(10, 10, 10, 0.678);
 /*--------HELP POPUP--------*/
 #myPopup {
     font-size: 16px;
+    margin-left: -20%;
 }
 
 
@@ -426,7 +427,7 @@ background-color:rgba(10, 10, 10, 0.678);
     #myPopup {
         font-size: 14px;
         width: 275px;
-        left: -40%;
+        margin-left: 0%;
     }
 }
 
