@@ -129,6 +129,7 @@ h2 {
   font-weight: 750;
   color: #000;
   transition: 300ms;
+  padding-top: 2px;
 }
 
 .about-button:hover {
