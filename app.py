@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from boto.s3.connection import S3Connection
 
+import os 
 #from hidden import heroku_db_connect, shhh
 
 
