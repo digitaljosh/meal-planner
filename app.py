@@ -10,7 +10,7 @@ import os
 app = Flask(__name__)
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}"
-secret_conn = S3Connection(os.environ['S3_Key'], os.environ['S3_SECRET'])
+secret_conn = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
 #heroku_db_connect = S3Connection(os.environ['DATABASE_URL'])
 #shhh = S3Connection(os.environ['SECRET_KEY'])
 heroku_db_connect = secret_conn(['DATABASE_URL'])
