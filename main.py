@@ -9,7 +9,6 @@ from datetime import date
 import os
 
 from app import app, db
-from hidden import mash_key
 from models import User, Event, Recipe, Cookbook, Api
 from hashy import check_pw_hash
 from st_amts import make_shopping_list
