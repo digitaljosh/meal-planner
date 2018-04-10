@@ -6,7 +6,7 @@ import pprint
 import re 
 import sqlalchemy
 from datetime import date
-
+import os
 
 from app import app, db
 from hidden import mash_key
@@ -21,7 +21,7 @@ from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_eve
 
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
-
+mash_key = os.environ.get('MASH_KEY')
 
 @app.before_request
 def login_required():
