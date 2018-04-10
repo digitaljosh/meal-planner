@@ -4,8 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from boto.s3.connection import S3Connection
 
 import os 
-from hidden import heroku_db_connect, shhh
-
+#from hidden import heroku_db_connect, shhh
+#from config import heroku_db_connect, shhh
 
 app = Flask(__name__)
 
@@ -20,6 +20,10 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 heroku_db_connect = secret_conn(['DATABASE_URL'])
 shhh = secret_conn(['SECRET_KEY'])
 '''
+shhh = os.environ.get('SECRET_KEY')
+
+heroku_db_connect = os.environ.get('DATABASE_URL')
+
 app.config['SQLALCHEMY_DATABASE_URI'] = heroku_db_connect
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
