@@ -6,10 +6,9 @@ import pprint
 import re 
 import sqlalchemy
 from datetime import date
-
+import os
 
 from app import app, db
-from hidden import mash_key
 from models import User, Event, Recipe, Cookbook, Api
 from hashy import check_pw_hash
 from st_amts import make_shopping_list
@@ -21,7 +20,7 @@ from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_eve
 
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
-
+mash_key = os.environ.get('MASH_KEY')
 
 @app.before_request
 def login_required():
@@ -223,7 +222,7 @@ def recipe_search():
                 }
 
             json_data = requests.get(url, headers=headers).json()
-
+            print(json_data)
             # make sure Jinja doesn't break if no recipe 
             if json_data['totalResults'] == 0:
                 flash("No recipe listed, maybe check spelling and try again.", 'negative')
@@ -302,8 +301,10 @@ def recipe_instructions():
 
         json_data = requests.get(url, headers=headers).json()
 
+        print("%%%%%%%%%%%%%%%%%%%%%%%%%")
+        print(json_data)
+        print(json_data['title'])
         recipe_name = json_data['title']
-
         ingreds = json_data['extendedIngredients']
 
         recipe_ingredients = []
@@ -505,5 +506,5 @@ def logout():
 
 
 
-if __name__ == '__main__':
-    app.run()
+# if __name__ == '__main__':
+#     app.run()

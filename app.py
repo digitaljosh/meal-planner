@@ -1,16 +1,21 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from hidden import jason_db_connect, josh_db_connect, shhh
+#from boto.s3.connection import S3Connection
+
+import os 
+
 
 app = Flask(__name__)
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}"
 
-# Comment out other devs' db's to run the app locally
-app.config['SQLALCHEMY_DATABASE_URI'] = jason_db_connect
-#app.config['SQLALCHEMY_DATABASE_URI'] = josh_db_connect
+# imports config vars from os (Heroku)
+shhh = os.environ.get('SECRET_KEY')
 
+heroku_db_connect = os.environ.get('DATABASE_URL')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = heroku_db_connect
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.secret_key = shhh
 
