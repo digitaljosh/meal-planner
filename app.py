@@ -17,7 +17,7 @@ heroku_db_connect = os.environ.get('DATABASE_URL')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = heroku_db_connect
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_POOL_RECYCLE'] = 59
+#app.config['SQLALCHEMY_POOL_RECYCLE'] = 59
 
 app.secret_key = shhh
 
