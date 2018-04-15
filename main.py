@@ -388,6 +388,8 @@ def save_recipe():
     if time == "":
         #defaults to 30 minutes
         time = 30
+    
+    # following elif no longer needed -> changed time input-type to 'number' so it only allows ints
     elif type(time) != int:
         time = 30
     
@@ -404,7 +406,9 @@ def save_recipe():
     c_book = Cookbook.query.filter_by(owner_id=user.id).first()
     same_recipe = Recipe.query.filter_by(name=name, instructions=instructions, cookbook_id=c_book.id).first()
     if same_recipe:   
-        return render_template('full-calendar.html', user=user, events=events)
+        recipes = User.getListUserRecipes(session['username'])
+        flash("That recipe already exists", 'negative')   
+        return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
     new_recipe = Recipe(name, str(ingredients), instructions, str(time), c_book.id)
     db.session.add(new_recipe)
