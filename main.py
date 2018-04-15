@@ -106,7 +106,14 @@ def login():
             if session['username']:
                 name = session['username']
                 recipes = User.getListUserRecipes(name)
-                return render_template('full-calendar.html', user=User.getUserByName(name), events=Usae(name), recipes=recipes)#username=session['username'])
+                with open("events.json", "r") as input_data:
+                    if len(input_data.read()) == 0:
+                        evs = User.getUsersEvents(name)
+                        # writes to events.json
+                        Event.write_events(evs)
+                        return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
+                    else:
+                        return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
         except KeyError:
             return render_template('login.html')
         except AttributeError: # no one in db yet NoneType
