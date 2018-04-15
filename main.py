@@ -385,8 +385,8 @@ def save_recipe():
         time = 30
     
     # following elif no longer needed -> changed time input-type to 'number' so it only allows ints
-    elif type(time) != int:
-        time = 30
+    # elif type(time) != int:
+    #    time = 30
     
     # elif type(time) != int:
     #     flash("Sorry, times must be typed as number of minutes.", 'negative')
