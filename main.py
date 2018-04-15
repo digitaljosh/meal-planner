@@ -107,7 +107,7 @@ def login():
             if session['username']:
                 name = session['username']
                 recipes = User.getListUserRecipes(name)
-                return render_template('full-calendar.html', user=User.getUserByName(name), events=Usae(name), recipes=recipes)#username=session['username'])
+                return render_template('full-calendar.html', user=User.getUserByName(name), events=User.getUsersEvents(name), recipes=recipes)
         except KeyError:
             return render_template('login.html')
         except AttributeError: # no one in db yet NoneType
