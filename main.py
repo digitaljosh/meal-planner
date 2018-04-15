@@ -397,15 +397,19 @@ def save_recipe():
     
     if type(ingredients) == str and '[' not in ingredients :
         ingredients = ingredients.splitlines()
-      
+
+    new_recipe = Recipe(name, str(ingredients), instructions, str(time), c_book.id)  
     c_book = Cookbook.query.filter_by(owner_id=user.id).first()
     same_recipe = Recipe.query.filter_by(name=name, instructions=instructions, cookbook_id=c_book.id).first()
+    print("*********** same_recipe *********** # name #" + same_recipe.name + "# instructions #" + str(same_recipe.instructions) + "# cookbook id #" + str(same_recipe.cookbook_id))
+    print("*********** new_recipe *********** # name #" + new_recipe.name + "# instructions #" + new_recipe.instructions + "# cookbook id #" new_recipe.cookbook_id)
+
     if same_recipe:   
         recipes = User.getListUserRecipes(session['username'])
         flash("That recipe already exists", 'negative')   
         return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
-    new_recipe = Recipe(name, str(ingredients), instructions, str(time), c_book.id)
+    
     db.session.add(new_recipe)
     db.session.commit()
 
