@@ -12,9 +12,7 @@ from app import app, db
 from models import User, Event, Recipe, Cookbook, Api
 from hashy import check_pw_hash
 from st_amts import make_shopping_list
-from data_functs import (clean_ingreds, getUserByName, getUsersEvents, write_events, 
-                        make_users_events_current, get_meals_for_the_week, get_today_string,
-                        get_week_from_string, getListUserRecipes)
+from week_functs import get_today_string, get_week_from_string
 
 
 
@@ -88,8 +86,8 @@ def signup():
             session['cookbook-id'] = new_cookbook.id
             # since new user no events yet
             events = []
-            write_events(events)
-            return render_template('full-calendar.html', user= getUserByName(session['username']), events=events)      
+            Event.write_events(events)
+            return render_template('full-calendar.html', user= User.getUserByName(session['username']), events=events)      
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -107,8 +105,8 @@ def login():
         try:
             if session['username']:
                 name = session['username']
-                recipes = getListUserRecipes(name)
-                return render_template('full-calendar.html', user=getUserByName(name), events=getUsersEvents(name), recipes=recipes)#username=session['username'])
+                recipes = User.getListUserRecipes(name)
+                return render_template('full-calendar.html', user=User.getUserByName(name), events=Usae(name), recipes=recipes)#username=session['username'])
         except KeyError:
             return render_template('login.html')
         except AttributeError: # no one in db yet NoneType
@@ -123,9 +121,9 @@ def login():
             user = user_to_check.first()
             if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = user.username
-                evs = getUsersEvents(tried_name)
+                evs = User.getUsersEvents(tried_name)
                 # writes to events.json
-                write_events(evs)
+                Event.write_events(evs)
                 return redirect('/full-calendar')
             else:
                 flash("Nice try!", 'negative')
@@ -139,20 +137,20 @@ def login():
 @app.route('/full-calendar', methods=['POST', 'GET'])
 def cal_display():
     ''' Displays calendar as populated by user's events'''
-    user = getUserByName(session['username'])
+    user = User.getUserByName(session['username'])
    
     if request.method == 'GET':
         # simply displays events in current state
-        events = getUsersEvents(user.username)
+        events = User.getUsersEvents(user.username)
         # strips events of those that have passed
-        current_events = make_users_events_current(user.username)
-        write_events(current_events)
-        recipes = getListUserRecipes(user.username)
+        current_events = User.make_users_events_current(user.username)
+        Event.write_events(current_events)
+        recipes = User.getListUserRecipes(user.username)
         
         return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
     else: # 'POST'
         # displays calendar with updated changes
-        recipes = getListUserRecipes(user.username)
+        recipes = User.getListUserRecipes(user.username)
         if recipes == []:
             flash("Add some recipes to your cookbook.", 'negative')
             return render_template('full-calendar.html', user=user, recipes=recipes)
@@ -168,9 +166,9 @@ def cal_display():
         db.session.commit()
 
         # retrieve the events from updated db
-        make_users_events_current(user.username) # keeps users from adding events to the past
+        User.make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
-        write_events(event_list)
+        Event.write_events(event_list)
         return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
 
@@ -270,7 +268,7 @@ def recipe_search():
         
         
 
-    else: # method = GET
+    else: # ie GET
         return render_template('search.html')
 
 
@@ -331,15 +329,12 @@ def recipe_instructions():
 
         else:
             # add to db if not there
-            #number = session['cookbook-id']
-            user = User.query.filter_by(username=session['username']).first()
+            user = User.getUserByName(session['username'])
             cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
             
             new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
             new = True
-            #db.session.add(new_recipe)
-            #db.session.commit()        
-            
+            #not adding to db yet        
             # creates variables for current requests and last-api-call to update data in db 
             current_requests = api_obj.requests + 1
             last_api_call = date.today()                                
@@ -349,23 +344,23 @@ def recipe_instructions():
             api_obj.last_api_call = last_api_call
             db.session.commit()
 
-            return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
+            return render_template('recipe.html', recipe=new_recipe, ingredients=new_recipe.clean_ingreds(), new=new)
     
     else:
         if session['username'] == 'admin':
             # call api
             pass
-            #print("just here to satisfy indent")
         else:
             flash("API recipe instructions limit reached.Login as admin to bypass.", 'negative')
             return render_template('search.html')
         # displays recipe for user to decide if they'd like to save
-        user = User.query.filter_by(username=session['username']).first()
+        
+        user - User.getUserByName(session['username'])
         cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
         new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
         new = True       
    
-        return render_template('recipe.html', recipe=new_recipe, ingredients=clean_ingreds(new_recipe), new=new)
+        return render_template('recipe.html', recipe=new_recipe, ingredients=new_recipe.clean_ingreds(), new=new)
 
 # save recipe route
 @app.route("/recipe-added", methods=['POST'])
@@ -375,8 +370,8 @@ def save_recipe():
     ingredients = request.form['ingredients']
     instructions = request.form['instructions']
 
-    user = getUserByName(session['username'])
-    events = getUsersEvents(user.username)
+    user = User.getUserByName(session['username'])
+    events = User.getUsersEvents(user.username)
    
     if time == "":
         #defaults to 30 minutes
@@ -403,7 +398,7 @@ def save_recipe():
     db.session.add(new_recipe)
     db.session.commit()
 
-    recipes = getListUserRecipes(session['username'])
+    recipes = User.getListUserRecipes(session['username'])
     flash("Recipe saved!", 'positive')
     return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
@@ -419,7 +414,7 @@ def delete_recipe():
     Recipe.query.filter_by(id=recipe_id).delete()
     db.session.commit()
 
-    recipes = getListUserRecipes(session['username'])
+    recipes = User.getListUserRecipes(session['username'])
     return render_template('recipe-index.html', recipes=recipes, username=session['username'])
     
 
@@ -430,33 +425,33 @@ def display_modal_recipe():
     recipe_date = request.form["recipe_date"]
     username = session['username']
 
-    user = getUserByName(username)
+    user = User.getUserByName(username)
     event = Event.query.filter_by(date=recipe_date).filter_by(user_id=user.id).first()
     event_meal_id = event.meal
     recipe = Recipe.query.filter_by(id=event_meal_id).first()
 
-    return render_template('recipe.html', recipe=recipe, recipe_date=recipe_date, ingredients=clean_ingreds(recipe))
+    return render_template('recipe.html', recipe=recipe, recipe_date=recipe_date, ingredients=recipe.clean_ingreds())
 
 @app.route("/recipe/<recipe_id>")
 def display_recipe(recipe_id):
     """ diplays recipe by name with normalized data in clean format """
     recipe = Recipe.query.filter_by(id=recipe_id).first()
     button_flag = True
-    return render_template('recipe.html', recipe=recipe, button_flag=button_flag, ingredients=clean_ingreds(recipe))
+    return render_template('recipe.html', recipe=recipe, button_flag=button_flag, ingredients=recipe.clean_ingreds())
 
 
 @app.route("/recipe-index")
 def display_index():
     ''' displays list of all the recipes for that user '''
-    recipes = getListUserRecipes(session['username'])
+    recipes = User.getListUserRecipes(session['username'])
     return render_template('recipe-index.html', recipes=recipes, username=session['username'])
 
 @app.route("/ingredients")
 def display_ingredients():
     '''diplays a list of ingredients for recipes of all events for that week'''
-    user = User.query.filter_by(username=session['username']).first()
+    user = User.getUserByName(session['username'])
     # gets events for week, could change or make a user input
-    events = get_meals_for_the_week(user.username)
+    events = User.get_meals_for_the_week(user.username)
 
     ingredient_lists = []
     meals = []
@@ -481,15 +476,15 @@ def display_ingredients():
 def delete_meal_event():
     event_date = request.form['dinner_to_remove']
     username = session['username']
-    user = getUserByName(username)
+    user = User.getUserByName(username)
     
     Event.query.filter_by(date=event_date).filter_by(user_id=user.id).delete()
     db.session.commit()
     
-    events = getUsersEvents(user.username)
-    write_events(events)
+    events = User.getUsersEvents(user.username)
+    Event.write_events(events)
    
-    recipes = getListUserRecipes(username)
+    recipes = User.getListUserRecipes(username)
 
     return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
