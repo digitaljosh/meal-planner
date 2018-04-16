@@ -150,6 +150,8 @@ def cal_display():
     user = User.getUserByName(session['username'])
    
     if request.method == 'GET':
+        print("!!!!!!!!!!!!!!!")
+        print(user.username)
         # simply displays events in current state
         events = User.getUsersEvents(user.username)
         # strips events of those that have passed
