@@ -51,8 +51,8 @@ class User(db.Model):
         up_to_dates = []
         today = datetime.date.today()
         for event in all_events:
-            date = datetime.datetime(pytz.UTC).strptime(event.date, "%Y-%m-%d").date()
-            #date = datetime.datetime.strptime(event.date, "%Y-%m-%d").date()
+            #date = datetime.datetime(pytz.UTC).strptime(event.date, "%Y-%m-%d").date()
+            date = datetime.datetime.strptime(event.date, "%Y-%m-%d").date()
             if date >= today:
                 up_to_dates.append(event)
             else:
