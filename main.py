@@ -147,9 +147,10 @@ def login():
 @app.route('/full-calendar', methods=['POST', 'GET'])
 def cal_display():
     ''' Displays calendar as populated by user's events'''
-    user = User.getUserByName(session['username'])
-   
+    #user = User.getUserByName(session['username'])
+    #moved inside requests
     if request.method == 'GET':
+        user = User.getUserByName(session['username'])
         print("!!!!!!!!!!!!!!!")
         print(user.username)
         # simply displays events in current state
@@ -162,6 +163,7 @@ def cal_display():
         return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
     else: # 'POST'
         # displays calendar with updated changes
+        user = User.getUserByName(session['username'])
         recipes = User.getListUserRecipes(user.username)
         if recipes == []:
             flash("Add some recipes to your cookbook.", 'negative')
