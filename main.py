@@ -505,7 +505,8 @@ def delete_meal_event():
 def logout():
     try:
         if session['username']:
-            del session['username']
+            #del session['username']
+            session.pop('username', None)
             flash("See ya next time!", 'positive')
             return redirect("/")
     except KeyError:
