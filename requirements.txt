@@ -52,6 +52,7 @@ pathspec==0.5.5
 pylint==1.8.3
 PyMySQL==0.8.0
 python-dateutil==2.6.1
+pytz==2018.4
 PyYAML==3.12
 requests==2.9.1
 semantic-version==2.5.0
