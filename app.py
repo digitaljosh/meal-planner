@@ -14,6 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = jason_db_connect
 
 app.secret_key = shhh
 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['DEBUG'] = True
 
