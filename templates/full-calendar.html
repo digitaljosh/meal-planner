@@ -199,13 +199,32 @@
 				editable: true,
 				eventLimit: true,
 				eventStartEditable: false,
+
+				// BELOW is old way one source
 				events: {
 					
-					url: 'data',
+					//url: 'data/<user_id>',
+					url: 'data/?=<user_id>',
 					error: function() {
 						$('#script-warning').show();
 					}
 				},
+
+				// eventSources: [
+				// 	{
+				// 		events: {
+					
+				// 			url: 'data',
+				// 			error: function() {
+				// 				$('#script-warning').show();
+				// 			}
+				// 		},
+				// 	}
+					
+				// ],
+
+				
+
 				loading: function(bool) {
 					$('#loading').toggle(bool);
 				},

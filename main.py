@@ -5,6 +5,8 @@ import json
 import pprint 
 import re 
 import sqlalchemy
+import io
+import os
 from datetime import date
 
 
@@ -29,12 +31,22 @@ def login_required():
         flash("You need to be logged in to see your calendar!", 'negative')
         return redirect('/')
 
-@app.route('/data')
-def return_data():
-    ''' Just displays the json events scheduled on calendar, plain text dev purposes only'''
-    with open("events.json", "r") as input_data:
-        # check out jsonfiy method or the built in json module
-        # http://flask.pocoo.org/docs/0.10/api/#module-flask.json
+# Original thought
+# @app.route('/data')
+# def return_data():
+#     ''' Just displays the json events scheduled on calendar, plain text dev purposes only'''
+#     with open("events.json", "r") as input_data:
+#         # check out jsonfiy method or the built in json module
+#         # http://flask.pocoo.org/docs/0.10/api/#module-flask.json
+#         return input_data.read()
+
+#New multiple data sources
+@app.route('/data/<user_id>')
+def return_user_event_data(user_id):
+    ''' returns the data for that user's events.json '''
+    print("$$")
+    print(user_id)
+    with open("events_" + str(user_id) + ".json", "r") as input_data:
         return input_data.read()
 
 @app.route("/")
@@ -82,12 +94,40 @@ def signup():
             new_cookbook = Cookbook(owner_id=new_user.id)
             db.session.add(new_cookbook)
             db.session.commit()
+            # just create a json file for user's events
+            # maybe do this at login (?)
+
+
+            
+            '''
+            filename = "events/" + str(new_user.id) + ".json"
+            f = None 
+            # checks if the file doesn't exists or if the file is empty
+            if not os.path.isfile(filename) or os.stat(filename).st_size == 0:
+                print("!!!!!!!!!!!!NO FILE!!!!!!!!!!!")
+                print("CREATING")
+                with open(filename, 'w') as json_file:
+                    json_file.write(json.dumps({}))
+            '''
+            
+            #     f = open(filename, "w")
+            #     data = {"name": "Helio", "age": 88}
+
+            #     print("No file Found, setting default age to", data["age"])
+            #     json.dump(data, f)
+            # if not f:  # open the file that exists now 
+            #     f = open(filename) 
+            #     data = json.load(f) 
+            # f.close()  # close the file that was opened in either case 
+            # with open("events/" + str(new_user.id) +".json", 'a') as new_file:
+            #     json.dump({}, new_file)
+            #     pass
             # set current session
             session['username'] = new_user.username
             session['cookbook-id'] = new_cookbook.id
             # since new user no events yet
             events = []
-            Event.write_events(events)
+            Event.write_events(events, new_user.id)
             return render_template('full-calendar.html', user= User.getUserByName(session['username']), events=events)      
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -106,10 +146,11 @@ def login():
         try:
             if session['username']:
                 name = session['username']
+                user = User.getUserByName(name)
                 recipes = User.getListUserRecipes(name)
                 with open("events.json", "r") as input_data:
                     evs = User.getUsersEvents(name)
-                    Event.write_events(evs)
+                    Event.write_events(evs, user.id)
                     return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
                     # if len(input_data.read()) == 0:
                     #     evs = User.getUsersEvents(name)
@@ -134,7 +175,7 @@ def login():
                 session['username'] = user.username
                 evs = User.getUsersEvents(tried_name)
                 # writes to events.json
-                Event.write_events(evs)
+                Event.write_events(evs, user.id)
                 return redirect('/full-calendar')
             else:
                 flash("Nice try!", 'negative')
@@ -155,7 +196,7 @@ def cal_display():
         events = User.getUsersEvents(user.username)
         # strips events of those that have passed
         current_events = User.make_users_events_current(user.username)
-        Event.write_events(current_events)
+        Event.write_events(current_events, user.id)
         recipes = User.getListUserRecipes(user.username)
         
         return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
@@ -179,7 +220,7 @@ def cal_display():
         # retrieve the events from updated db
         User.make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
-        Event.write_events(event_list)
+        Event.write_events(event_list, user.id)
         return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
 
 
@@ -491,7 +532,7 @@ def delete_meal_event():
     db.session.commit()
     
     events = User.getUsersEvents(user.username)
-    Event.write_events(events)
+    Event.write_events(events, user.id)
    
     recipes = User.getListUserRecipes(username)
 
