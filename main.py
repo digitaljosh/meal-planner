@@ -199,7 +199,7 @@ def cal_display():
         Event.write_events(current_events, user.id)
         recipes = User.getListUserRecipes(user.username)
         
-        return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
+        return render_template('full-calendar.html', user=user, events=events, recipes=recipes, data_user_id=user.id)
     else: # 'POST'
         # displays calendar with updated changes
         recipes = User.getListUserRecipes(user.username)
@@ -221,7 +221,7 @@ def cal_display():
         User.make_users_events_current(user.username) # keeps users from adding events to the past
         event_list = Event.query.filter_by(user_id=user.id).all()
         Event.write_events(event_list, user.id)
-        return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
+        return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes, data_user_id=user.id)
 
 
 

@@ -6,6 +6,7 @@
 <html>
 <head>
 <meta charset='utf-8' />
+<!-- <meta id="user_number" data-name="{{ data_user_id }}"/> -->
 <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -64,6 +65,7 @@
 </head>
 <body>
 
+	<h6>{{ data_user_id }}</h6>
 	<!--
 	{% if calendar_shown %}
 		<h1>{{ calendar_shown }}'s calendar</h1>
@@ -167,7 +169,11 @@
 
 	
 
-
+	<!-- <script>
+		var user_number = {{ data_user_id|safe }};
+		alert(user_number);
+		alert("{{ data_user_id }}")
+	</script> -->
 
 	<script>
 		$(document).ready(function() {
@@ -202,9 +208,16 @@
 
 				// BELOW is old way one source
 				events: {
-					
+					//url: 'data/1',
+					//url: 'data/' + user_number,
+					url: 'data/' + "{{ data_user_id }}",
 					//url: 'data/<user_id>',
-					url: 'data/?=<user_id>',
+					//url: 'data/?=<user_id>',
+					//url: 'data',
+					//data: "/{{ data_user_id }}",
+					// success: function(){
+					// 	alert(user_number)
+					// },
 					error: function() {
 						$('#script-warning').show();
 					}

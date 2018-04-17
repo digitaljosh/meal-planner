@@ -114,6 +114,7 @@ mealvirt
 
 # ignore event specifics (?)
 events.json
+.json
 
 #Jupyter Notebook
 .ipynb 
