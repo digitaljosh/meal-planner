@@ -127,7 +127,7 @@ def signup():
             session['cookbook-id'] = new_cookbook.id
             # since new user no events yet
             events = []
-            Event.write_events(events, new_user.id)
+            # entered at login =>Event.write_events(events, new_user.id)
             return render_template('full-calendar.html', user= User.getUserByName(session['username']), events=events)      
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -148,10 +148,11 @@ def login():
                 name = session['username']
                 user = User.getUserByName(name)
                 recipes = User.getListUserRecipes(name)
-                with open("events.json", "r") as input_data:
-                    evs = User.getUsersEvents(name)
-                    Event.write_events(evs, user.id)
-                    return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
+                # with open("events.json", "r") as input_data:
+                #    evs = User.getUsersEvents(name)
+                evs = User.getUsersEvents(name)
+                Event.write_events(evs, user.id)
+                return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes, data_user_id=user.id)
                     # if len(input_data.read()) == 0:
                     #     evs = User.getUsersEvents(name)
                     #     # writes to events.json
@@ -205,6 +206,7 @@ def cal_display():
         recipes = User.getListUserRecipes(user.username)
         if recipes == []:
             flash("Add some recipes to your cookbook.", 'negative')
+            # no need to pass data_user_id since there's no events possible
             return render_template('full-calendar.html', user=user, recipes=recipes)
 
         date = request.form['date']
@@ -441,8 +443,9 @@ def save_recipe():
     same_recipe = Recipe.query.filter_by(name=name, instructions=instructions, cookbook_id=c_book.id).first()
     if same_recipe:
         recipes = User.getListUserRecipes(session['username'])
+        user = User.getUserByName(session['username'])
         flash("That recipe already exists", 'negative')   
-        return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
+        return render_template('full-calendar.html', user=user, events=events, recipes=recipes, data_user_id=user.id)
 
     new_recipe = Recipe(name, str(ingredients), instructions, str(time), c_book.id)
     db.session.add(new_recipe)
@@ -536,7 +539,7 @@ def delete_meal_event():
    
     recipes = User.getListUserRecipes(username)
 
-    return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
+    return render_template('full-calendar.html', user=user, events=events, recipes=recipes, data_user_id=user.id)
 
 @app.route('/logout')
 def logout():
