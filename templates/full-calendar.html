@@ -193,9 +193,11 @@ crossorigin="anonymous"></script>
 				editable: true,
 				eventLimit: true,
 				eventStartEditable: false,
+
+				//access Individual data pages for events_<user_id>.json here
 				events: {
-					
-					url: 'data',
+					url: 'data/' + "{{ data_user_id }}",
+					//url: 'data',
 					error: function() {
 						$('#script-warning').show();
 					}
