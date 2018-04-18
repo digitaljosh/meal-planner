@@ -8,10 +8,9 @@ import sqlalchemy
 import io
 import os
 from datetime import date
-
+import os
 
 from app import app, db
-from hidden import mash_key
 from models import User, Event, Recipe, Cookbook, Api
 from hashy import check_pw_hash
 from st_amts import make_shopping_list
@@ -21,7 +20,7 @@ from week_functs import get_today_string, get_week_from_string
 
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
-
+mash_key = os.environ.get('MASH_KEY')
 
 @app.before_request
 def login_required():
@@ -190,9 +189,12 @@ def login():
 @app.route('/full-calendar', methods=['POST', 'GET'])
 def cal_display():
     ''' Displays calendar as populated by user's events'''
-    user = User.getUserByName(session['username'])
-   
+    #user = User.getUserByName(session['username'])
+    #moved inside requests
     if request.method == 'GET':
+        user = User.getUserByName(session['username'])
+        print("!!!!!!!!!!!!!!!")
+        print(user.username)
         # simply displays events in current state
         events = User.getUsersEvents(user.username)
         # strips events of those that have passed
@@ -203,6 +205,7 @@ def cal_display():
         return render_template('full-calendar.html', user=user, events=events, recipes=recipes, data_user_id=user.id)
     else: # 'POST'
         # displays calendar with updated changes
+        user = User.getUserByName(session['username'])
         recipes = User.getListUserRecipes(user.username)
         if recipes == []:
             flash("Add some recipes to your cookbook.", 'negative')
@@ -274,7 +277,7 @@ def recipe_search():
                 }
 
             json_data = requests.get(url, headers=headers).json()
-
+            print(json_data)
             # make sure Jinja doesn't break if no recipe 
             if json_data['totalResults'] == 0:
                 flash("No recipe listed, maybe check spelling and try again.", 'negative')
@@ -353,8 +356,10 @@ def recipe_instructions():
 
         json_data = requests.get(url, headers=headers).json()
 
+        print("%%%%%%%%%%%%%%%%%%%%%%%%%")
+        print(json_data)
+        print(json_data['title'])
         recipe_name = json_data['title']
-
         ingreds = json_data['extendedIngredients']
 
         recipe_ingredients = []
@@ -438,6 +443,7 @@ def save_recipe():
     
     if type(ingredients) == str and '[' not in ingredients :
         ingredients = ingredients.splitlines()
+
       
     c_book = Cookbook.query.filter_by(owner_id=user.id).first()
     same_recipe = Recipe.query.filter_by(name=name, instructions=instructions, cookbook_id=c_book.id).first()
@@ -545,7 +551,8 @@ def delete_meal_event():
 def logout():
     try:
         if session['username']:
-            del session['username']
+            #del session['username']
+            session.pop('username', None)
             flash("See ya next time!", 'positive')
             return redirect("/")
     except KeyError:
@@ -554,5 +561,5 @@ def logout():
 
 
 
-if __name__ == '__main__':
-    app.run()
+# if __name__ == '__main__':
+#     app.run()

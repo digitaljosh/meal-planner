@@ -283,7 +283,7 @@ background-color:rgba(10, 10, 10, 0.678);
 
 @media screen and (max-width: 1380px) {
     .dropdown-menu {
-        margin-left: 8px;
+        margin-left: 8px !important;
     }
     .fc-event {
         font-size: 1em;
@@ -293,19 +293,19 @@ background-color:rgba(10, 10, 10, 0.678);
 
 @media screen and (max-width: 1152px) {
     .dropdown-menu {
-        margin-left: -8px;
+        margin-left: -8px !important;
     }
 }
 
 @media screen and (max-width: 1048px) {
     .dropdown-menu {
-        margin-left: -8px;
+        margin-left: -8px !important;
     }
 }
 
 @media screen and (max-width: 991px) {
     .dropdown-menu {
-        margin-left: 40%;
+        margin-left: 40% !important;
     }
     .search-button {
         margin-left: 0;
@@ -328,14 +328,14 @@ background-color:rgba(10, 10, 10, 0.678);
 
 @media screen and (max-width: 880px) {
     .dropdown-menu {
-        margin-left: 38%;
+        margin-left: 38% !important;
     }
 }
 
 
 @media screen and (max-width: 745px) {
     .dropdown-menu {
-        margin-left: 36%;
+        margin-left: 36% !important;
     }
     #ingred-list {
         margin-left: 18%;
@@ -359,7 +359,7 @@ background-color:rgba(10, 10, 10, 0.678);
 
 @media screen and (max-width: 645px) {
     .dropdown-menu {
-        margin-left: 34%;
+        margin-left: 34% !important;
     }
     #ingred-list {
         margin-left: 10%;
@@ -380,7 +380,7 @@ background-color:rgba(10, 10, 10, 0.678);
 
 @media screen and (max-width: 580px) {
     .dropdown-menu {
-        margin-left: 32%;
+        margin-left: 32% !important;
     }
 }
 
@@ -402,19 +402,19 @@ background-color:rgba(10, 10, 10, 0.678);
 
 @media screen and (max-width: 515px) {
     .dropdown-menu {
-        margin-left: 29%;
+        margin-left: 29% !important;
     }
 }
 
 @media screen and (max-width: 450px) {
     .dropdown-menu {
-        margin-left: 26%;
+        margin-left: 26% !important;
     }
 }
 
 @media screen and (max-width: 397px) {
     .dropdown-menu {
-        margin-left: 23%;
+        margin-left: 23% !important;
     }
     #ingred-list {
         margin-left: 1%;
@@ -434,7 +434,7 @@ background-color:rgba(10, 10, 10, 0.678);
 
 @media screen and (max-width: 370px) {
     .dropdown-menu {
-        margin-left: 20%;
+        margin-left: 20% !important;
     }
     #search-title {
         font-size: 24px;
