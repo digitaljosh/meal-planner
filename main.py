@@ -68,6 +68,21 @@ def return_user_event_data(user_id):
     print(user_id)
     with open("events_" + str(user_id) + ".json", "r") as input_data:
         return input_data.read()
+    '''
+    name = session['username']
+    recipes = User.getListUserRecipes(name)
+    events = User.getUsersEvents(name)
+    d = []
+    for event in events:
+        d.append({"title":event.meal_name, "start":event.date, "id":event.meal})
+    
+    print("!!!!!! hitting /data !!!!!!!!!!!")
+    print("  Returning d:  ")
+    print(d)
+    
+    return json.dumps(d, ensure_ascii=False)
+    
+    '''
 
 @app.route("/")
 def index():
