@@ -31,11 +31,26 @@ def login_required():
 
 @app.route('/data')
 def return_data():
-    ''' Just displays the json events scheduled on calendar, plain text dev purposes only'''
+    ''' Just displays the json events scheduled on calendar, plain text dev purposes only
     with open("events.json", "r") as input_data:
         # check out jsonfiy method or the built in json module
         # http://flask.pocoo.org/docs/0.10/api/#module-flask.json
         return input_data.read()
+    '''
+    name = session['username']
+    recipes = User.getListUserRecipes(name)
+    events = User.getUsersEvents(name)
+    d = []
+    for event in events:
+        d.append({"title":event.meal_name, "start":event.date, "id":event.meal})
+    
+    print("!!!!!! hitting /data !!!!!!!!!!!")
+    print("  Returning d:  ")
+    print(d)
+    
+    return json.dumps(d, ensure_ascii=False)
+    
+
 
 @app.route("/")
 def index():
@@ -86,9 +101,8 @@ def signup():
             session['username'] = new_user.username
             session['cookbook-id'] = new_cookbook.id
             # since new user no events yet
-            events = []
-            Event.write_events(events)
-            return render_template('full-calendar.html', user= User.getUserByName(session['username']), events=events)      
+            
+            return render_template('full-calendar.html', user= User.getUserByName(session['username']))      
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -107,14 +121,9 @@ def login():
             if session['username']:
                 name = session['username']
                 recipes = User.getListUserRecipes(name)
-                with open("events.json", "r") as input_data:
-                    if len(input_data.read()) == 0:
-                        evs = User.getUsersEvents(name)
-                        # writes to events.json
-                        Event.write_events(evs)
-                        return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
-                    else:
-                        return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
+                
+                return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
+                    
         except KeyError:
             return render_template('login.html')
         except AttributeError: # no one in db yet NoneType
@@ -129,9 +138,6 @@ def login():
             user = user_to_check.first()
             if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = user.username
-                evs = User.getUsersEvents(tried_name)
-                # writes to events.json
-                Event.write_events(evs)
                 return redirect('/full-calendar')
             else:
                 flash("Nice try!", 'negative')
@@ -150,9 +156,10 @@ def cal_display():
     if request.method == 'GET':
         # simply displays events in current state
         events = User.getUsersEvents(user.username)
-        # strips events of those that have passed
-        current_events = User.make_users_events_current(user.username)
-        Event.write_events(current_events)
+
+        # calls method that deletes old events from db
+        User.make_users_events_current(user.username)
+
         recipes = User.getListUserRecipes(user.username)
         
         return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
@@ -175,9 +182,7 @@ def cal_display():
 
         # retrieve the events from updated db
         User.make_users_events_current(user.username) # keeps users from adding events to the past
-        event_list = Event.query.filter_by(user_id=user.id).all()
-        Event.write_events(event_list)
-        return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
+        return render_template('full-calendar.html', user=user, recipes=recipes)
 
 
 
@@ -487,12 +492,9 @@ def delete_meal_event():
     Event.query.filter_by(date=event_date).filter_by(user_id=user.id).delete()
     db.session.commit()
     
-    events = User.getUsersEvents(user.username)
-    Event.write_events(events)
-   
     recipes = User.getListUserRecipes(username)
 
-    return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
+    return render_template('full-calendar.html', user=user, recipes=recipes)
 
 @app.route('/logout')
 def logout():
