@@ -88,7 +88,7 @@ class Event(db.Model):
         events = Event.query.filter_by(user_id=user_id).all()
         with open('events_' + str(user_id) + '.json', 'w') as event_list:
                 event_dicts = []
-                events = User.getUsersEvents()
+                
                 for event in events:
                     event_dicts.append({"title":event.meal_name, "start":event.date, "id":event.meal})
                 event_list.write(json.dumps(event_dicts))
