@@ -85,7 +85,7 @@ class Event(db.Model):
     
     def write_events(events, user_id):
         """ overwrites event.json with current event list for current (session) user """
-        events = Event.query.filter_by(user_id=user.id).all()
+        events = Event.query.filter_by(user_id=user_id).all()
         with open('events_' + str(user_id) + '.json', 'w') as event_list:
                 event_dicts = []
                 events = User.getUsersEvents()
