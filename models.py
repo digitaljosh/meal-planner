@@ -83,14 +83,13 @@ class Event(db.Model):
         self.meal_name = meal_name
 
     
-    def write_events(events):
+   def write_events(events, user_id):
         """ overwrites event.json with current event list for current (session) user """
         with open('events_' + str(user_id) + '.json', 'w') as event_list:
                 event_dicts = []
                 for event in events:
                     event_dicts.append({"title":event.meal_name, "start":event.date, "id":event.meal})
                 event_list.write(json.dumps(event_dicts))
-    
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
