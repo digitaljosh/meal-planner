@@ -36,10 +36,31 @@ def login_required():
 #     ''' Just displays the json events scheduled on calendar, plain text dev purposes only'''
 #     with open("events.json", "r") as input_data:
 #         # check out jsonfiy method or the built in json module
-#         # http://flask.pocoo.org/docs/0.10/api/#module-flask.json
-#         return input_data.read()
+#         # http://flask.pocoo.org/docs/0.10/api/#module-flask.json 
+#        return input_data.read()
 
+#New Josh thought
+'''
+@app.route('/data')
+
+def return_data():
+
+    name = session['username']
+
+    recipes = User.getListUserRecipes(name)
+
+    events = User.getUsersEvents(name)
+
+    d = []
+
+    for event in events:
+
+        d.append({"title":event.meal_name, "start":event.date, "id":event.meal})
+    
+    return json.dumps(d, ensure_ascii=False)
+'''
 #New multiple data sources
+
 @app.route('/data/<user_id>')
 def return_user_event_data(user_id):
     ''' returns the data for that user's events.json '''
