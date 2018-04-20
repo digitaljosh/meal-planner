@@ -47,16 +47,13 @@ class User(db.Model):
     def make_users_events_current(username):
         ''' Drops events that have occured from table '''
         all_events = User.getUsersEvents(username)
-        up_to_dates = []
         today = datetime.date.today()
         for event in all_events:
             date = datetime.datetime.strptime(event.date, "%Y-%m-%d").date()
-            if date >= today:
-                up_to_dates.append(event)
-            else:
+            if date < today:
                 Event.query.filter_by(id=event.id).delete()
                 db.session.commit()
-        return up_to_dates
+    
 
     def get_meals_for_the_week(username):
         ''' returns the events the user has planned for the next week '''
@@ -83,13 +80,6 @@ class Event(db.Model):
         self.user_id = user_id
         self.meal_name = meal_name
 
-    def write_events(events):
-        """ overwrites event.json with current event list for current (session) user """
-        with open('events.json', 'w') as event_list:
-                event_dicts = []
-                for event in events:
-                    event_dicts.append({"title":event.meal_name, "start":event.date, "id":event.meal})
-                event_list.write(json.dumps(event_dicts))
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -107,7 +97,7 @@ class Recipe(db.Model):
         self.cookbook_id = cookbook_id
 
     def clean_ingreds(self):
-        """splits recipe ingredients from list of one string to list of individual ingredient strings"""
+        '''splits recipe ingredients from list of one string to list of individual ingredient strings'''
         no_coma_ingreds = re.sub(',', '', self.ingredients)
         # splits from string of ingredients to list at first ' 
         ingreds = no_coma_ingreds.split(' \'')

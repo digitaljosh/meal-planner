@@ -31,11 +31,16 @@ def login_required():
 
 @app.route('/data')
 def return_data():
-    ''' Just displays the json events scheduled on calendar, plain text dev purposes only'''
-    with open("events.json", "r") as input_data:
-        # check out jsonfiy method or the built in json module
-        # http://flask.pocoo.org/docs/0.10/api/#module-flask.json
-        return input_data.read()
+    name = session['username']
+    recipes = User.getListUserRecipes(name)
+    events = User.getUsersEvents(name)
+    user_event_list = []
+    for event in events:
+        user_event_list.append({"title":event.meal_name, "start":event.date, "id":event.meal})
+    
+    return json.dumps(user_event_list, ensure_ascii=False)
+    
+
 
 @app.route("/")
 def index():
@@ -86,9 +91,8 @@ def signup():
             session['username'] = new_user.username
             session['cookbook-id'] = new_cookbook.id
             # since new user no events yet
-            events = []
-            Event.write_events(events)
-            return render_template('full-calendar.html', user= User.getUserByName(session['username']), events=events)      
+            
+            return render_template('full-calendar.html', user= User.getUserByName(session['username']))      
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -107,14 +111,9 @@ def login():
             if session['username']:
                 name = session['username']
                 recipes = User.getListUserRecipes(name)
-                with open("events.json", "r") as input_data:
-                    if len(input_data.read()) == 0:
-                        evs = User.getUsersEvents(name)
-                        # writes to events.json
-                        Event.write_events(evs)
-                        return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
-                    else:
-                        return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
+                
+                return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
+                    
         except KeyError:
             return render_template('login.html')
         except AttributeError: # no one in db yet NoneType
@@ -129,9 +128,6 @@ def login():
             user = user_to_check.first()
             if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = user.username
-                evs = User.getUsersEvents(tried_name)
-                # writes to events.json
-                Event.write_events(evs)
                 return redirect('/full-calendar')
             else:
                 flash("Nice try!", 'negative')
@@ -145,17 +141,17 @@ def login():
 @app.route('/full-calendar', methods=['POST', 'GET'])
 def cal_display():
     ''' Displays calendar as populated by user's events'''
+    
     user = User.getUserByName(session['username'])
    
     if request.method == 'GET':
-        # simply displays events in current state
-        events = User.getUsersEvents(user.username)
-        # strips events of those that have passed
-        current_events = User.make_users_events_current(user.username)
-        Event.write_events(current_events)
+        # calls method that deletes old events from db
+        User.make_users_events_current(user.username)
+
         recipes = User.getListUserRecipes(user.username)
         
-        return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
+        return render_template('full-calendar.html', user=user, recipes=recipes)
+
     else: # 'POST'
         # displays calendar with updated changes
         recipes = User.getListUserRecipes(user.username)
@@ -173,28 +169,19 @@ def cal_display():
         db.session.add(new_event)
         db.session.commit()
 
-        # retrieve the events from updated db
-        User.make_users_events_current(user.username) # keeps users from adding events to the past
-        event_list = Event.query.filter_by(user_id=user.id).all()
-        Event.write_events(event_list)
-        return render_template('full-calendar.html', events=event_list, user=user, recipes=recipes)
+        # make events in db current
+        User.make_users_events_current(user.username)
+        return render_template('full-calendar.html', user=user, recipes=recipes)
 
 
 
-
-# TODO assign an admin user that can bypass api limits (if session[username]=admin => override api limits)
-# TODO reset results and requests in db every 24 hours
-# TODO consider lowering search results (currently @ 20) to extend daily search limits. Currently limited to 25 searches/day
-# TODO may want to separate out the api call to a separate function
-
-
-
-
-# GET Search Recipes - spoonacular
-# costs 1 request per search
-# costs 20 results per search (or however many recipes are returned)
 @app.route('/search', methods=['POST', 'GET'])
 def recipe_search():
+    ''' 
+    GET Search Recipes - spoonacular
+    costs 1 request per search
+    costs 20 results per search (or however many recipes are returned)
+    '''
 
     # check today's date against last api call, if not same day, reset results & requests in db
     today = date.today()
@@ -216,7 +203,7 @@ def recipe_search():
         api_obj = Api.query.filter_by(id=1).first()
         
         # check if we have reached api call limits
-        if api_obj.requests < 50 and api_obj.results < 500: 
+        if api_obj.requests < 50 and api_obj.results < 500:
             # if no limits reached, proceed with api call
             search_query = request.form['search']
             search_query = search_query.replace(" ","+")
@@ -250,7 +237,6 @@ def recipe_search():
 
             # api call limit bypass for admin
             if session['username'] == 'admin':
-                print("$#$#$#$#$ !!!!!!!! ADMIN FOR THE WIN  $#$#$#$ !!!!!!!")
                 search_query = request.form['search']
                 search_query = search_query.replace(" ","+")
                 api = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search?instructionsRequired=true&number=20&query="
@@ -276,17 +262,17 @@ def recipe_search():
         
         
 
-    else: # ie GET
+    else: # GET request
         return render_template('search.html')
 
 
-# Get Recipe Information - spoonacular API 
-# costs 1 request
+
 @app.route('/instructions', methods=['POST', 'GET'])
 def recipe_instructions():
 
     '''
-    The following code block calls spoonacular api
+    GET Recipe Information - spoonacular API
+    costs 1 request
     '''
     
     # get api object from db
@@ -316,18 +302,15 @@ def recipe_instructions():
             recipe_ingredients.append(ingreds[i]['originalString'])
 
         recipe_instructs = json_data['instructions']
-
-
         recipe_time =  int(json_data['readyInMinutes'])
     
-        '''Duplicates won't be allowed by db anyway so let them push a save button if they wish
-        # Assumption here, FOR NOW, is that there won't be multiple recipes with the same name and exact same
+        '''
         same_recipe = Recipe.query.filter_by(name=recipe_name, instructions=recipe_instructs).first()
-    
         if same_recipe:
             #already in db, just display that one
             return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
         '''
+
         # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
         if recipe_ingredients == None or recipe_instructions == None:
             flash("That isn't a complete recipe, pick another.", 'negative')
@@ -340,12 +323,12 @@ def recipe_instructions():
             
             new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
             new = True
-            #not adding to db yet        
-            # creates variables for current requests and last-api-call to update data in db 
+                    
+            # create variables for current requests and last-api-call to update data in db 
             current_requests = api_obj.requests + 1
             last_api_call = date.today()                                
 
-            # update api columns in api table then return search results
+            # update api table in db then return search results
             api_obj.requests = current_requests
             api_obj.last_api_call = last_api_call
             db.session.commit()
@@ -355,18 +338,65 @@ def recipe_instructions():
     else:
         if session['username'] == 'admin':
             # call api
-            pass
+            recipe_id = request.args.get('id')
+            api_part1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/"
+            api_part2 = "/information?includeNutrition=false"
+            url = api_part1 + recipe_id + api_part2
+            headers={
+            "X-Mashape-Key": mash_key,
+            "Accept": "application/json"
+            }
+
+            json_data = requests.get(url, headers=headers).json()
+
+            recipe_name = json_data['title']
+
+            ingreds = json_data['extendedIngredients']
+
+            recipe_ingredients = []
+            for i in range(0, len(ingreds)):
+                recipe_ingredients.append(ingreds[i]['originalString'])
+
+            recipe_instructs = json_data['instructions']
+            recipe_time =  int(json_data['readyInMinutes'])
+        
+            '''
+            same_recipe = Recipe.query.filter_by(name=recipe_name, instructions=recipe_instructs).first()
+            if same_recipe:
+                #already in db, just display that one
+                return render_template('recipe.html', recipe=same_recipe, ingredients=clean_ingreds(same_recipe))
+            '''
+
+            # Make sure recipe found has ingredient list and instructions (surprisingly they don't always)
+            if recipe_ingredients == None or recipe_instructions == None:
+                flash("That isn't a complete recipe, pick another.", 'negative')
+                return redirect('search.html')
+
+            else:
+                # add to db if not there
+                user = User.getUserByName(session['username'])
+                cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
+                
+                new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
+                new = True
+                        
+                # create variables for current requests and last-api-call to update data in db 
+                current_requests = api_obj.requests + 1
+                last_api_call = date.today()                                
+
+                # update api table in db then return search results
+                api_obj.requests = current_requests
+                api_obj.last_api_call = last_api_call
+                db.session.commit()
+
+                return render_template('recipe.html', recipe=new_recipe, ingredients=new_recipe.clean_ingreds(), new=new)
+
+        # if api limit reached and admin not logged in
         else:
             flash("API recipe instructions limit reached.Login as admin to bypass.", 'negative')
             return render_template('search.html')
-        # displays recipe for user to decide if they'd like to save
-        
-        user - User.getUserByName(session['username'])
-        cookbook = Cookbook.query.filter_by(owner_id=user.id).first()
-        new_recipe = Recipe(recipe_name, str(recipe_ingredients), recipe_instructs, recipe_time, cookbook.id)
-        new = True       
-   
-        return render_template('recipe.html', recipe=new_recipe, ingredients=new_recipe.clean_ingreds(), new=new)
+
+
 
 # save recipe route
 @app.route("/recipe-added", methods=['POST'])
@@ -383,13 +413,8 @@ def save_recipe():
     if time == "":
         #defaults to 30 minutes
         time = 30
-
-    # following elif no longer needed -changed time input type to 'number' so it only allows numbers
-    #elif type(time) != int:
-        #time = 30
    
     # keeps format consistent for recipes manually entered
-    
     if type(ingredients) == str and '[' not in ingredients :
         ingredients = ingredients.splitlines()
       
@@ -406,17 +431,23 @@ def save_recipe():
 
     recipes = User.getListUserRecipes(session['username'])
     flash("Recipe saved!", 'positive')
-    return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
+    return render_template('full-calendar.html', user=user, recipes=recipes)
+
 
 
 @app.route("/remove-recipe", methods=['POST'])
 def delete_recipe():
+    '''
+    Deletes recipe from db
+    '''
     recipe_id = request.form["id"]
-    #need to remove any event with that recipe first
+
+    # removes events with that recipe
     events_to_go = Event.query.filter_by(meal=recipe_id).all()
     for event in events_to_go:
         Event.query.filter_by(id=event.id).delete()
 
+    # removes recipe from db
     Recipe.query.filter_by(id=recipe_id).delete()
     db.session.commit()
 
@@ -424,10 +455,14 @@ def delete_recipe():
     return render_template('recipe-index.html', recipes=recipes, username=session['username'])
     
 
-# display recipe instructions in modal
+
+
 @app.route("/modal-recipe", methods=['POST'])
 def display_modal_recipe():
-    ''' displays the recipe '''
+    ''' 
+    Displays recipe instructions in modal  
+    '''
+
     recipe_date = request.form["recipe_date"]
     username = session['username']
 
@@ -438,9 +473,13 @@ def display_modal_recipe():
 
     return render_template('recipe.html', recipe=recipe, recipe_date=recipe_date, ingredients=recipe.clean_ingreds())
 
+
+
 @app.route("/recipe/<recipe_id>")
 def display_recipe(recipe_id):
-    """ diplays recipe by name with normalized data in clean format """
+    '''
+    Diplays recipe on its own template with normalized data in clean format
+    '''
     recipe = Recipe.query.filter_by(id=recipe_id).first()
     button_flag = True
     return render_template('recipe.html', recipe=recipe, button_flag=button_flag, ingredients=recipe.clean_ingreds())
@@ -448,15 +487,20 @@ def display_recipe(recipe_id):
 
 @app.route("/recipe-index")
 def display_index():
-    ''' displays list of all the recipes for that user '''
+    '''
+    Displays list of all the recipes for that user 
+    '''
     recipes = User.getListUserRecipes(session['username'])
     return render_template('recipe-index.html', recipes=recipes, username=session['username'])
 
+
 @app.route("/ingredients")
 def display_ingredients():
-    '''diplays a list of ingredients for recipes of all events for that week'''
+    '''
+    Diplays a list of ingredients for recipes of all events for that week
+    '''
+
     user = User.getUserByName(session['username'])
-    # gets events for week, could change or make a user input
     events = User.get_meals_for_the_week(user.username)
 
     ingredient_lists = []
@@ -480,6 +524,9 @@ def display_ingredients():
 
 @app.route('/remove-meal', methods=['POST'])
 def delete_meal_event():
+    '''
+    Removes meal from event calendar 
+    '''
     event_date = request.form['dinner_to_remove']
     username = session['username']
     user = User.getUserByName(username)
@@ -487,12 +534,11 @@ def delete_meal_event():
     Event.query.filter_by(date=event_date).filter_by(user_id=user.id).delete()
     db.session.commit()
     
-    events = User.getUsersEvents(user.username)
-    Event.write_events(events)
-   
     recipes = User.getListUserRecipes(username)
 
-    return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
+    return render_template('full-calendar.html', user=user, recipes=recipes)
+
+
 
 @app.route('/logout')
 def logout():
