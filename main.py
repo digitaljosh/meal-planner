@@ -87,41 +87,13 @@ def signup():
             new_cookbook = Cookbook(owner_id=new_user.id)
             db.session.add(new_cookbook)
             db.session.commit()
-            # just create a json file for user's events
-            # maybe do this at login (?)
 
-
-            
-            '''
-            filename = "events/" + str(new_user.id) + ".json"
-            f = None 
-            # checks if the file doesn't exists or if the file is empty
-            if not os.path.isfile(filename) or os.stat(filename).st_size == 0:
-                print("!!!!!!!!!!!!NO FILE!!!!!!!!!!!")
-                print("CREATING")
-                with open(filename, 'w') as json_file:
-                    json_file.write(json.dumps({}))
-            '''
-            
-            #     f = open(filename, "w")
-            #     data = {"name": "Helio", "age": 88}
-
-            #     print("No file Found, setting default age to", data["age"])
-            #     json.dump(data, f)
-            # if not f:  # open the file that exists now 
-            #     f = open(filename) 
-            #     data = json.load(f) 
-            # f.close()  # close the file that was opened in either case 
-            # with open("events/" + str(new_user.id) +".json", 'a') as new_file:
-            #     json.dump({}, new_file)
-            #     pass
             # set current session
             session['username'] = new_user.username
             session['cookbook-id'] = new_cookbook.id
             # since new user no events yet
-            events = []
-            # entered at login =>Event.write_events(events, new_user.id)
-            return render_template('full-calendar.html', user= User.getUserByName(session['username']), events=events)      
+           
+            return render_template('full-calendar.html', user= User.getUserByName(session['username']))      
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -139,20 +111,9 @@ def login():
         try:
             if session['username']:
                 name = session['username']
-                user = User.getUserByName(name)
                 recipes = User.getListUserRecipes(name)
-                # with open("events.json", "r") as input_data:
-                #    evs = User.getUsersEvents(name)
-                evs = User.getUsersEvents(name)
-                Event.write_events(evs, user.id)
-                return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes, data_user_id=user.id)
-                    # if len(input_data.read()) == 0:
-                    #     evs = User.getUsersEvents(name)
-                    #     # writes to events.json
-                    #     Event.write_events(evs)
-                    #     return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
-                    # else:
-                    #     return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
+                return render_template('full-calendar.html', user=User.getUserByName(name), recipes=recipes)
+        
         except KeyError:
             return render_template('login.html')
         except AttributeError: # no one in db yet NoneType
@@ -167,9 +128,6 @@ def login():
             user = user_to_check.first()
             if user and check_pw_hash(tried_pw, user.pw_hash):
                 session['username'] = user.username
-                evs = User.getUsersEvents(tried_name)
-                # writes to events.json
-                Event.write_events(evs, user.id)
                 return redirect('/full-calendar')
             else:
                 flash("Nice try!", 'negative')
@@ -581,13 +539,10 @@ def delete_meal_event():
     
     Event.query.filter_by(date=event_date).filter_by(user_id=user.id).delete()
     db.session.commit()
-    
-    events = User.getUsersEvents(user.username)
-    Event.write_events(events, user.id)
    
     recipes = User.getListUserRecipes(username)
 
-    return render_template('full-calendar.html', user=user, events=events, recipes=recipes, data_user_id=user.id)
+    return render_template('full-calendar.html', user=user, recipes=recipes)
 
 
 

@@ -195,10 +195,9 @@
 				eventLimit: true,
 				eventStartEditable: false,
 
-				//access Individual data pages for events_<user_id>.json here
 				events: {
-					url: 'data/' + "{{ data_user_id }}",
-					//url: 'data',
+					url: 'data',
+				
 					error: function() {
 						$('#script-warning').show();
 					}
