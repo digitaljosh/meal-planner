@@ -15,14 +15,23 @@
 
     <body class="body">
 
+        <!--
         {% with messages = get_flashed_messages(with_categories=True) %}
         <ul>
             {% for category, message in messages %}
             <li class="{{category}}">{{ message }}</li>
             {% endfor %}
         </ul>
+        {% endwith %}
+        -->
 
-       
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+            {% for category, message in messages %}
+                <div style="text-align: center; width: 100%; color: white; margin-top: -7%; padding: 5px; border: 2px solid rgb(12, 14, 12); background: rgba(10, 10, 10, 0.678); position: absolute;" role="alert">
+                    <em>{{ message }}</em>
+                </div>
+            {% endfor %}
         {% endwith %}
 
         

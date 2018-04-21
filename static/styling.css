@@ -246,6 +246,7 @@ background-color:rgba(10, 10, 10, 0.678);
 .search-form-wrap {
     width: 50%;
     margin: 0 auto;
+    padding: 15px;
     background-color:rgba(10, 10, 10, 0.678);
 }
 
