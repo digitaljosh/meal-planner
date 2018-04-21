@@ -124,6 +124,7 @@ h2 {
   text-align: center;
   background: rgba(253, 253, 253, 0.575);
   border: 2px solid black;
+  border-radius: 12px;
   font-family: 'Georgia';
   font-size: 22px;
   font-weight: 750;
@@ -162,6 +163,7 @@ h2 {
     outline: 0;
     background: rgba(253, 253, 253, 0.575);
     border: 2px solid black;
+    border-radius: 12px;
     font-family: 'Georgia';
     font-size: 22px;
     font-weight: 750;
