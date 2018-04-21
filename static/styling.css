@@ -3,11 +3,16 @@ h2 {
     font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif
 }
 .body {
-    background-image: url(/static/images/splash-background.jpeg) ;
+    background-image: url(/static/images/splash-background-compressed.jpeg) ;
     background-position: center center;
     background-repeat:  no-repeat;
-    /*background-attachment: fixed;*/
+    background-attachment: fixed;
     background-size:  cover;
+    height: 100%;
+}
+
+html {
+    height: 100%;
 }
 
 
