@@ -107,8 +107,15 @@
     
     </ul>
     {% endfor %}
+    
     <h3 class="recipe-text-responsive">Instructions:</h3>
-    <h3 id="recipe-instructions-responsive">{{ recipe.instructions }}</h3>
+    {% for step in instructions %}
+    <ul style="list-style-type:none">
+    <h4 id="recipe-instructions-responsive"><li>{{ loop.index }}. {{ step }}.</li></h4>
+    </ul>
+    {% endfor %}
+
+    <!--<h3 id="recipe-instructions-responsive">{{ recipe.instructions }}</h3>-->
     
 </div>
 

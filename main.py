@@ -16,7 +16,9 @@ from st_amts import make_shopping_list
 from week_functs import get_today_string, get_week_from_string
 
 
-
+# TODO: Right now the db lets integers in for instructions and removes them at the template
+# so every list of instructions can be numbered on template level. It would be better
+# to handle this at the commit level so no ints even pass into db instructions
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
 
@@ -302,6 +304,7 @@ def recipe_instructions():
             recipe_ingredients.append(ingreds[i]['originalString'])
 
         recipe_instructs = json_data['instructions']
+        
         recipe_time =  int(json_data['readyInMinutes'])
     
         '''
@@ -471,7 +474,21 @@ def display_modal_recipe():
     event_meal_id = event.meal
     recipe = Recipe.query.filter_by(id=event_meal_id).first()
 
-    return render_template('recipe.html', recipe=recipe, recipe_date=recipe_date, ingredients=recipe.clean_ingreds())
+    # remove step numbers if present since they are added in template view
+    instructions = re.sub("\d+\.", "", recipe.instructions)
+
+    # splits string at "." and casts it as list
+    instructions = instructions.split(".")
+
+    fresh_instructions = []
+    for step in instructions:
+        step = step.replace("(", "").replace(")", "")
+        fresh_instructions.append(step)
+
+    # removes empty strings in list
+    fresh_instructions = list(filter(None, fresh_instructions))    
+
+    return render_template('recipe.html', recipe=recipe, instructions=fresh_instructions, recipe_date=recipe_date, ingredients=recipe.clean_ingreds())
 
 
 
@@ -482,7 +499,26 @@ def display_recipe(recipe_id):
     '''
     recipe = Recipe.query.filter_by(id=recipe_id).first()
     button_flag = True
-    return render_template('recipe.html', recipe=recipe, button_flag=button_flag, ingredients=recipe.clean_ingreds())
+
+    # remove step numbers if present since they are added in template view
+    instructions = re.sub("\d+\.", "", recipe.instructions)
+
+    print("INSTRUCTIONS BEFORE SPLIT('.')")
+    print(instructions)
+    # splits string at "." and casts it as list
+    instructions = instructions.split(".")
+    print("INSTRUCTIONS AFTER SPLIT('.')")
+    print(instructions)
+
+    fresh_instructions = []
+    for step in instructions:
+        step = step.replace("(", "").replace(")", "")
+        fresh_instructions.append(step)  
+
+    # removes empty strings in list
+    fresh_instructions = list(filter(None, fresh_instructions))
+    
+    return render_template('recipe.html', recipe=recipe, instructions=fresh_instructions, button_flag=button_flag, ingredients=recipe.clean_ingreds())
 
 
 @app.route("/recipe-index")
