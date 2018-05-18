@@ -124,7 +124,7 @@ class Recipe(db.Model):
         # handles cases where parentheses exist in instructions
         fresh_instructions = []
         for step in instructions:
-            step = step.replace("(", "").replace(")", "")
+            step = step.replace("(", "").replace(")", "").replace("!", "")
             fresh_instructions.append(step)  
 
         # removes empty strings in list
