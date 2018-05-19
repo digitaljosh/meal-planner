@@ -10,7 +10,7 @@
 
 
 
-<div class="container" style="background-color:rgba(10, 10, 10, 0.778); margin-top: 5px; color: white; max-width: 82%;">
+<div class="container" style="background-color:rgba(10, 10, 10, 0.9); margin-top: 5px; color: white; max-width: 82%;">
 
     <!-- Display 'SAVE RECIPE' button if not in db -->
     {% if new %}
@@ -39,8 +39,8 @@
     <!--  close modal button  -->
     {% if not button_flag and not new %}
         <div>
-            <button style="color: #fff; float: right;" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">
+            <button style="color: #fff; float: right;" type="button" class="close" data-dismiss="modal">
+                <span style="text-shadow: none; color: white;">
                     &times;
                 </span>
             </button>
@@ -89,6 +89,7 @@
     {% if recipe.time <= 60 %}
         <h3 class="recipe-text-responsive" style="text-align: center;">Estimated time: <em>{{ recipe.time }} minutes</em></h3>
     {% else %}
+        <!-- maybe handle this logic in models.py -->
         {% set recipe_hour = recipe.time//60 %}
         {% set recipe_mins = recipe.time%60 %}
         {% if not recipe_mins %}
@@ -107,8 +108,14 @@
     
     </ul>
     {% endfor %}
+    
     <h3 class="recipe-text-responsive">Instructions:</h3>
-    <h3 id="recipe-instructions-responsive">{{ recipe.instructions }}</h3>
+    {% for step in instructions %}
+    <ul style="list-style-type:none">
+    <h4 id="recipe-instructions-responsive"><li>{{ loop.index }}. {{ step }}.</li></h4>
+    </ul>
+    {% endfor %}
+
     
 </div>
 

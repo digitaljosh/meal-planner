@@ -108,6 +108,31 @@ class Recipe(db.Model):
             fresh_ingredients.append(ingred)
         return fresh_ingredients
 
+
+    def clean_instructs(self):
+        '''removes digits if present and splits string at periods to form list of strings'''
+
+        # remove step numbers (digits) if present since they are not ubiquitous in api recipes. Step nums added in template view
+        instructions = re.sub("\d+\.", "", self.instructions)
+        
+        # removes html tags
+        instructions = re.sub("<.*?>", "", instructions)
+
+        # splits string at "." and casts it as list
+        instructions = instructions.split(".")
+
+        # handles cases where parentheses exist in instructions
+        fresh_instructions = []
+        for step in instructions:
+            step = step.replace("(", "").replace(")", "").replace("!", "")
+            fresh_instructions.append(step)  
+
+        # removes empty strings in list
+        fresh_instructions = list(filter(None, fresh_instructions))
+
+        return fresh_instructions
+
+
 class Cookbook(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))

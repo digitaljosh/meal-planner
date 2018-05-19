@@ -243,17 +243,13 @@
 
 
 
-<!-- start ADD MEAL modal -->
-	<div class="modal fade" id="addMeal" tabindex="-1" role="dialog" 
-	aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div style="background-color:rgba(10, 10, 10, 0.678);" class="modal-content">
+<!-- start ADD MEAL modal--> 
+	<div id="addMeal" class="modal fade">
+		<div class="modal-dialog" style="background-color:rgba(10, 10, 10, 0.9);" class="modal-content">
 			<!-- Modal Header -->
 			<div style="border-bottom: none;" class="modal-header">
-				<button type="button" class="close" 
-				data-dismiss="modal">
-					<span aria-hidden="true">&times;</span>
-					<span class="sr-only">Close</span>
+				<button type="button" class="close" data-dismiss="modal">
+					<span style="text-shadow: none; color: white;">&times;</span>
 				</button>
 				<h4 style="color:#fff; text-align: center;" class="modal-title" id="myModalLabel">
 					Add Meal
@@ -265,13 +261,12 @@
 				
 				<form class="form-horizontal" action="/full-calendar" method="post" role="form">
 					<div class="form-group">
-						<label class="col-sm-2 control-label"
-								for="inputEmail3">Meal
+						<label class="col-sm-2 control-label">
+							Meal
 						</label>
 						<div class="col-sm-10">
 							<select id="recipe-add" name="meal">
 								{% for recipe in recipes|sort(attribute="name") %}
-									<!-- <option value="{{ recipe.id }}">{{ recipe.name }} : recipe {{ recipe.id }}</option> -->
 									<option value="{{ recipe.id }}">{{ recipe.name }}</option>
 								{% endfor %}
 							</select>
@@ -289,7 +284,6 @@
 				</form> 
 			</div>
 		</div>
-	</div>
 	</div>
 <!-- end ADD MEAL modal -->
 
@@ -311,14 +305,13 @@
 	<div class="modal fade" id="createRecipeModal" tabindex="-1" role="dialog" 
 		aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
-			<div style="background-color:rgba(10, 10, 10, 0.678);" class="modal-content">
+			<div style="background-color:rgba(10, 10, 10, 0.9);" class="modal-content">
 
 				<!-- Modal Header -->
 				<div style="border-bottom: none;" class="modal-header">
 					<button type="button" class="close" 
 					data-dismiss="modal">
-						<span aria-hidden="true">&times;</span>
-						<span class="sr-only">Close</span>
+						<span style="text-shadow: none; color: white;">&times;</span>
 					</button>
 					<h4 style="color: #fff; text-align: center;" class="modal-title" id="myModalLabel">
 						Create Recipe
@@ -358,7 +351,7 @@
 								for="inputPassword3" >Instructions</label>
 							<div class="col-sm-10">
 								<textarea name="instructions" type="text" class="form-control"
-									id="inputPassword3" placeholder="Instructions"></textarea>
+									id="inputPassword3" placeholder="Chop. Cook. Eat."></textarea>
 							</div>
 						</div>
 					<div class="form-group">

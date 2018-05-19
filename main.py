@@ -16,7 +16,9 @@ from st_amts import make_shopping_list
 from week_functs import get_today_string, get_week_from_string
 
 
-
+# TODO: Right now the db lets integers in for instructions and removes them at the template
+# so every list of instructions can be numbered on template level. It would be better
+# to handle this at the commit level so no ints even pass into db instructions
 
 #calendar demo copied with adjusts from https://gist.github.com/Nikola-K/37e134c741127380f5d6 
 
@@ -302,6 +304,7 @@ def recipe_instructions():
             recipe_ingredients.append(ingreds[i]['originalString'])
 
         recipe_instructs = json_data['instructions']
+        
         recipe_time =  int(json_data['readyInMinutes'])
     
         '''
@@ -333,7 +336,7 @@ def recipe_instructions():
             api_obj.last_api_call = last_api_call
             db.session.commit()
 
-            return render_template('recipe.html', recipe=new_recipe, ingredients=new_recipe.clean_ingreds(), new=new)
+            return render_template('recipe.html', recipe=new_recipe, instructions=new_recipe.clean_instructs(), ingredients=new_recipe.clean_ingreds(), new=new)
     
     else:
         if session['username'] == 'admin':
@@ -389,7 +392,7 @@ def recipe_instructions():
                 api_obj.last_api_call = last_api_call
                 db.session.commit()
 
-                return render_template('recipe.html', recipe=new_recipe, ingredients=new_recipe.clean_ingreds(), new=new)
+                return render_template('recipe.html', recipe=new_recipe, instructions=new_recipe.clean_instructs(), ingredients=new_recipe.clean_ingreds(), new=new)
 
         # if api limit reached and admin not logged in
         else:
@@ -471,7 +474,7 @@ def display_modal_recipe():
     event_meal_id = event.meal
     recipe = Recipe.query.filter_by(id=event_meal_id).first()
 
-    return render_template('recipe.html', recipe=recipe, recipe_date=recipe_date, ingredients=recipe.clean_ingreds())
+    return render_template('recipe.html', recipe=recipe, instructions=recipe.clean_instructs(), recipe_date=recipe_date, ingredients=recipe.clean_ingreds())
 
 
 
@@ -482,7 +485,8 @@ def display_recipe(recipe_id):
     '''
     recipe = Recipe.query.filter_by(id=recipe_id).first()
     button_flag = True
-    return render_template('recipe.html', recipe=recipe, button_flag=button_flag, ingredients=recipe.clean_ingreds())
+    
+    return render_template('recipe.html', recipe=recipe, instructions=recipe.clean_instructs(), button_flag=button_flag, ingredients=recipe.clean_ingreds())
 
 
 @app.route("/recipe-index")
