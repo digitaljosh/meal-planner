@@ -39,8 +39,8 @@
     <!--  close modal button  -->
     {% if not button_flag and not new %}
         <div>
-            <button style="color: #fff; float: right;" type="button" class="close" data-dismiss="modal">
-                <span style="text-shadow: none; color: white;">
+            <button style="color: #fff; float: right;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span style="text-shadow: none; color: white;" aria-hidden="true">
                     &times;
                 </span>
             </button>
@@ -89,7 +89,6 @@
     {% if recipe.time <= 60 %}
         <h3 class="recipe-text-responsive" style="text-align: center;">Estimated time: <em>{{ recipe.time }} minutes</em></h3>
     {% else %}
-        <!-- maybe handle this logic in models.py -->
         {% set recipe_hour = recipe.time//60 %}
         {% set recipe_mins = recipe.time%60 %}
         {% if not recipe_mins %}
@@ -98,6 +97,7 @@
             <h3 class="recipe-text-responsive">Estimated time: <em>{{ recipe_hour }} hours : {{ recipe_mins }} minutes</em></h3>
         {% endif %}
     {% endif %}
+
 
 
     <h3 class="recipe-text-responsive">Ingredients:</h3>
@@ -115,7 +115,6 @@
     <h4 id="recipe-instructions-responsive"><li>{{ loop.index }}. {{ step }}.</li></h4>
     </ul>
     {% endfor %}
-
     
 </div>
 
