@@ -412,7 +412,11 @@ def save_recipe():
     user = User.getUserByName(session['username'])
     events = User.getUsersEvents(user.username)
     
+    c_book = Cookbook.query.filter_by(owner_id=user.id).first()
+    same_recipe = Recipe.query.filter_by(name=name, instructions=instructions, cookbook_id=c_book.id).first()
 
+    recipes = User.getListUserRecipes(session['username'])
+    
     if time == "":
         #defaults to 30 minutes
         time = 30
@@ -420,11 +424,12 @@ def save_recipe():
     # keeps format consistent for recipes manually entered
     if type(ingredients) == str and '[' not in ingredients :
         ingredients = ingredients.splitlines()
-      
-    c_book = Cookbook.query.filter_by(owner_id=user.id).first()
-    same_recipe = Recipe.query.filter_by(name=name, instructions=instructions, cookbook_id=c_book.id).first()
+
+    if len(name) == 0 or len(ingredients) == 0 or len(instructions) == 0:
+        flash("Please fill in Name, Ingredients, and Instructions.", 'negative')
+        return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
+    
     if same_recipe:
-        recipes = User.getListUserRecipes(session['username'])
         flash("That recipe already exists", 'negative')   
         return render_template('full-calendar.html', user=user, events=events, recipes=recipes)
 
