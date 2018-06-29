@@ -8,3 +8,5 @@ josh_db_connect = 'mysql+pymysql://mealplanner:mealplanner@localhost:8889/mealpl
 mash_key = "2lZIhttKlzmshfcvdDIws3dS8XAfp1Z9kkVjsn6Y7YuGocYKNB"
 
 shhh = 'Shhhhh,dont_tell_anyone1979'
+
+#test to see if gitignore is ignoring this file
