@@ -1,4 +1,4 @@
-# Plan:EAt (meal-planner) v1.0
+# Plan:Eat (meal-planner) v1.0
 Plan:EAt is a web application that allows users to schedule meals for a week/month/year with recipes that they have either created and entered, or searched and saved from the web. Recipes are stored in the db with their ingredients and instructions and accesed via a user's individual, virtual cookbook.
 A shopping list can also be created with one click at any time for the next week. This list as well as the calendar itself can also be printed if desired.
 
@@ -8,6 +8,7 @@ A shopping list can also be created with one click at any time for the next week
 + Flask
 + Javascript (vanilla)
 + JQuery
++ AJAX
 + MySQL
 
 ## Live
@@ -15,7 +16,7 @@ A shopping list can also be created with one click at any time for the next week
 
 
 ## License
-Plan:EAt is provided under the MIT license.
+Plan:Eat is provided under the MIT license.
 >The MIT License (MIT)
 >Copyright (c) 2018 Jason Jones
  
